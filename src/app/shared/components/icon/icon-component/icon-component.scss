@@ -1,0 +1,14 @@
+@use 'abstracts/variables' as v;
+@use 'abstracts/mixins' as m;
+
+.icon-renderer {
+    // display: inline-block;
+    @include m.layout-flex();
+    background-color: currentColor;/* El icono adopta el color del texto del botón */
+    mask-repeat: no-repeat;
+    mask-size: contain;
+    mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: contain;
+    -webkit-mask-position: center;
+}

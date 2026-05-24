@@ -1,3 +1,13 @@
-<button [class]="'btn btn--' + type">
-    <ng-content></ng-content>
+<button [type]="type()" [class]="buttonClass()" [style.background-color]="!isThemeColor() ? color() : null" (click)="handleClick($event)">
+    <!-- Icono alineado a la izquierda -->
+    @if (icon() && iconPosition() === 'left') {
+        <app-icon-component [name]="icon()!" [size]="20" />
+    }
+    <span>{{ label() }}</span>
+    
+    <!-- Icono alineado a la derecha -->
+    @if (icon() && iconPosition() === 'right') {
+        <app-icon-component [name]="icon()!" [size]="20" />
+    }
+
 </button>

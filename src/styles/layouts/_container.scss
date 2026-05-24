@@ -32,9 +32,13 @@
         .menu-route{
             align-self: flex-end;
             @include m.layout-flex();
-            border-radius: 2rem;
+            border-radius: 1rem;
             background-color: v.$light-primary-color;
-            padding:0.875rem;
+            padding:0.75rem;
+
+            p{
+                font-size: 0.875rem;
+            }
             
             .icon-home{
                 color: v.$primary-hover-color;
@@ -65,9 +69,9 @@
 
         .buttons-container{
             align-self: stretch;
-            @include m.layout-flex(row, flex-end, center, nowrap);
+            @include m.layout-flex(row, flex-end, center, wrap);
             border: 1px solid green;
-            padding: 1rem;
+            padding-right: 0;
             margin-bottom: 1rem;
         }
 
