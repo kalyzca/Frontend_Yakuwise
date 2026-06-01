@@ -61,6 +61,17 @@ $font-weight: 400;
   }
 }
 
+
+.btn-delete {
+  background-color: v.$delete-color; 
+  color: #ffffff;
+
+  &:hover {
+    background-color:red;
+    box-shadow: 0 4px 12px rgba(100, 116, 139, 0.3);
+  }
+}
+
 // Comportamiento para colores hexadecimales dinámicos (Custom hex)
 .btn-custom {
   color: #ffffff; /* Asegura legibilidad base */

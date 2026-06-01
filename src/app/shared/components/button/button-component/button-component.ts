@@ -27,7 +27,7 @@ export class ButtonComponent {
 
   // Evalúa si el color recibido pertenece al tema predefinido
   isThemeColor = computed(() => 
-    ['primary', 'secondary', 'accent'].includes(this.color() || '')
+    ['primary', 'secondary', 'accent','edit','error'].includes(this.color() || '')
   );
 
   // Gestiona de forma reactiva las clases del botón

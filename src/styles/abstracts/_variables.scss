@@ -22,7 +22,10 @@ $secondary-color: #2ee0d7;
 $tertiary-color: #df7c2d;
 $quaternary-color: #df2d90;
 $important-color:#2d37df;
-$error-color: red;
+$error-color: hsl(0, 100%, 50%);
+$delete-color: hsl(0, 100%, 60%);
+$edit-color: rgb(233, 233, 17);
+$deactive-color: hsl(0, 100%, 70%);
 
 // Colores
 // $color-secondary: #64748b;

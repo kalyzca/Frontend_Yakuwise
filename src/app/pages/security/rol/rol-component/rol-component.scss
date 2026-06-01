@@ -1,3 +1,51 @@
-.rol-container{
-    border:1px solid red;
+@use 'abstracts/variables' as v;
+@use  '@angular/material' as mat;
+
+.rol-container {
+    border: 1px solid red;
+}
+
+.btn{
+    border: none;
+    background-color: v.$white-color;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+}
+.btn-edit {
+    color: v.$edit-color;
+    
+    svg {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: v.$edit-color;
+    }
+}
+
+.state-active{
+    color: v.$secondary-color;
+}
+
+.state-deactive{
+    color: v.$deactive-color;
+}
+
+:root .mat-mdc-option .mat-mdc-option-active .mdc-list-item{
+    background-color: red;
+    padding: 8px;
+}
+
+.position{
+    width: 10%;
+}
+.name{
+    width: 70%;
+}
+.state{
+    width: 10%;
+}
+.options{
+    width: 10%;
+    background-color: red;
 }
