@@ -1,34 +1,31 @@
-<h2 mat-dialog-title>Crear rol</h2>
-<form [formRoot]="roleForm" noValidate>
-    <mat-dialog-content>
-        <!-- Campo Rol -->
-        <div>
-            <label for="role">Rol:</label>
-            <input id="role" type="text" [formField]="roleForm.name" />
-            
-            <!-- 💡 Se ejecutan directamente invocando la señal de la propiedad del formulario -->
-            @if (roleForm.name().touched() && roleForm.name().invalid()) {
-                @for (error of roleForm.name().errors(); track error.kind) {
-                    <span class="error-msg">{{ error.message }}</span>
-                }
-            }
-        </div>
+<h3 mat-dialog-title>{{ isEditMode() ? 'Editar Rol' : 'Agregar Rol' }}</h3>
 
-        <!-- Campo state -->
-        <div>
-            <label for="state">Estado:</label>
-            <input id="state" type="checkbox" [formField]="roleForm.state" />
-            
-            @if (roleForm.state().touched() && roleForm.state().invalid()) {
-                @for (error of roleForm.state().errors(); track error.kind) {
-                    <span class="error-msg">{{ error.message }}</span>
-                }
-            }
-        </div>
+<mat-dialog-content>
+    <!-- Campo Rol -->
+    <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Nombre</mat-label>
+        <input matInput [ngModel]="name()" (ngModelChange)="name.set($event)" (blur)="nameTouched.set(true)" placeholder="Ej. Administrador" required>
         
-    </mat-dialog-content>
-    <mat-dialog-actions>
-        <button mat-button mat-dialog-close>No</button>
-        <button mat-button mat-dialog-close type="submit" [disabled]="roleForm().invalid()">Registrar</button>
-    </mat-dialog-actions>
-</form>
+        <!-- Renderizado condicional del error basado en la señal computada -->
+        @if (nameError()) {
+            <mat-error>{{ nameError() }}</mat-error>
+        }
+    </mat-form-field>
+
+    <!-- Campo estado -->
+    <div style="margin-top: 15px;">
+        <mat-label for="state" style="margin-right: 10px; font-weight: bold;">Estado:</mat-label>
+        <mat-checkbox [ngModel]="isActive()" (ngModelChange)="isActive.set($event)">
+            ¿Es rol activo?
+        </mat-checkbox>
+        <p style="margin-top: 8px; color: #555;">
+        El rol se registrará como: <strong style="color: #3f51b5;">{{ statusText() }}</strong>
+        </p>
+    </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button  (click)="onCancel()">Cancelar</button>
+    <button mat-button color="primary" type="submit" [disabled]="isFormInvalid()" (click)="onSave()">{{ isEditMode() ? 'Actualizar' : 'Guardar' }}</button>
+</mat-dialog-actions>
+

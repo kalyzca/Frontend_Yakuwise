@@ -1,57 +1,73 @@
-
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { form, required, FormRoot, FormField} from '@angular/forms/signals';
+import { Component, computed, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogRef, MatDialogTitle } from '@angular/material/dialog';
-import { elementAt } from 'rxjs';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MAT_DIALOG_DATA, MatDialogActions,  MatDialogContent, MatDialogRef, MatDialogTitle } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatError, MatFormField } from "@angular/material/select";
 
-export interface RoleFormData {
-  name:string,
-  state:boolean
+export interface RoleData {
+  id?: number;
+  name:string;
+  state: string;
 }
 
 @Component({
   selector: 'app-rol-modal-component',
-  imports: [MatDialogActions, MatDialogClose, MatDialogTitle, MatDialogContent, MatButtonModule, FormRoot, FormField],
+  imports: [FormsModule, MatDialogActions, MatFormFieldModule, MatInputModule, MatDialogTitle, MatDialogContent, MatButtonModule,  MatFormField, MatCheckboxModule, MatError],
   templateUrl: './rol-modal-component.html',
   styleUrl: './rol-modal-component.scss',
 })
 
-export class RolModalComponent implements OnInit {
-  readonly dialogRef = inject(MatDialogRef<RolModalComponent>);
-  data = inject(MAT_DIALOG_DATA);
+export class RolModalComponent {
+  private dialogRef = inject(MatDialogRef<RolModalComponent>);
+  // Recibimos los datos de la tabla (pueden ser undefined si es un nuevo registro)
+  private inputData = inject<RoleData | undefined>(MAT_DIALOG_DATA);
   dataState:any;
 
-  // 1. Crear el modelo de datos inicial con una signal
-  private formModel = signal<RoleFormData>({
-    name : '',
-    state: false
+  // 1. Valores de los campos
+  name = signal<string>(this.inputData?.name ?? '');
+
+  // CONVERSIÓN DE ENTRADA: Si viene 'Activo', el checkbox será true. Si no, false.
+  isActive = signal<boolean>(this.inputData?.state === 'Activo');
+
+  // 2. Estado de interacción (touched) para no mostrar errores prematuros
+  nameTouched = signal<boolean>(false);
+  isEditMode = signal<boolean>(!!this.inputData);
+
+  // CONVERSIÓN DE SALIDA: Traduce el booleano del checkbox a la cadena que la tabla necesita
+  statusText = computed(() => this.isActive() ? 'Activo' : 'Inactivo');
+
+  // 3. Señal computada para manejar las validaciones
+  nameError = computed(() => {
+    if (!this.nameTouched()) return null; // No mostrar error si no ha interactuado
+    return this.name().trim() === '' ? 'El nombre es obligatorio.': null;
   });
 
-  // 2. Crear el FieldTree pasando el modelo y sus validaciones en el schema
-  protected roleForm = form(this.formModel, (path:any) => {
-    required(path.role, { message: 'El nombre de rol es obligatorio.' });
-    // required(path.state, { message: 'El estado es requerido' });
-  }, {
-    // La directiva [formRoot] buscará esta propiedad 'submission' automáticamente
-    submission: {
-      action: async ( FieldTree) =>{
-        const rawValues = this.formModel(); // 🟢 Esto te da un objeto de tipo RoleFormData limpio
-        this.saveRole(rawValues);
-        
-      } 
-        
+  // 4. Estado general del botón del formulario
+  isFormInvalid = computed(() => this.name().trim() === '');
+  
+  onSave(): void {
+    // Si el usuario da clic directamente en guardar sin tocar nada, forzamos los errores
+    if (this.isFormInvalid()) {
+      this.nameTouched.set(true);
+      return;
     }
-  });
 
-  ngOnInit(): void {
-    console.log('datos de la tabla', this.data);
-    
+    // Devolvemos el objeto limpio estructurado exactamente como lo espera la tabla
+    const payload: RoleData = {
+      name: this.name().trim(),
+      state: this.statusText() // Enviará 'Activo' o 'Inactivo'
+    };
+
+    this.dialogRef.close(payload);
   }
 
-  private saveRole(formData:RoleFormData) {
-    console.log('Datos listos y validados enviados al servidor: del form', formData);
+  onCancel(): void {
+    this.dialogRef.close();
   }
+
 }
 
 
