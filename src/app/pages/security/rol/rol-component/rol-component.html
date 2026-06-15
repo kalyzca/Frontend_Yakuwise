@@ -9,7 +9,7 @@
                 <path fill="currentColor" d="M261.56 101.28a8 8 0 0 0-11.06 0L66.4 277.15a8 8 0 0 0-2.47 5.79L63.9 448a32 32 0 0 0 32 32H192a16 16 0 0 0 16-16V328a8 8 0 0 1 8-8h80a8 8 0 0 1 8 8v136a16 16 0 0 0 16 16h96.06a32 32 0 0 0 32-32V282.94a8 8 0 0 0-2.47-5.79Z"/>
                 <path fill="currentColor" d="m490.91 244.15l-74.8-71.56V64a16 16 0 0 0-16-16h-48a16 16 0 0 0-16 16v32l-57.92-55.38C272.77 35.14 264.71 32 256 32c-8.68 0-16.72 3.14-22.14 8.63l-212.7 203.5c-6.22 6-7 15.87-1.34 22.37A16 16 0 0 0 43 267.56L250.5 69.28a8 8 0 0 1 11.06 0l207.52 198.28a16 16 0 0 0 22.59-.44c6.14-6.36 5.63-16.86-.76-22.97"/>
             </svg>
-            &nbsp;
+            &nbsp;&nbsp;
             <p class="module">Seguridad&nbsp;</p>
             <p>/ Rol</p>
         </div>
@@ -25,7 +25,7 @@
             </mat-paginator>
         </div>
         <div class="search-container">
-            <mat-form-field appearance="outline" class="custom-search-field">
+            <mat-form-field class="custom-search-field">
                 <mat-label>Buscar rol</mat-label>
                 <input matInput  [ngModel]="searchTerm()"  (ngModelChange)="onSearchChange($event)" placeholder="Ej. Operador" #input>
             </mat-form-field>
@@ -47,13 +47,13 @@
                     <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
                     <td mat-cell *matCellDef="let element" class="roleState">
                         @if (element.state === 'Activo') {
-                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" class="state-active" matTooltip="{{element.state}}" matTooltipPosition="right">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" class="state-active" matTooltip="{{element.state}}" matTooltipPosition="below">
                                 <path d="M0 0h24v24H0z" fill="none" />
                                 <path fill="currentColor" d="M23 12c0 6.075-4.925 11-11 11S1 18.075 1 12S5.925 1 12 1s11 4.925 11 11M9.305 18.11l9.402-9.403l-1.414-1.414l-7.883 7.883l-2.476-3.01l-1.511 1.31l3.882 4.633z" />
                             </svg>
                         }
                         @else {
-                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" class="state-deactive" matTooltip="{{element.state}}" matTooltipPosition="right">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" class="state-deactive" matTooltip="{{element.state}}" matTooltipPosition="below">
                                 <path d="M0 0h24v24H0z" fill="none" />
                                 <path fill="currentColor" fill-rule="evenodd" d="M12 23c6.075 0 11-4.925 11-11S18.075 1 12 1S1 5.925 1 12s4.925 11 11 11m-1.414-11l-3.293 3.293l1.414 1.414L12 13.414l3.293 3.293l1.414-1.414L13.414 12l3.293-3.293l-1.414-1.414L12 10.586L8.707 7.293L7.293 8.707z" clip-rule="evenodd" />
                             </svg>
