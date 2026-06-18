@@ -3,7 +3,7 @@
 
 // Variables de diseño local
 $transition-speed: 0.25s;
-$border-radius: 1rem;
+$border-radius: 0.25rem;
 $font-weight: 400;
 
 // Estructura base del botón común para todos los estados
@@ -31,7 +31,6 @@ $font-weight: 400;
 
   &:hover {
     background-color: v.$primary-hover-color;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
     font-weight: 500;
   }
 

@@ -71,10 +71,7 @@
 
         .buttons-container{
             align-self: stretch;
-            @include m.layout-flex(row, flex-end, center, wrap);
-            border: 1px solid green;
-            padding-right: 0;
-            margin-bottom: 1rem;
+            @include m.layout-flex(row, flex-end, center, nowrap);
         }
 
         .search-container {

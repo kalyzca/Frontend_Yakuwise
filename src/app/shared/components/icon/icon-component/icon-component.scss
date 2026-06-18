@@ -2,9 +2,8 @@
 @use 'abstracts/mixins' as m;
 
 .icon-renderer {
-    // display: inline-block;
     @include m.layout-flex();
-    background-color: currentColor;/* El icono adopta el color del texto del botón */
+    background-color: currentColor;
     mask-repeat: no-repeat;
     mask-size: contain;
     mask-position: center;
