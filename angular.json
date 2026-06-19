@@ -39,7 +39,11 @@
               "includePaths": [
                 "src/styles"
               ]
-            }
+            },
+            "polyfills": [
+              "zone.js",
+              "@angular/localize/init"
+            ]
           },
           "configurations": {
             "production": {

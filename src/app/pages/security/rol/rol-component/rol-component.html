@@ -19,11 +19,7 @@
             <app-button-component type="submit" label="Nuevo Rol" icon="plus" color="primary" (click)="createRole()" />
         </div>
 
-        <div class="pagination-container">
-            <mat-paginator [length]="filteredRolesCount()" [pageSize]="pageSize()"
-                     [pageIndex]="pageIndex()" [pageSizeOptions]="[5, 10, 25]" (page)="onPageChange($event)"showFirstLastButtons aria-label="Seleccionar página">
-            </mat-paginator>
-        </div>
+        
         <div class="search-container">
             <mat-form-field class="custom-search-field">
                 <mat-label>Buscar rol</mat-label>
@@ -81,6 +77,10 @@
                     </td>
                 </tr>
             </table>
+            <div class="pagination-container">
+                <mat-paginator [length]="filteredRolesCount()" [pageSize]="pageSize()" [pageIndex]="pageIndex()" [pageSizeOptions]="[5, 10, 20, 25]" (page)="onPageChange($event)"showFirstLastButtons aria-label="Seleccionar página">
+                </mat-paginator>
+            </div>
         </div>
     </div>
 </section>

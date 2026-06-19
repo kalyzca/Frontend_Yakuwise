@@ -1,4 +1,6 @@
 @use '@angular/material' as mat;
+@use 'abstracts/variables' as v;
+@use 'abstracts/mixins' as m;
 
 html {
     color-scheme: light;
@@ -11,6 +13,101 @@ html {
     typography: Roboto,
     density: 0
     ));
+}
+
+:root {
+    @include mat.paginator-overrides(
+        (
+            container-text-color : v.$dark-color,
+            container-background-color: v.$white-color,
+            enabled-icon-color:v.$primary-color,
+            page-size-select-width:4rem,
+            page-size-select-touch-target-height:1rem,
+            container-text-font:1rem,
+            container-text-line-height:1rem,
+            container-text-size:14px,
+            select-trigger-text-size:14px,
+            container-size:1rem,
+            form-field-container-height:1rem,
+            form-field-container-vertical-padding:0.25rem,
+        )
+      
+    );
+    
+    // Aplica a todos los selectores de los paginadores de tu app
+    .mat-mdc-paginator .mat-mdc-form-field:hover .mdc-notched-outline__leading,
+    .mat-mdc-paginator .mat-mdc-form-field:hover .mdc-notched-outline__notch,
+    .mat-mdc-paginator .mat-mdc-form-field:hover .mdc-notched-outline__trailing {
+        border-color: v.$primary-hover-color !important; 
+    }
+    .mat-mdc-paginator .mat-mdc-form-field:active .mdc-notched-outline__leading,
+    .mat-mdc-paginator .mat-mdc-form-field:active .mdc-notched-outline__notch,
+    .mat-mdc-paginator .mat-mdc-form-field:active .mdc-notched-outline__trailing {
+        border-color: v.$primary-active-color !important; 
+    }
+    .mat-mdc-select-arrow{
+        color: v.$primary-color;
+
+    }
+    .mat-mdc-select-panel {
+        color: v.$primary-color;
+        background-color:v.$light-primary-color;
+        padding-top: 0px !important;
+        padding-bottom: 0px !important;
+        align-items: stretch;
+        
+        .mdc-list {
+            padding-top: 0px !important;
+            padding-bottom: 0px !important;
+        }
+        
+        .mat-mdc-option {
+            font-size: 0.875rem;
+            font-weight: 400;
+            color: v.$dark-color;
+            background-color: v.$white-color;
+            min-height: 1.5rem;
+            justify-content: center !important; 
+            text-align: center !important; 
+            
+            .mdc-list-item__primary-text {
+                text-align: center !important;
+                width: 100%; // Asegura que el texto ocupe todo el ancho para centrarse
+            }
+        }
+        .mat-mdc-option:hover:not(.mdc-list-item--disabled) {
+            .mdc-list-item__primary-text {
+            color: v.$white-color !important;
+            }
+        }
+    }
+    .mat-mdc-option:hover:not(.mdc-list-item--disabled) {
+        background-color:v.$primary-color;
+        color: v.$white-color;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+    .mat-mdc-option:active:not(.mdc-list-item--disabled) {
+        background-color:v.$primary-active-color;
+    }
+    
+    // Cambiar el estilo de la opción que está seleccionada actualmente
+    .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+        background-color:  hsl(206, 87%, 82%) !important;
+        justify-self: center;
+        width: 100%;
+        
+        .mdc-list-item__primary-text {
+            font-size: 0.875rem;
+            color: v.$dark-color !important;
+            text-align: center !important;
+            width: 100%;
+        }
+    }
+    .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled):hover {
+        background-color: v.$primary-hover-color !important;
+    }
+        
 }
 
 // 1. Reset Global y Box Sizing
