@@ -15,6 +15,24 @@ html {
     ));
 }
 
+// 1. Reset Global y Box Sizing
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+}
+
 :root {
     @include mat.paginator-overrides(
         (
@@ -66,7 +84,7 @@ html {
             font-weight: 400;
             color: v.$dark-color;
             background-color: v.$white-color;
-            min-height: 1.5rem;
+            min-height: 1.875rem;
             justify-content: center !important; 
             text-align: center !important; 
             
@@ -107,24 +125,70 @@ html {
     .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled):hover {
         background-color: v.$primary-hover-color !important;
     }
+    
+    // Estilos del icono del buscador
+    @include mat.icon-overrides((
+        color: v.$primary-color,
+    ));
+    
+    .small-clear-btn.mat-mdc-icon-button {
+        --mdc-icon-button-state-layer-size: 1.5rem !important;
+        --mdc-icon-button-icon-size:1rem !important;
         
+        width: 1.5rem !important;
+        height: 1.5rem !important;
+        padding: 0 !important;
+        line-height: 1.5rem !important;
+        right: 0.5rem;
+        
+        &:hover{
+            background-color: v.$primary-color;
+        }
+        
+        .mat-icon {
+            font-size: 1rem !important;
+            width: 1rem !important;
+            height: 1rem !important;
+            
+            &:hover{
+                color: v.$white-color;
+            }
+        }
+
+        .mat-mdc-button-touch-target {
+            width: 1.5rem !important;
+            height: 1.5rem !important;
+        }
+    }
 }
 
-// 1. Reset Global y Box Sizing
-*,
-*::before,
-*::after {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Roboto', sans-serif;
+// Estilos del input buscador
+.custom-search-field {
+    width: 100% !important; // Fuerza el ancho total del componente de Material
+    display: block;
+    
+    ::ng-deep {
+        
+        // Estira la estructura flex interna de Material a lo ancho
+        .mat-mdc-form-field-flex {
+            width: 100% !important;
+        }
 
+        // Estira la línea de contorno (borde outline) al ancho completo
+        .mdc-notched-outline {
+            width: 100% !important;
+        }
+
+        // Asegura que la última sección del borde cubra todo el espacio restante derecho
+        .mdc-notched-outline__trailing {
+            flex-grow: 1 !important;
+        }
+
+        // El input de texto nativo tomará todo el espacio horizontal libre
+        input.mat-mdc-input-element {
+            width: 100% !important;
+        }
+    }
 }
 
-body {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-
-}
 

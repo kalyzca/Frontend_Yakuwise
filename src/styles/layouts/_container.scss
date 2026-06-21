@@ -77,16 +77,16 @@
         .search-container {
             align-self: stretch;
             @include m.layout-flex(row, space-between, center, nowrap);
-            border: 1px solid blue;
-            padding: 1rem;
-            margin-top: 0;
-            
+            border: 1px solid red;
+            padding-top: 1rem;
+            padding-bottom: 0;
+            padding-inline: 0;
+            margin-bottom: 0;
         }
         
         .table-container {
             align-self: stretch;
             border: 1px solid purple;
-            margin-top: 1rem;
             @include m.layout-flex(column);
         }
         .pagination-container {

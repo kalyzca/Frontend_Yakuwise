@@ -18,14 +18,25 @@
         <div class="buttons-container">
             <app-button-component type="submit" label="Nuevo Rol" icon="plus" color="primary" (click)="createRole()" />
         </div>
-
         
         <div class="search-container">
             <mat-form-field class="custom-search-field">
                 <mat-label>Buscar rol</mat-label>
-                <input matInput  [ngModel]="searchTerm()"  (ngModelChange)="onSearchChange($event)" placeholder="Ej. Operador" #input>
+                <input matInput 
+                    [ngModel]="searchTerm()" 
+                    (ngModelChange)="onSearchChange($event)" 
+                    placeholder="Ej. Operador" 
+                    #input>
+                
+                <!-- Botón para limpiar el input (Solo visible si hay texto) -->
+                @if (searchTerm()) {
+                    <button mat-icon-button matSuffix class="small-clear-btn" (click)="searchTerm.set(''); input.value = ''" aria-label="Limpiar">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                }
             </mat-form-field>
         </div>
+        
         <div class="table-container">
             <table mat-table [dataSource]="displayedRoles()" class="mat-elevation-z8" matSort (matSortChange)="onSortChange($event)" matSortDirection="desc">
                 <!-- Position Column -->

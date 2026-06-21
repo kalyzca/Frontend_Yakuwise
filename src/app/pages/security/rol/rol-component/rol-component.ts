@@ -10,7 +10,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms'; 
 import { RolModalComponent, RoleData } from '../../modals/rol-modal-component/rol-modal-component';
-import { NgStyle } from "../../../../../../node_modules/@angular/common/types/_common_module-chunk";
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 // Datos iniciales de respaldo por si el localStorage está vacío la primera vez
 const DEFAULT_ROLES : RoleData[] = [
@@ -22,7 +23,7 @@ const DEFAULT_ROLES : RoleData[] = [
 
 @Component({
   selector: 'app-rol-component',
-  imports: [ButtonComponent, RouterLink, MatFormFieldModule, MatInputModule, MatTableModule, MatSortModule, MatPaginatorModule, MatTooltipModule, FormsModule],
+  imports: [ButtonComponent, RouterLink, MatFormFieldModule, MatInputModule, MatTableModule, MatSortModule, MatPaginatorModule, MatTooltipModule, FormsModule, MatIconModule, MatButtonModule],
   templateUrl: './rol-component.html',
   styleUrl: './rol-component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,6 +41,7 @@ export class RolComponent {
   pageIndex = signal<number>(0);
   pageSize = signal<number>(5); // Inicializado en 2 para probar el cambio de página fácilmente
   activeSort = signal<Sort>({ active: '', direction: '' });
+  
   searchTerm = signal<string>('');
 
   constructor() {
