@@ -11,6 +11,9 @@
 tr.mat-mdc-header-row {
     background-color: v.$light-primary-color;
     justify-content: center;
+    position: sticky;
+    top: 0;
+    z-index: 1;
 }
 
 // Estilo base para todos los th
@@ -121,3 +124,24 @@ th.mat-column-actions {
 .state-deactive {
     color: v.$deactive-color;
 }
+
+    // Estilos para las alertas de MatSnackBar
+    ::ng-deep .success-snackbar {
+        background-color: #4caf50 !important;
+        color: white !important;
+        font-weight: 500;
+
+        .mat-mdc-button {
+            color: white !important;
+        }
+    }
+
+    ::ng-deep .error-snackbar {
+        background-color: #f44336 !important;
+        color: white !important;
+        font-weight: 500;
+
+        .mat-mdc-button {
+            color: white !important;
+        }
+    }
