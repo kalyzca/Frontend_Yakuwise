@@ -30,7 +30,7 @@
                 
                 <!-- Botón para limpiar el input (Solo visible si hay texto) -->
                 @if (searchTerm()) {
-                    <button mat-icon-button matSuffix class="small-clear-btn" (click)="searchTerm.set(''); input.value = ''" aria-label="Limpiar">
+                    <button mat-icon-button matSuffix class="small-clear-btn" (click)="onSearchChange(''); input.value = ''" aria-label="Limpiar">
                         <mat-icon>close</mat-icon>
                     </button>
                 }
