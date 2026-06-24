@@ -125,6 +125,14 @@ th.mat-column-actions {
     color: v.$deactive-color;
 }
 
+.small-clear-btn {
+    &:hover {
+        mat-icon {
+            color: white !important;
+        }
+    }
+}
+
     // Estilos para las alertas de MatSnackBar
     ::ng-deep .success-snackbar {
         background-color: #4caf50 !important;
