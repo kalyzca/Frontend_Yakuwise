@@ -197,6 +197,16 @@ body {
         display:inline;
         font-weight: 600;
     }
+    // Estilos para títulos de diálogos o modales
+    .mat-mdc-dialog-container .mat-mdc-dialog-title{
+        font-size: 1.25rem;
+        border-bottom: 1px solid v.$light-primary-color;
+        padding-block:0;
+        margin-block: 0;
+    }
+    .mat-mdc-dialog-content > :first-child {
+        margin-top: 1rem;
+    }
 }
 
 // Estilos del input buscador
@@ -227,5 +237,21 @@ body {
         }
     }
 }
+
+// Estilos para labels generales
+.form-input-container {
+    margin:0.5rem 0;
+
+    label {
+        padding: 0.25rem 0;
+        color: v.$primary-color;
+        font-size: 0.875rem;
+        font-weight: 600;
+        display: block;
+    }
+}
+
+
+
 
 

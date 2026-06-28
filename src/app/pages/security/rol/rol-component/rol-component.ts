@@ -175,7 +175,8 @@ export class RolComponent {
 
   createRole(role?: RoleData): void {
     const dialogRef = this.dialog.open(RolModalComponent, {
-      width: '450px',
+      width: '30rem',
+      height: 'max-content',
       data: role,
       disableClose: true
     });

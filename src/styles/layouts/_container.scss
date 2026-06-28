@@ -86,11 +86,18 @@
         .search-container {
             align-self: stretch;
             flex-shrink: 0;
-            @include m.layout-flex(row, space-between, center, nowrap);
-            padding-top: 1rem;
-            padding-bottom: 0;
+            @include m.layout-flex(column, flex-start, flex-start,nowrap);
+            padding-block: 0;
             padding-inline: 0;
             margin-bottom: 0;
+
+            label {
+                padding: 0.25rem 0;
+                color: v.$primary-color;
+                font-size: 0.875rem;
+                font-weight: 600;
+                display: block;
+            }
         }
 
         .table-container {
