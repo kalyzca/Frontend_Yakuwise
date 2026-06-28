@@ -3,15 +3,15 @@
 <mat-dialog-content>
     <!-- Campo Rol -->
      <div class="form-input-container">
-         <label for="nameRol">Nombre: (*)</label>
-         <mat-form-field appearance="fill" class="full-width">
-             <input matInput id="nameRol" [ngModel]="name()" (ngModelChange)="name.set($event)" (blur)="nameTouched.set(true)" placeholder="Ej. Administrador" required>
-             
-             <!-- Renderizado condicional del error basado en la señal computada -->
-             @if (nameError()) {
-                 <mat-error>{{ nameError() }}</mat-error>
-             }
-         </mat-form-field>
+        <label for="nameRol">Nombre: (*)</label>
+        <mat-form-field appearance="fill" class="full-width">
+            <input matInput id="nameRol" [ngModel]="name()" (ngModelChange)="name.set($event)" (blur)="nameTouched.set(true)" placeholder="Ej. Administrador" required>
+            
+            <!-- Renderizado condicional del error basado en la señal computada -->
+            @if (nameError()) {
+                <mat-error>{{ nameError() }}</mat-error>
+            }
+        </mat-form-field>
     </div>
 
     <!-- Campo estado -->
@@ -25,7 +25,7 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-    <button mat-button  (click)="onCancel()">Cancelar</button>
+    <button mat-button (click)="onCancel()">Cancelar</button>
     <button mat-button color="primary" type="submit" [disabled]="isFormInvalid()" (click)="onSave()">{{ isEditMode() ? 'Actualizar' : 'Guardar' }}</button>
 </mat-dialog-actions>
 

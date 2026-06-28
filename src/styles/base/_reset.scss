@@ -186,6 +186,51 @@ body {
         unselected-hover-track-color:v.$light-primary-color,
         unselected-hover-handle-color:v.$primary-color,
     ));
+
+    // Estilos de botones en modales
+    .mat-mdc-dialog-actions {
+        .mat-mdc-button {
+            border: 1px solid transparent;
+            border-radius: v.$radius;
+            gap: 0.5rem;
+            font-weight: 400;
+            
+            // Botón secundario (Cancelar/Cerrar) - primer botón
+            &:first-child {
+                background-color: v.$cancelar-color;
+                color: v.$white-color;
+                border-color: v.$cancelar-color;
+                
+                &:hover {
+                    background-color: v.$cancelar-hover-color;
+                    border-color: v.$cancelar-hover-color;
+                }
+                
+                &:active {
+                    background-color: v.$cancelar-active-color;
+                    border-color: v.$cancelar-active-color;
+                    font-weight: 500;
+                }
+            }
+            
+            // Botón principal (Guardar/Crear/Editar) - segundo botón
+            &:last-child {
+                background-color: v.$primary-color;
+                color: v.$white-color;
+                border-color: v.$primary-color;
+                
+                &:hover {
+                    background-color: v.$primary-hover-color;
+                    border-color: v.$primary-hover-color;
+                }
+                
+                &:active {
+                    background-color: v.$primary-active-color;
+                    border-color: v.$primary-active-color;
+                }
+            }
+        }
+    }
     .mdc-switch__track::before {
         background-color: v.$light-primary-color;
     }
@@ -201,11 +246,21 @@ body {
     .mat-mdc-dialog-container .mat-mdc-dialog-title{
         font-size: 1.25rem;
         border-bottom: 1px solid v.$light-primary-color;
-        padding-block:0;
+        padding-bottom: 0.5rem;
+        padding-top:0;
         margin-block: 0;
     }
     .mat-mdc-dialog-content > :first-child {
-        margin-top: 1rem;
+        margin-top: 0.5rem;
+    }
+    // Estilos de los botones del modal
+    .mat-mdc-dialog-actions.mat-mdc-dialog-actions-align-end, .mat-mdc-dialog-actions[align=end] {
+        margin-right: 1rem;
+        
+        .mat-mdc-button {
+            height: 2.25rem;
+            padding: 0.5rem 0.875rem;
+        }
     }
 }
 
