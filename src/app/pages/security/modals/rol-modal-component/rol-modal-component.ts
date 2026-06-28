@@ -3,9 +3,9 @@ import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MAT_DIALOG_DATA, MatDialogActions,  MatDialogContent, MatDialogRef, MatDialogTitle } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatError, MatFormField } from "@angular/material/select";
+import { MatFormFieldModule, MatFormField, MatError } from '@angular/material/form-field'; 
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 export interface RoleData {
   id?: number;
@@ -15,21 +15,19 @@ export interface RoleData {
 
 @Component({
   selector: 'app-rol-modal-component',
-  imports: [FormsModule, MatDialogActions, MatFormFieldModule, MatInputModule, MatDialogTitle, MatDialogContent, MatButtonModule,  MatFormField, MatCheckboxModule, MatError],
+  imports: [FormsModule, MatDialogActions, MatFormFieldModule, MatInputModule, MatDialogTitle, MatDialogContent, MatButtonModule,  MatFormField, MatCheckboxModule, MatError, MatSlideToggleModule],
   templateUrl: './rol-modal-component.html',
   styleUrl: './rol-modal-component.scss',
 })
 
 export class RolModalComponent {
-  private dialogRef = inject(MatDialogRef<RolModalComponent>);
+  private readonly dialogRef = inject(MatDialogRef<RolModalComponent>);
   // Recibimos los datos de la tabla (pueden ser undefined si es un nuevo registro)
-  private inputData = inject<RoleData | undefined>(MAT_DIALOG_DATA);
+  private readonly inputData = inject<RoleData | undefined>(MAT_DIALOG_DATA);
   dataState:any;
 
   // 1. Valores de los campos
   name = signal<string>(this.inputData?.name ?? '');
-
-  // CONVERSIÓN DE ENTRADA: Si viene 'Activo', el checkbox será true. Si no, false.
   isActive = signal<boolean>(this.inputData?.state === 'Activo');
 
   // 2. Estado de interacción (touched) para no mostrar errores prematuros
@@ -57,7 +55,7 @@ export class RolModalComponent {
 
     // Devolvemos el objeto limpio estructurado exactamente como lo espera la tabla
     const payload: RoleData = {
-      name: this.name().trim(),
+      name: this.name().trim().toUpperCase(),
       state: this.statusText() // Enviará 'Activo' o 'Inactivo'
     };
 

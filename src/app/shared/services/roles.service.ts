@@ -34,8 +34,8 @@ export interface GetRolesParams {
   providedIn: 'root'
 })
 export class RolesService {
-  private http = inject(HttpClient);
-  private apiConfig = inject(ApiConfigService);
+  private readonly http = inject(HttpClient);
+  private readonly apiConfig = inject(ApiConfigService);
 
   // Crear un nuevo rol
   createRole(roleData: CreateRoleRequest): Observable<RoleResponse> {

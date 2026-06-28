@@ -160,6 +160,43 @@ body {
             height: 1.5rem !important;
         }
     }
+    // Estilos del slideToggle
+    @include mat.slide-toggle-overrides((
+        label-text-line-height:1rem,
+        label-text-size:0.875rem,
+        label-text-weight:400,
+        state-layer-size:1rem,
+        label-text-color:v.$dark-color,
+        selected-focus-handle-color:v.$white-color,
+        selected-focus-track-color:v.$primary-color,
+        selected-focus-state-layer-color:v.$primary-color,
+        selected-handle-color:v.$white-color,
+        selected-hover-handle-color:v.$white-color,
+        selected-hover-state-layer-color:v.$light-primary-color,
+        selected-hover-state-layer-opacity:0.08,
+        selected-hover-track-color:v.$primary-color,
+        selected-icon-color:v.$primary-color,
+        selected-pressed-handle-color:v.$white-color,
+        selected-pressed-track-color:v.$primary-color,
+        selected-track-color:v.$primary-color,
+        track-outline-color:v.$primary-color,
+        selected-track-outline-color:v.$primary-color,
+        disabled-unselected-track-outline-color:v.$primary-color,
+        unselected-icon-color:v.$white-color,
+        unselected-hover-track-color:v.$light-primary-color,
+        unselected-hover-handle-color:v.$primary-color,
+    ));
+    .mdc-switch__track::before {
+        background-color: v.$light-primary-color;
+    }
+    .mdc-switch__track:hover {
+        background-color: v.$primary-hover-color;
+    }
+    .state-text{
+        color:v.$primary-active-color;
+        display:inline;
+        font-weight: 600;
+    }
 }
 
 // Estilos del input buscador

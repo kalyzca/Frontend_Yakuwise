@@ -16,13 +16,13 @@
     </div>
     <div class="body-container">
         <div class="buttons-container">
-            <app-button-component type="submit" label="Nuevo Rol" icon="plus" color="primary" (click)="createRole()" />
+            <app-button-component type="submit" label="Nuevo Rol" icon="plus" color="primary" (click)="createRole()" onKeyPress />
         </div>
         
         <div class="search-container">
+            <label for="buscarRol" style="display: block; margin-bottom: 8px; font-weight: bold;">Buscar rol</label>
             <mat-form-field class="custom-search-field">
-                <mat-label>Buscar rol</mat-label>
-                <input matInput 
+                <input matInput id="buscarRol"
                     [ngModel]="searchTerm()" 
                     (ngModelChange)="onSearchChange($event)" 
                     placeholder="Ej. Operador" 
@@ -30,7 +30,7 @@
                 
                 <!-- Botón para limpiar el input (Solo visible si hay texto) -->
                 @if (searchTerm()) {
-                    <button mat-icon-button matSuffix class="small-clear-btn" (click)="onSearchChange(''); input.value = ''" aria-label="Limpiar">
+                    <button mat-icon-button matSuffix class="small-clear-btn" (click)="onSearchChange(''); input.value=''" aria-label="Limpiar">
                         <mat-icon>close</mat-icon>
                     </button>
                 }
@@ -90,7 +90,7 @@
             </table>
         </div>
         <div class="pagination-container">
-            <mat-paginator [length]="filteredRolesCount()" [pageSize]="pageSize()" [pageIndex]="paginatorPageIndex()" [pageSizeOptions]="[5, 10, 20, 25]" (page)="onPageChange($event)"showFirstLastButtons aria-label="Seleccionar página">
+            <mat-paginator [length]="totalRoles()" [pageSize]="pageSize()" [pageIndex]="paginatorPageIndex()" [pageSizeOptions]="[5, 10, 20, 25]" (page)="onPageChange($event)"showFirstLastButtons aria-label="Seleccionar página">
             </mat-paginator>
         </div>
     </div>

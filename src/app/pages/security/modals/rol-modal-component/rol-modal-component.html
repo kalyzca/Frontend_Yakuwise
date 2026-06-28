@@ -2,9 +2,9 @@
 
 <mat-dialog-content>
     <!-- Campo Rol -->
+    <label for="nameRol" style="display: block; margin-bottom: 5px; font-weight: bold;">Nombre</label>
     <mat-form-field appearance="fill" class="full-width">
-        <mat-label>Nombre</mat-label>
-        <input matInput [ngModel]="name()" (ngModelChange)="name.set($event)" (blur)="nameTouched.set(true)" placeholder="Ej. Administrador" required>
+        <input matInput id="nameRol" [ngModel]="name()" (ngModelChange)="name.set($event)" (blur)="nameTouched.set(true)" placeholder="Ej. Administrador" required>
         
         <!-- Renderizado condicional del error basado en la señal computada -->
         @if (nameError()) {
@@ -14,13 +14,11 @@
 
     <!-- Campo estado -->
     <div style="margin-top: 15px;">
-        <mat-label for="state" style="margin-right: 10px; font-weight: bold;">Estado:</mat-label>
-        <mat-checkbox [ngModel]="isActive()" (ngModelChange)="isActive.set($event)">
-            ¿Es rol activo?
-        </mat-checkbox>
-        <p style="margin-top: 8px; color: #555;">
-        El rol se registrará como: <strong style="color: #3f51b5;">{{ statusText() }}</strong>
-        </p>
+        <label for="state" style="display: block; margin-bottom: 8px; font-weight: bold;">Estado:</label>
+        <mat-slide-toggle id="state" [checked]="isActive()" (change)="isActive.set($event.checked)">
+            El rol está 
+            <p class="state-text">{{ statusText().toLowerCase() }}.</p>
+        </mat-slide-toggle>
     </div>
 </mat-dialog-content>
 
