@@ -87,12 +87,11 @@
             align-self: stretch;
             flex-shrink: 0;
             @include m.layout-flex(column, flex-start, flex-start,nowrap);
-            padding-block: 0;
-            padding-inline: 0;
-            margin-bottom: 0;
+            padding: 0;
+            margin: 0;
 
             label {
-                padding: 0.25rem 0;
+                padding: 0.5rem 0;
                 color: v.$primary-color;
                 font-size: 0.875rem;
                 font-weight: 600;

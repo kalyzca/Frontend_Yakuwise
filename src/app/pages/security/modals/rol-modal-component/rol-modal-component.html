@@ -3,8 +3,8 @@
 <mat-dialog-content>
     <!-- Campo Rol -->
      <div class="form-input-container">
-        <label for="nameRol">Nombre: (*)</label>
-        <mat-form-field appearance="fill" class="full-width">
+        <label for="nameRol" class="label-input-container">Nombre: (*)</label>
+        <mat-form-field appearance="outline" class="custom-input">
             <input matInput id="nameRol" [ngModel]="name()" (ngModelChange)="name.set($event)" (blur)="nameTouched.set(true)" placeholder="Ej. Administrador" required>
             
             <!-- Renderizado condicional del error basado en la señal computada -->
@@ -16,11 +16,13 @@
 
     <!-- Campo estado -->
     <div class="form-input-container">
-        <label for="state">Estado:</label>
+        <label for="state" class="label-input-container custom-switch">Estado:</label>
         <mat-slide-toggle id="state" [checked]="isActive()" (change)="isActive.set($event.checked)">
+            <p class="txt-switch">
+                El rol está 
+                <span  class="state-text">&nbsp;{{statusText().toLowerCase()}}.</span>
+            </p>
         </mat-slide-toggle>
-        El rol está
-        <p class="state-text">{{ statusText().toLowerCase() }}.</p>
     </div>
 </mat-dialog-content>
 

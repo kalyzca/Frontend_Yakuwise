@@ -160,7 +160,7 @@ body {
             height: 1.5rem !important;
         }
     }
-    // Estilos del slideToggle
+    // Estilos del slideToggle o switch
     @include mat.slide-toggle-overrides((
         label-text-line-height:1rem,
         label-text-size:0.875rem,
@@ -231,17 +231,31 @@ body {
             }
         }
     }
+    // Estilos para switches
+    .mat-mdc-slide-toggle{
+        margin-right: 0.5rem;
+    }
     .mdc-switch__track::before {
         background-color: v.$light-primary-color;
     }
     .mdc-switch__track:hover {
         background-color: v.$primary-hover-color;
     }
-    .state-text{
-        color:v.$primary-active-color;
-        display:inline;
-        font-weight: 600;
+    .txt-switch{
+        @include m.layout-flex(row, flex-start, flex-end);
+        font-size:0.875rem;
+
+        .state-text{
+            color:v.$primary-active-color;
+            font-weight: 500;
+            font-size: 15px;
+        }
     }
+    .custom-switch{
+        margin-bottom: 0.25rem;
+        display:block;
+    }
+
     // Estilos para títulos de diálogos o modales
     .mat-mdc-dialog-container .mat-mdc-dialog-title{
         font-size: 1.25rem;
@@ -262,51 +276,66 @@ body {
             padding: 0.5rem 0.875rem;
         }
     }
+    // Estilos de input
+    @include mat.form-field-overrides((
+        outlined-hover-outline-color: v.$primary-color,
+        outlined-focus-outline-color: v.$primary-color,
+        outlined-outline-color: v.$gray-400,
+        container-height: 2.25rem,
+        container-vertical-padding: 0.875rem,
+        outlined-input-text-placeholder-color: v.$gray-400,
+        container-text-size: 0.875rem,
+    ));
 }
+
 
 // Estilos del input buscador
 .custom-search-field {
     width: 100% !important; // Fuerza el ancho total del componente de Material
     display: block;
     
-    ::ng-deep {
+    // ::ng-deep {
         
-        // Estira la estructura flex interna de Material a lo ancho
-        .mat-mdc-form-field-flex {
-            width: 100% !important;
-        }
+    //     // Estira la estructura flex interna de Material a lo ancho
+    //     .mat-mdc-form-field-flex {
+    //         width: 100% !important;
+    //     }
 
-        // Estira la línea de contorno (borde outline) al ancho completo
-        .mdc-notched-outline {
-            width: 100% !important;
-        }
+    //     // Estira la línea de contorno (borde outline) al ancho completo
+    //     .mdc-notched-outline {
+    //         width: 100% !important;
+    //     }
 
-        // Asegura que la última sección del borde cubra todo el espacio restante derecho
-        .mdc-notched-outline__trailing {
-            flex-grow: 1 !important;
-        }
+    //     // Asegura que la última sección del borde cubra todo el espacio restante derecho
+    //     .mdc-notched-outline__trailing {
+    //         flex-grow: 1 !important;
+    //     }
 
-        // El input de texto nativo tomará todo el espacio horizontal libre
-        input.mat-mdc-input-element {
-            width: 100% !important;
-        }
-    }
+    //     // El input de texto nativo tomará todo el espacio horizontal libre
+    //     input.mat-mdc-input-element {
+    //         width: 100% !important;
+    //     }
+    // }
 }
 
 // Estilos para labels generales
-.form-input-container {
-    margin:0.5rem 0;
+// Estilos de los input
+.form-input-container{
+    margin: 0;
+    padding: 0;
 
-    label {
-        padding: 0.25rem 0;
-        color: v.$primary-color;
-        font-size: 0.875rem;
-        font-weight: 600;
-        display: block;
-    }
 }
+.label-input-container
+{
+    margin: 0;
+    padding: 0.25rem 0;
+    color: v.$primary-color;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+.custom-input{
+    @include m.layout-flex();
+    margin-top:0.5rem;
+    width:100%;
 
-
-
-
-
+}

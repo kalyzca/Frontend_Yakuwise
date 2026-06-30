@@ -20,15 +20,14 @@
         </div>
         
         <div class="search-container">
-            <label for="buscarRol" class="form-input-container">Buscar rol:</label>
-            <mat-form-field class="custom-search-field">
+            <label for="buscarRol">Buscar rol:</label>
+            <mat-form-field class="custom-search-field" appearance="outline">
                 <input matInput id="buscarRol"
                     [ngModel]="searchTerm()" 
                     (ngModelChange)="onSearchChange($event)" 
                     placeholder="Ej. Operador" 
                     #input>
                 
-                <!-- Botón para limpiar el input (Solo visible si hay texto) -->
                 @if (searchTerm()) {
                     <button mat-icon-button matSuffix class="small-clear-btn" (click)="onSearchChange(''); input.value=''" aria-label="Limpiar">
                         <mat-icon>close</mat-icon>
@@ -95,4 +94,3 @@
         </div>
     </div>
 </section>
-
