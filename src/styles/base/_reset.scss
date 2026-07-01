@@ -232,9 +232,6 @@ body {
         }
     }
     // Estilos para switches
-    .mat-mdc-slide-toggle{
-        margin-right: 0.5rem;
-    }
     .mdc-switch__track::before {
         background-color: v.$light-primary-color;
     }
@@ -244,7 +241,8 @@ body {
     .txt-switch{
         @include m.layout-flex(row, flex-start, flex-end);
         font-size:0.875rem;
-
+        margin-left: 0.5rem;
+        
         .state-text{
             color:v.$primary-active-color;
             font-weight: 500;
@@ -293,32 +291,8 @@ body {
 .custom-search-field {
     width: 100% !important; // Fuerza el ancho total del componente de Material
     display: block;
-    
-    // ::ng-deep {
-        
-    //     // Estira la estructura flex interna de Material a lo ancho
-    //     .mat-mdc-form-field-flex {
-    //         width: 100% !important;
-    //     }
-
-    //     // Estira la línea de contorno (borde outline) al ancho completo
-    //     .mdc-notched-outline {
-    //         width: 100% !important;
-    //     }
-
-    //     // Asegura que la última sección del borde cubra todo el espacio restante derecho
-    //     .mdc-notched-outline__trailing {
-    //         flex-grow: 1 !important;
-    //     }
-
-    //     // El input de texto nativo tomará todo el espacio horizontal libre
-    //     input.mat-mdc-input-element {
-    //         width: 100% !important;
-    //     }
-    // }
 }
 
-// Estilos para labels generales
 // Estilos de los input
 .form-input-container{
     margin: 0;
@@ -337,5 +311,4 @@ body {
     @include m.layout-flex();
     margin-top:0.5rem;
     width:100%;
-
 }
