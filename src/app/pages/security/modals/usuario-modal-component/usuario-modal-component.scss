@@ -1,0 +1,23 @@
+.full-width {
+  width: 100%;
+  display: block;
+}
+
+.persona-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+
+  h3 {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 1rem;
+  }
+}
+
+.state-text {
+  display: inline;
+  margin-left: 0.5rem;
+  font-weight: 500;
+}

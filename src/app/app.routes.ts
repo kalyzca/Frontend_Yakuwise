@@ -5,6 +5,7 @@ import { HomeComponent } from './pages/home/home-component/home-component';
 import { FrontPageComponent } from './core/layout/front-page/front-page-component';
 import { WelcomeComponent } from './pages/welcome/welcome-component/welcome-component';
 import { RolComponent } from './pages/security/rol/rol-component/rol-component';
+import { UsuarioComponent } from './pages/security/usuario/usuario-component/usuario-component';
 
 export const routes: Routes = [
   {
@@ -32,6 +33,10 @@ export const routes: Routes = [
       {
         path:'rol',
         component:RolComponent
+      },
+      {
+        path:'usuario',
+        component:UsuarioComponent
       }
     ]
   },
