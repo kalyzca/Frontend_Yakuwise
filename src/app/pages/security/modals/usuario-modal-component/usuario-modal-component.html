@@ -1,0 +1,149 @@
+<p mat-dialog-title>{{ isEditMode() ? 'Editar Usuario' : 'Agregar Usuario' }}</p>
+
+<mat-dialog-content>
+    <!-- Campo Email Institucional -->
+    <div class="form-input-container">
+        <label for="emailInstitucional">Email Institucional: (*)</label>
+        <mat-form-field appearance="fill" class="full-width">
+            <input matInput id="emailInstitucional" [ngModel]="email()" (ngModelChange)="email.set($event)" (blur)="emailTouched.set(true)" placeholder="Ej. usuario@institucion.edu.pe" required>
+            
+            @if (emailError()) {
+                <mat-error>{{ emailError() }}</mat-error>
+            }
+        </mat-form-field>
+    </div>
+
+    <!-- Campo Rol -->
+    <div class="form-input-container">
+        <label for="rol">Roles: (*)</label>
+        <mat-form-field appearance="fill" class="full-width">
+            <mat-select id="rol" [ngModel]="idRoles()" (ngModelChange)="idRoles.set($event)" (blur)="idRolesTouched.set(true)" multiple required>
+                @for (role of roles(); track role.id_rol || role.id) {
+                    <mat-option [value]="role.id_rol || role.id">{{ role.nombre_rol }}</mat-option>
+                }
+            </mat-select>
+
+            @if (idRolesError()) {
+                <mat-error>{{ idRolesError() }}</mat-error>
+            }
+        </mat-form-field>
+    </div>
+
+    <!-- Sección: Datos de Persona -->
+    <div class="persona-section">
+        <h3>Datos Personales</h3>
+        
+        <!-- Campo Tipo de Documento -->
+        <div class="form-input-container">
+            <label for="tipoDocumento">Tipo de Documento:</label>
+            <mat-form-field appearance="fill" class="full-width">
+                <mat-select id="tipoDocumento" [ngModel]="idTipoDocumento()" (ngModelChange)="idTipoDocumento.set($event)">
+                    <mat-option [value]="1">DNI</mat-option>
+                    <mat-option [value]="2">Carnet de Extranjería</mat-option>
+                    <mat-option [value]="3">Pasaporte</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+        <!-- Campo Número de Documento -->
+        <div class="form-input-container">
+            <label for="numeroDocumento">Número de Documento: (*)</label>
+            <mat-form-field appearance="fill" class="full-width">
+                <input matInput id="numeroDocumento" [ngModel]="numeroDocumento()" (ngModelChange)="numeroDocumento.set($event)" (blur)="numeroDocumentoTouched.set(true)" placeholder="Ej. 12345678" required>
+                
+                @if (numeroDocumentoError()) {
+                    <mat-error>{{ numeroDocumentoError() }}</mat-error>
+                }
+            </mat-form-field>
+        </div>
+
+        <!-- Campo Nombres -->
+        <div class="form-input-container">
+            <label for="nombres">Nombres: (*)</label>
+            <mat-form-field appearance="fill" class="full-width">
+                <input matInput id="nombres" [ngModel]="nombres()" (ngModelChange)="nombres.set($event)" (blur)="nombresTouched.set(true)" placeholder="Ej. Juan Carlos" required>
+                
+                @if (nombresError()) {
+                    <mat-error>{{ nombresError() }}</mat-error>
+                }
+            </mat-form-field>
+        </div>
+
+        <!-- Campo Apellido Paterno -->
+        <div class="form-input-container">
+            <label for="apellidoPaterno">Apellido Paterno: (*)</label>
+            <mat-form-field appearance="fill" class="full-width">
+                <input matInput id="apellidoPaterno" [ngModel]="apellidoPaterno()" (ngModelChange)="apellidoPaterno.set($event)" (blur)="apellidoPaternoTouched.set(true)" placeholder="Ej. Pérez" required>
+                
+                @if (apellidoPaternoError()) {
+                    <mat-error>{{ apellidoPaternoError() }}</mat-error>
+                }
+            </mat-form-field>
+        </div>
+
+        <!-- Campo Apellido Materno -->
+        <div class="form-input-container">
+            <label for="apellidoMaterno">Apellido Materno: (*)</label>
+            <mat-form-field appearance="fill" class="full-width">
+                <input matInput id="apellidoMaterno" [ngModel]="apellidoMaterno()" (ngModelChange)="apellidoMaterno.set($event)" (blur)="apellidoMaternoTouched.set(true)" placeholder="Ej. López" required>
+                
+                @if (apellidoMaternoError()) {
+                    <mat-error>{{ apellidoMaternoError() }}</mat-error>
+                }
+            </mat-form-field>
+        </div>
+
+        <!-- Campo Género -->
+        <div class="form-input-container">
+            <label for="genero">Género: (*)</label>
+            <mat-form-field appearance="fill" class="full-width">
+                <mat-select id="genero" [ngModel]="genero()" (ngModelChange)="genero.set($event)" (blur)="generoTouched.set(true)" required>
+                    <mat-option value="M">Masculino</mat-option>
+                    <mat-option value="F">Femenino</mat-option>
+                </mat-select>
+                
+                @if (generoError()) {
+                    <mat-error>{{ generoError() }}</mat-error>
+                }
+            </mat-form-field>
+        </div>
+
+        <!-- Campo Teléfono -->
+        <div class="form-input-container">
+            <label for="telefono">Teléfono: (*)</label>
+            <mat-form-field appearance="fill" class="full-width">
+                <input matInput id="telefono" [ngModel]="telefono()" (ngModelChange)="telefono.set($event)" (blur)="telefonoTouched.set(true)" placeholder="Ej. 999999999" required>
+                
+                @if (telefonoError()) {
+                    <mat-error>{{ telefonoError() }}</mat-error>
+                }
+            </mat-form-field>
+        </div>
+
+        <!-- Campo Correo Personal -->
+        <div class="form-input-container">
+            <label for="correoPersonal">Correo Personal: (*)</label>
+            <mat-form-field appearance="fill" class="full-width">
+                <input matInput id="correoPersonal" [ngModel]="correoPersonal()" (ngModelChange)="correoPersonal.set($event)" (blur)="correoPersonalTouched.set(true)" placeholder="Ej. juan@gmail.com" required>
+                
+                @if (correoPersonalError()) {
+                    <mat-error>{{ correoPersonalError() }}</mat-error>
+                }
+            </mat-form-field>
+        </div>
+    </div>
+
+    <!-- Campo estado del usuario -->
+    <div class="form-input-container">
+        <label for="state">Estado:</label>
+        <mat-slide-toggle id="state" [checked]="isActive()" (change)="isActive.set($event.checked)">
+        </mat-slide-toggle>
+        El usuario está
+        <p class="state-text">{{ statusText().toLowerCase() }}.</p>
+    </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button  (click)="onCancel()">Cancelar</button>
+    <button mat-button color="primary" type="submit" [disabled]="isFormInvalid()" (click)="onSave()">{{ isEditMode() ? 'Actualizar' : 'Guardar' }}</button>
+</mat-dialog-actions>

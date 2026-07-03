@@ -7,8 +7,11 @@ export class ApiConfigService {
   // URL base del servidor API
   private readonly baseUrl = signal('http://127.0.0.1:8000');
 
-  // Endpoint específico para roles 
+  // Endpoint específico para roles
   readonly rolesEndpoint = signal(`${this.baseUrl()}/security/roles/`);
+
+  // Endpoint específico para usuarios
+  readonly usersEndpoint = signal(`${this.baseUrl()}/security/usuarios/`);
 
   constructor() {}
 
