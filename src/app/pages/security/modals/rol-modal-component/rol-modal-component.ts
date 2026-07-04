@@ -5,6 +5,7 @@ import { MAT_DIALOG_DATA, MatDialogActions,  MatDialogContent, MatDialogRef, Mat
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule, MatFormField, MatError } from '@angular/material/form-field'; 
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import { IconService } from '../../../../shared/services/icon.service';
 
 export interface RoleData {
   id?: number;
@@ -23,6 +24,7 @@ export class RolModalComponent {
   private readonly dialogRef = inject(MatDialogRef<RolModalComponent>);
   // Recibimos los datos de la tabla (pueden ser undefined si es un nuevo registro)
   private readonly inputData = inject<RoleData | undefined>(MAT_DIALOG_DATA);
+  private readonly iconService = inject(IconService);
   dataState:any;
 
   // 1. Valores de los campos
@@ -41,6 +43,9 @@ export class RolModalComponent {
     if (!this.nameTouched()) return null; // No mostrar error si no ha interactuado
     return this.name().trim() === '' ? 'El nombre es obligatorio.': null;
   });
+
+  // Signal para obtener la ruta del icono de error
+  errorIconPath = computed(() => this.iconService.getIconPath('error')());
 
   // 4. Estado general del botón del formulario
   isFormInvalid = computed(() => this.name().trim() === '');

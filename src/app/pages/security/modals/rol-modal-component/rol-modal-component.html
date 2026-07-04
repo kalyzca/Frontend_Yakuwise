@@ -9,7 +9,10 @@
             
             <!-- Renderizado condicional del error basado en la señal computada -->
             @if (nameError()) {
-                <mat-error>{{ nameError() }}</mat-error>
+                <mat-error class="error-with-icon">
+                    <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" >
+                    {{ nameError() }}
+                </mat-error>
             }
         </mat-form-field>
     </div>
