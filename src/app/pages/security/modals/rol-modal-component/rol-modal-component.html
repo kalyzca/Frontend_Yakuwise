@@ -2,21 +2,20 @@
 
 <mat-dialog-content>
     <!-- Campo Rol -->
-     <div class="form-input-container">
+     <div class="form-input-container" [ngClass]="{ 'con-error': nameError() }">
         <label for="nameRol" class="label-input-container">Nombre: (*)</label>
-        <mat-form-field appearance="outline" class="custom-input">
+        <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
             <input matInput id="nameRol" [ngModel]="name()" (ngModelChange)="name.set($event)" (blur)="nameTouched.set(true)" placeholder="Ej. Administrador" required>
             
             <!-- Renderizado condicional del error basado en la señal computada -->
             @if (nameError()) {
                 <mat-error class="error-with-icon">
-                    <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" >
+                    <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
                     {{ nameError() }}
                 </mat-error>
             }
         </mat-form-field>
     </div>
-
     <!-- Campo estado -->
     <div class="form-input-container">
         <label for="state" class="label-input-container custom-switch">Estado:</label>
