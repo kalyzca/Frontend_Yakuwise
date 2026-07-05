@@ -8,6 +8,8 @@ import { MatFormFieldModule, MatFormField, MatError } from '@angular/material/fo
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { MatSelectModule } from '@angular/material/select';
 import { RolesService, RoleResponse } from '../../../../shared/services/roles.service';
+import { IconService } from '../../../../shared/services/icon.service';
+import { CommonModule } from '@angular/common';
 
 export interface PersonaData {
   id_tipo_documento: number;
@@ -34,7 +36,7 @@ export interface UserData {
 
 @Component({
   selector: 'app-usuario-modal-component',
-  imports: [FormsModule, MatDialogActions, MatFormFieldModule, MatInputModule, MatDialogTitle, MatDialogContent, MatButtonModule,  MatFormField, MatCheckboxModule, MatError, MatSlideToggleModule, MatSelectModule],
+  imports: [FormsModule, MatDialogActions, MatFormFieldModule, MatInputModule, MatDialogTitle, MatDialogContent, MatButtonModule,  MatFormField, MatCheckboxModule, MatError, MatSlideToggleModule, MatSelectModule, CommonModule],
   templateUrl: './usuario-modal-component.html',
   styleUrl: './usuario-modal-component.scss',
 })
@@ -43,6 +45,7 @@ export class UsuarioModalComponent {
   private readonly dialogRef = inject(MatDialogRef<UsuarioModalComponent>);
   private readonly inputData = inject<UserData | undefined>(MAT_DIALOG_DATA);
   private readonly rolesService = inject(RolesService);
+  private readonly iconService = inject(IconService);
 
   roles = signal<RoleResponse[]>([]);
 
@@ -52,12 +55,12 @@ export class UsuarioModalComponent {
   idRoles = signal<number[]>(this.inputData?.id_roles ?? [this.inputData?.id_rol ?? 1]);
 
   // Persona fields
-  idTipoDocumento = signal<number>(this.inputData?.persona?.id_tipo_documento ?? 1);
+  idTipoDocumento = signal<number>(this.inputData?.persona?.id_tipo_documento ?? 0);
   numeroDocumento = signal<string>(this.inputData?.persona?.numero_documento ?? '');
   nombres = signal<string>(this.inputData?.persona?.nombres ?? '');
   apellidoPaterno = signal<string>(this.inputData?.persona?.apellido_paterno ?? '');
   apellidoMaterno = signal<string>(this.inputData?.persona?.apellido_materno ?? '');
-  genero = signal<string>(this.inputData?.persona?.genero ?? 'M');
+  genero = signal<string>(this.inputData?.persona?.genero ?? '');
   telefono = signal<string>(this.inputData?.persona?.telefono ?? '');
   correoPersonal = signal<string>(this.inputData?.persona?.correo_personal ?? '');
   personaActiva = signal<boolean>(this.inputData?.persona?.estado ?? true);
@@ -191,9 +194,9 @@ export class UsuarioModalComponent {
       persona: {
         id_tipo_documento: this.idTipoDocumento(),
         numero_documento: this.numeroDocumento().trim(),
-        nombres: this.nombres().trim(),
-        apellido_paterno: this.apellidoPaterno().trim(),
-        apellido_materno: this.apellidoMaterno().trim(),
+        nombres: this.nombres().trim().toUpperCase(),
+        apellido_paterno: this.apellidoPaterno().trim().toUpperCase(),
+        apellido_materno: this.apellidoMaterno().trim().toUpperCase(),
         genero: this.genero(),
         telefono: this.telefono().trim(),
         correo_personal: this.correoPersonal().trim().toLowerCase(),
@@ -208,4 +211,5 @@ export class UsuarioModalComponent {
     this.dialogRef.close();
   }
 
+  errorIconPath = computed(() => this.iconService.getIconPath('error')());
 }

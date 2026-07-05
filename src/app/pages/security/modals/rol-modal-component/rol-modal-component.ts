@@ -6,6 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule, MatFormField, MatError } from '@angular/material/form-field'; 
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { IconService } from '../../../../shared/services/icon.service';
+import { CommonModule } from '@angular/common';
 
 export interface RoleData {
   id?: number;
@@ -15,7 +16,7 @@ export interface RoleData {
 
 @Component({
   selector: 'app-rol-modal-component',
-  imports: [FormsModule, MatDialogActions, MatFormFieldModule, MatInputModule, MatDialogTitle, MatDialogContent, MatButtonModule, MatFormField, MatError, MatSlideToggleModule],
+  imports: [FormsModule, MatDialogActions, MatFormFieldModule, MatInputModule, MatDialogTitle, MatDialogContent, MatButtonModule, MatFormField, MatError, MatSlideToggleModule, CommonModule],
   templateUrl: './rol-modal-component.html',
   styleUrl: './rol-modal-component.scss',
 })

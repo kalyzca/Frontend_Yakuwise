@@ -21,14 +21,13 @@
         
         <div class="search-container">
             <label for="buscarUsuario" class="form-input-container">Buscar usuario:</label>
-            <mat-form-field class="custom-search-field">
+            <mat-form-field class="custom-search-field" appearance="outline">
                 <input matInput id="buscarUsuario"
                     [ngModel]="searchTerm()" 
                     (ngModelChange)="onSearchChange($event)" 
                     placeholder="Ej. Juan Pérez" 
                     #input>
                 
-                <!-- Botón para limpiar el input (Solo visible si hay texto) -->
                 @if (searchTerm()) {
                     <button mat-icon-button matSuffix class="small-clear-btn" (click)="onSearchChange(''); input.value=''" aria-label="Limpiar">
                         <mat-icon>close</mat-icon>

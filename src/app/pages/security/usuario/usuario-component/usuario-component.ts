@@ -204,7 +204,7 @@ export class UsuarioComponent {
 
   createUser(user?: UserData): void {
     const dialogRef = this.dialog.open(UsuarioModalComponent, {
-      width: '40rem',
+      width: '30rem',
       height: 'max-content',
       data: user,
       disableClose: true
