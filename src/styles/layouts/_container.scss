@@ -69,18 +69,18 @@
     .body-container{
         background-color: v.$white-color;
         border-radius: 0.5rem;
-        padding: 1.25rem;
-        padding-bottom: 2rem;
+        padding-top: 0.5rem;
+        padding-inline: 1.25rem;
+        padding-bottom: 1rem;
         min-height: 0;
         overflow: auto;
         @include m.layout-flex(column, flex-start, flex-start, nowrap);
 
         .buttons-container{
+            margin-top: 0.5rem;
             align-self: stretch;
             flex-shrink: 0;
-            overflow: visible;
-            min-height: 3rem;
-            @include m.layout-flex(row, flex-end, center, nowrap);
+            @include m.layout-flex(row, flex-end, flex-start, nowrap);
         }
 
         .search-container {
@@ -89,7 +89,7 @@
             @include m.layout-flex(column, flex-start, flex-start,nowrap);
             padding: 0;
             margin: 0;
-
+            
             label {
                 padding: 0.5rem 0;
                 color: v.$primary-color;
@@ -97,18 +97,35 @@
                 font-weight: 600;
                 display: block;
             }
+
+            .small-clear-btn {
+                &:hover {
+                    mat-icon {
+                        color: v.$white-color !important;
+                    }
+                }
+            }
         }
 
-        .table-container {
-            align-self: stretch;
-            @include m.layout-flex(column);
-        }
-        .pagination-container {
-            align-self: normal;
-            flex-shrink: 0;
+        .btn-edit{
+            background-color: transparent;
+            border-style: none;
+            cursor: pointer;
             padding: 0;
-            margin-top: 1rem;
-            @include m.layout-flex(row, flex-end, center, nowrap);
+            margin: auto;
+            
+            .icon-edit {
+                fill: v.$edit-color;
+                width: 1.75rem;
+                height: 1.75rem;
+                stroke: hsl(57.01deg 89.09% 46.72%);
+                transition: filter 0.2s ease-in-out
+            }
+
+            .icon-edit:hover {
+                stroke: v.$gray-400;
+            }
+
         }
     }
     

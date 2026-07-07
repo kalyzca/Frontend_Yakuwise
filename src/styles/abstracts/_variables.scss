@@ -10,6 +10,7 @@ $breakpoints: (
 // Escala de Grises
 $white:    #ffffff;
 $gray-100: #f8f9fa;
+$gray-200: hsl(208, 7%, 95%);
 $gray-400: hsl(208, 7%, 70%);
 $gray-500: #6c757d;
 $gray-900: #212529;
@@ -25,7 +26,7 @@ $quaternary-color: #df2d90;
 $important-color:#2d37df;
 $error-color: hsl(0, 100%, 50%);
 $delete-color: hsl(0, 100%, 60%);
-$edit-color: rgb(233, 233, 17);
+$edit-color: #e9e911;
 $deactive-color: hsl(0, 100%, 70%);
 $cancelar-color: hsl(357, 74%, 65%);
 $cancelar-active-color: hsl(357, 74%, 49%);
@@ -67,7 +68,7 @@ $font-size:16px;
 $spacing:1.5em;
 
 // Color de fuente
-$dark-color: hsl(0, 0%, 15%);
+$dark-color: #1a1b1f;
 $white-color: #ffffff;
 
 // Color de fuente

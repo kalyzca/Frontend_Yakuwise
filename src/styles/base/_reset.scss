@@ -39,19 +39,21 @@ body {
             container-text-color : v.$dark-color,
             container-background-color: v.$white-color,
             enabled-icon-color:v.$primary-color,
-            page-size-select-width:4rem,
-            page-size-select-touch-target-height:1rem,
-            container-text-font:1rem,
-            container-text-line-height:1rem,
-            container-text-size:14px,
-            select-trigger-text-size:14px,
-            container-size:1rem,
-            form-field-container-height:1rem,
-            form-field-container-vertical-padding:0.25rem,
+            page-size-select-width: 4rem,
+            page-size-select-touch-target-height: 1rem,
+            container-text-font: 1rem,
+            container-text-line-height: 1rem,
+            container-text-size: 0.875rem,
+            select-trigger-text-size: 0.8125rem,
+            container-size: 1rem,
+            form-field-container-height: 1rem,
+            form-field-container-vertical-padding: 0.25rem,
         )
       
     );
-    
+    .mat-mdc-paginator{
+        margin-block: 1.5rem;
+    }
     // Aplica a todos los selectores de los paginadores de tu app
     .mat-mdc-paginator .mat-mdc-form-field:hover .mdc-notched-outline__leading,
     .mat-mdc-paginator .mat-mdc-form-field:hover .mdc-notched-outline__notch,
@@ -84,7 +86,7 @@ body {
             font-weight: 400;
             color: v.$dark-color;
             background-color: v.$white-color;
-            min-height: 1.875rem;
+            min-height: 1.5rem;
             justify-content: center !important; 
             text-align: center !important; 
             
@@ -111,7 +113,7 @@ body {
     
     // Cambiar el estilo de la opción que está seleccionada actualmente
     .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
-        background-color:  hsl(206, 87%, 82%) !important;
+        background-color: v.$light-primary-color;
         justify-self: center;
         width: 100%;
         
@@ -295,13 +297,22 @@ body {
         margin-bottom: 0;
         padding-bottom: 0;
     }
-}
 
+    // Estilos de la tabla angular material
+    @include mat.table-overrides((
+        background-color: v.$white-color,
+        row-item-outline-color:v.$light-primary-color,
+        header-container-height: 3rem,
+        row-item-container-height: 2.75rem,
+        footer-container-height: 2.75rem,
+        row-item-label-text-size: 0.875rem,
+    ));
+
+}
 
 // Estilos del input buscador
 .custom-search-field {
     width: 100% !important;
-    display: block;
 }
 
 // Estilos de los input
@@ -344,4 +355,19 @@ body {
     @include m.layout-flex();
     width:100%;
     margin-bottom: 0rem;
+}
+// Estilos de la tabla
+.table-container {
+    width: 100%;
+    overflow: auto;
+    
+    .mat-mdc-header-row {
+        background-color: v.$light-primary-color;
+        text-transform: uppercase;
+        font-weight: 700;
+    }
+
+    .mat-mdc-row:hover .mat-mdc-cell {
+        background-color:  v.$gray-100;
+    }
 }

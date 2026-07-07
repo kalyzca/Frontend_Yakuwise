@@ -36,8 +36,8 @@
             </mat-form-field>
         </div>
         
-        <div class="table-container">
-            <table mat-table [dataSource]="displayedRoles()" class="mat-elevation-z8" matSort (matSortChange)="onSortChange($event)" matSortDirection="desc">
+        <section class="table-container mat-elevation-z8">
+            <table mat-table [dataSource]="displayedRoles()" matSort (matSortChange)="onSortChange($event)" matSortDirection="desc">
                 <!-- Position Column -->
                 <ng-container matColumnDef="id" class="position">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header>Nº</th>
@@ -50,34 +50,32 @@
                 </ng-container>
                 <!-- State Column -->
                 <ng-container matColumnDef="state" class="state">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
+                    <th mat-header-cell *matHeaderCellDef>Estado</th>
                     <td mat-cell *matCellDef="let element" class="roleState">
                         @if (element.state === 'Activo') {
-                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" class="state-active" matTooltip="{{element.state}}" matTooltipPosition="below">
-                                <path d="M0 0h24v24H0z" fill="none" />
-                                <path fill="currentColor" d="M23 12c0 6.075-4.925 11-11 11S1 18.075 1 12S5.925 1 12 1s11 4.925 11 11M9.305 18.11l9.402-9.403l-1.414-1.414l-7.883 7.883l-2.476-3.01l-1.511 1.31l3.882 4.633z" />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="state-active" matTooltip="{{element.state}}" matTooltipPosition="below">
+                                <path fill="hsl(206, 87%, 56%)" d="M23 12c0 6.075-4.925 11-11 11S1 18.075 1 12S5.925 1 12 1s11 4.925 11 11M9.305 18.11l9.402-9.403l-1.414-1.414l-7.883 7.883l-2.476-3.01l-1.511 1.31l3.882 4.633z" />
                             </svg>
                         }
                         @else {
-                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" class="state-deactive" matTooltip="{{element.state}}" matTooltipPosition="below">
-                                <path d="M0 0h24v24H0z" fill="none" />
-                                <path fill="currentColor" fill-rule="evenodd" d="M12 23c6.075 0 11-4.925 11-11S18.075 1 12 1S1 5.925 1 12s4.925 11 11 11m-1.414-11l-3.293 3.293l1.414 1.414L12 13.414l3.293 3.293l1.414-1.414L13.414 12l3.293-3.293l-1.414-1.414L12 10.586L8.707 7.293L7.293 8.707z" clip-rule="evenodd" />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="state-deactive" matTooltip="{{element.state}}" matTooltipPosition="below">
+                                <path fill="hsl(357, 74%, 65%)" fill-rule="evenodd" d="M12 23c6.075 0 11-4.925 11-11S18.075 1 12 1S1 5.925 1 12s4.925 11 11 11m-1.414-11l-3.293 3.293l1.414 1.414L12 13.414l3.293 3.293l1.414-1.414L13.414 12l3.293-3.293l-1.414-1.414L12 10.586L8.707 7.293L7.293 8.707z" clip-rule="evenodd" />
                             </svg>
                         }
                     </td>
                 </ng-container>
                 <!-- Opctions Column -->
                 <ng-container matColumnDef="actions" class="actions">
-                    <th mat-header-cell *matHeaderCellDef>Acciones</th>
+                    <th mat-header-cell *matHeaderCellDef>Acción</th>
                     <td mat-cell *matCellDef="let element" class="rolActions">
-                        <button type="button" class="btn btn-edit" matTooltip="Editar" matTooltipPosition="right" (click)="createRole(element)">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"  viewBox="0 0 24 24">
-                                <path fill="currentColor" fill-rule="evenodd" d="M17.204 10.796L19 9c.545-.545.818-.818.964-1.112a2 2 0 0 0 0-1.776C19.818 5.818 19.545 5.545 19 5s-.818-.818-1.112-.964a2 2 0 0 0-1.776 0c-.294.146-.567.419-1.112.964l-1.819 1.819a10.9 10.9 0 0 0 4.023 3.977m-5.477-2.523l-6.87 6.87c-.426.426-.638.638-.778.9c-.14.26-.199.555-.316 1.145l-.616 3.077c-.066.332-.1.498-.005.593s.26.061.593-.005l3.077-.616c.59-.117.885-.176 1.146-.316s.473-.352.898-.777l6.89-6.89a12.9 12.9 0 0 1-4.02-3.98" clip-rule="evenodd" />
+                        <button type="button" class="btn-edit" matTooltip="Editar" matTooltipPosition="below" (click)="createRole(element)">
+                            <svg class="icon-edit" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path fill-rule="evenodd" d="M17.204 10.796L19 9c.545-.545.818-.818.964-1.112a2 2 0 0 0 0-1.776C19.818 5.818 19.545 5.545 19 5s-.818-.818-1.112-.964a2 2 0 0 0-1.776 0c-.294.146-.567.419-1.112.964l-1.819 1.819a10.9 10.9 0 0 0 4.023 3.977m-5.477-2.523l-6.87 6.87c-.426.426-.638.638-.778.9c-.14.26-.199.555-.316 1.145l-.616 3.077c-.066.332-.1.498-.005.593s.26.061.593-.005l3.077-.616c.59-.117.885-.176 1.146-.316s.473-.352.898-.777l6.89-6.89a12.9 12.9 0 0 1-4.02-3.98" clip-rule="evenodd" stroke-width="1" />
                             </svg>
                         </button>
                     </td>
                 </ng-container>
-                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
                 <!-- Row shown when there is no matching data. -->
@@ -87,10 +85,8 @@
                     </td>
                 </tr>
             </table>
-        </div>
-        <div class="pagination-container">
-            <mat-paginator [length]="totalRoles()" [pageSize]="pageSize()" [pageIndex]="paginatorPageIndex()" [pageSizeOptions]="[5, 10, 20, 25]" (page)="onPageChange($event)"showFirstLastButtons aria-label="Seleccionar página">
+            <mat-paginator [length]="totalRoles()" [pageSize]="pageSize()" [pageIndex]="paginatorPageIndex()" [pageSizeOptions]="[5, 10, 20]" (page)="onPageChange($event)"showFirstLastButtons aria-label="Seleccionar página">
             </mat-paginator>
-        </div>
+        </section>
     </div>
 </section>
