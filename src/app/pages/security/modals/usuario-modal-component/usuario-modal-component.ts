@@ -25,6 +25,7 @@ export interface PersonaData {
 
 export interface UserData {
   id?: number;
+  username?: string;
   email: string;
   state: string;
   id_rol: number;
@@ -49,6 +50,7 @@ export class UsuarioModalComponent {
 
   roles = signal<RoleResponse[]>([]);
 
+  username = signal<string>(this.inputData?.username ?? '');
   email = signal<string>(this.inputData?.email ?? '');
   isActive = signal<boolean>(this.inputData?.state === 'Activo');
   idRol = signal<number>(this.inputData?.id_rol ?? 1);
@@ -187,6 +189,7 @@ export class UsuarioModalComponent {
 
     // Devolvemos el objeto limpio estructurado exactamente como lo espera la tabla
     const payload: UserData = {
+      username: this.username().trim().toLowerCase(),
       email: this.email().trim().toLowerCase(),
       state: this.statusText(),
       id_rol: this.idRoles()[0] || 1,

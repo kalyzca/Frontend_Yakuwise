@@ -14,10 +14,11 @@ import { UsuarioModalComponent, UserData } from '../../modals/usuario-modal-comp
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { UsersService, CreateUserRequest, UserResponse, UsersListResponse } from '../../../../shared/services/users.service';
+import { MatChipsModule } from '@angular/material/chips';
 
 @Component({
   selector: 'app-usuario-component',
-  imports: [ButtonComponent, RouterLink, MatFormFieldModule, MatInputModule, MatTableModule, MatSortModule, MatPaginatorModule, MatTooltipModule, MatSnackBarModule, FormsModule, MatIconModule, MatButtonModule],
+  imports: [ButtonComponent, RouterLink, MatFormFieldModule, MatInputModule, MatTableModule, MatSortModule, MatPaginatorModule, MatTooltipModule, MatSnackBarModule, FormsModule, MatIconModule, MatButtonModule, MatChipsModule],
   templateUrl: './usuario-component.html',
   styleUrl: './usuario-component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,7 +28,7 @@ export class UsuarioComponent {
   private readonly usersService = inject(UsersService);
   private readonly snackBar = inject(MatSnackBar);
 
-  displayedColumns: string[] = ['id', 'email', 'name', 'role', 'state', 'actions'];
+  displayedColumns: string[] = ['id', 'username', 'name', 'role', 'state', 'actions'];
 
   // Signals para manejar estados de carga y error
   isLoading = signal<boolean>(false);
@@ -78,6 +79,7 @@ export class UsuarioComponent {
       page_size: this.pageSize()
     }).subscribe({
       next: (response: UsersListResponse) => {
+        console.log('usuarios 1', response);
         const mappedUsers = response.results
           .map(user => this.mapFromApiResponse(user))
           .filter((user): user is UserData => user !== null);
@@ -95,7 +97,7 @@ export class UsuarioComponent {
   private mapSortField(field: string): string {
     const fieldMap: { [key: string]: string } = {
       'id': 'id_usuario',
-      'email': 'email_institucional',
+      'username': 'nombre_usuario',
       'name': 'persona__nombres',
       'role': 'id_rol',
       'state': 'estado'
@@ -107,12 +109,13 @@ export class UsuarioComponent {
   displayedUsers = computed(() => {
     const currentUsers = this.users();
     const search = this.searchTerm().toLowerCase().trim();
-
+    
     if (!search) {
       return currentUsers;
     }
 
     return currentUsers.filter(user => {
+      const userNameLower = user.username?.toLowerCase() || '';
       const emailLower = user.email.toLowerCase();
       const nameLower = user.name?.toLowerCase() || '';
       const userStateLower = user.state.toLowerCase();
@@ -123,14 +126,14 @@ export class UsuarioComponent {
       }
 
       // Si busca por abreviaciones de estado
-      if (['act', 'activ', 'activa'].includes(search)) {
+      if (['act', 'activ', 'activo'].includes(search)) {
         return userStateLower === 'activo';
       }
-      if (['inac', 'ina', 'inactiv', 'inactiva'].includes(search)) {
+      if (['inac', 'ina', 'inactiv', 'inactivo'].includes(search)) {
         return userStateLower === 'inactivo';
       }
       // Si no es una palabra de estado, busca normalmente por email, nombre o ID usando .includes()
-      return emailLower.includes(search) || nameLower.includes(search) || userIdStr.includes(search);
+      return emailLower.includes(search) || nameLower.includes(search) || userIdStr.includes(search) || userNameLower.includes(search);
     });
   });
 
@@ -182,19 +185,37 @@ export class UsuarioComponent {
   }
 
   private mapFromApiResponse(apiResponse: UserResponse): UserData | null {
+    console.log('api user response', apiResponse);
     const persona = apiResponse.persona;
     if (!persona) {
       return null;
     }
     // Extraer nombres de roles del campo roles del backend
-    const rolesNames = apiResponse.roles?.map(r => r.nombre_rol) || [];
+    const rolesNames = apiResponse.roles?.map(r => r.nombre_rol.charAt(0).toUpperCase() + r.nombre_rol.slice(1).toLowerCase()) || [];
     const rolesIds = apiResponse.roles?.map(r => r.id_rol) || [];
+    const apellidoPaterno = persona.apellido_paterno;
+    const apellidoMaterno = persona.apellido_materno;
+    const nombres = persona.nombres;
+    
+    const capitalizeNames = (fullName: string): string => {
+      if (!fullName) return '';
 
+      return fullName
+        .toLowerCase()                   // 1. Pasa todo a minúsculas primero
+        .split(' ')                      // 2. Divide la cadena por cada espacio
+        .map(word => {
+          if (!word) return '';          // Evita errores si hay espacios dobles
+          return word.charAt(0).toUpperCase() + word.slice(1); // 3. Capitaliza cada palabra
+        })
+        .join(' ');                      // 4. Une todo de nuevo con espacios
+    };
+    
     return {
       id: apiResponse.id_usuario || apiResponse.id || 0,
+      username: apiResponse.nombre_usuario,
       email: apiResponse.email_institucional,
       state: apiResponse.estado ? 'Activo' : 'Inactivo',
-      name: `${persona.nombres} ${persona.apellido_paterno} ${persona.apellido_materno}`,
+      name: `${apellidoPaterno} ${apellidoMaterno}, ${capitalizeNames(nombres)}`,
       id_rol: rolesIds[0] || 0,
       id_roles: rolesIds,
       roles_names: rolesNames,

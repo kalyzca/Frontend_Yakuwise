@@ -28,6 +28,7 @@ export interface CreateUserRequest {
 export interface UserResponse {
   id?: number;
   id_usuario?: number;
+  nombre_usuario?: string;
   email_institucional: string;
   estado: boolean;
   persona: PersonaData;

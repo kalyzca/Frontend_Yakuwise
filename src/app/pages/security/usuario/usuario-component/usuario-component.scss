@@ -1,182 +1,38 @@
 @use 'abstracts/variables' as v;
-@use '@angular/material' as mat;
+@use 'abstracts/mixins'as m;
 
-.mat-elevation-z8 {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
-    overflow-x: auto;
-}
-
-tr.mat-mdc-header-row {
-    background-color: v.$light-primary-color;
-    justify-content: center;
-    position: sticky;
-    top: 0;
-    z-index: 1;
-}
-
-// Estilo base para todos los th
-::ng-deep th.mat-mdc-header-cell {
-    font-weight: bold;
-    font-size: 14px;
-}
-
-td.mat-mdc-cell {
-    padding: 12px 16px;
-    font-size: 14px;
-    background-color: none;
-}
-
-tr.mat-mdc-row:hover {
-    background-color: #d8dce1;
-    cursor: pointer;
-}
-
-
-// 2. CONTROL ESTRICTO DE ALINEACIÓN POR COLUMNA (TH y TD juntos para evitar conflictos)
-th.mat-column-id,
-th.mat-column-email,
-th.mat-column-name,
-th.mat-column-role,
+th.mat-column-actions,
 th.mat-column-state {
-    ::ng-deep .mat-sort-header-container {
-        justify-content: center !important;
-        flex-wrap: nowrap;
-    }
-}
-
-th.mat-column-actions {
     text-align: center;
 }
 
-// A. Columna ID (Completamente Centrada)
 .mat-column-id {
-    text-align: center !important;
-    width: 8%;
-
-    // Forzamos el flex interno a centrarse solo en esta columna
-    & :ng-deep .mat-sort-header-container {
-        justify-content: center !important;
-        flex-wrap: nowrap;
-    }
+    width: 5%;
 }
 
-// B. Columna Email (Alineada a la Izquierda)
-.mat-column-email {
-    width: 25%;
-    text-align: start !important;
-    padding-left: 16px !important;
-
-    // Forzamos el flex interno a ir a la izquierda solo en esta columna
-    & :ng-deep .mat-sort-header-container {
-        justify-content: center !important;
-        flex-wrap: nowrap;
-    }
+.mat-column-username {
+    width: 10%;
 }
 
-// C. Columna Nombre (Alineada a la Izquierda)
 .mat-column-name {
-    width: 30%;
-    text-align: start !important;
-    padding-left: 16px !important;
-
-    // Forzamos el flex interno a ir a la izquierda solo en esta columna
-    & :ng-deep .mat-sort-header-container {
-        justify-content: center !important;
-        flex-wrap: nowrap;
-    }
+    width: 35%;
 }
 
-// D. Columna Rol (Completamente Centrada)
 .mat-column-role {
-    width: 12%;
-    text-align: center !important;
-
-    & :ng-deep .mat-sort-header-container {
-        justify-content: center !important;
-        align-items: center;
-        flex-wrap: nowrap;
-    }
+    width: 25%;
 }
 
-// E. Columna Estado (Completamente Centrada)
 .mat-column-state {
     width: 10%;
     text-align: center !important;
-
-    & :ng-deep .mat-sort-header-container {
-        justify-content: center !important;
-        align-items: center;
-        flex-wrap: nowrap;
-    }
 }
 
-// F. Columna Acciones (Completamente Centrada)
 .mat-column-actions {
-    width: 15%;
     text-align: center !important;
-    flex-wrap: nowrap;
-}
+    vertical-align: middle;
+    width: 15%;
 
-.btn {
-    border: none;
-    background-color: transparent;
-    cursor: pointer;
-    padding: 0;
-    margin: 0;
-}
-
-.btn-edit {
-    background: none;
-    border: none;
-    color: v.$edit-color;
-
-    svg {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: v.$edit-color;
-    }
-
-    &:hover {
-        transform: scale(1.1);
+    button + button{
+        margin-left: 0.5rem;
     }
 }
-
-.state-active {
-    color: v.$secondary-color;
-}
-
-.state-deactive {
-    color: v.$deactive-color;
-}
-
-.small-clear-btn {
-    &:hover {
-        mat-icon {
-            color: white !important;
-        }
-    }
-}
-
-    // Estilos para las alertas de MatSnackBar
-    ::ng-deep .success-snackbar {
-        background-color: #4caf50 !important;
-        color: white !important;
-        font-weight: 500;
-
-        .mat-mdc-button {
-            color: white !important;
-        }
-    }
-
-    ::ng-deep .error-snackbar {
-        background-color: #f44336 !important;
-        color: white !important;
-        font-weight: 500;
-
-        .mat-mdc-button {
-            color: white !important;
-        }
-    }

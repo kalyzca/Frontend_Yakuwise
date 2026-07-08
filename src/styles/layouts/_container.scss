@@ -127,6 +127,44 @@
             }
 
         }
+
+        .btn-reset-pass {
+            background-color: transparent;
+            border-style: none;
+            cursor: pointer;
+            padding: 0;
+            margin: auto;
+            
+            .icon-reset-pass {
+                fill: v.$cancelar-color;
+                width: 1.75rem;
+                height: 1.75rem;
+                transition: filter 0.2s ease-in-out;
+            }
+
+            .icon-reset-pass:hover {
+                fill: v.$cancelar-hover-color;
+            }
+        }
+
+        .btn-read-user {
+            background-color: transparent;
+            border-style: none;
+            cursor: pointer;
+            padding: 0;
+            margin: auto;
+            
+            .icon-read-user {
+                fill: v.$primary-color;
+                width: 1.75rem;
+                height: 1.75rem;
+                transition: filter 0.2s ease-in-out
+            }
+
+            .icon-read-user:hover {
+                fill: v.$primary-hover-color;
+            }
+        }
     }
     
 }

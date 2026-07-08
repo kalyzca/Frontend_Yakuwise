@@ -36,55 +36,68 @@
             </mat-form-field>
         </div>
         
-        <div class="table-container">
-            <table mat-table [dataSource]="displayedUsers()" class="mat-elevation-z8" matSort (matSortChange)="onSortChange($event)" matSortDirection="desc">
+        <section class="table-container mat-elevation-z8">
+            <table mat-table [dataSource]="displayedUsers()" matSort (matSortChange)="onSortChange($event)" matSortDirection="desc">
                 <!-- Position Column -->
-                <ng-container matColumnDef="id" class="position">
+                <ng-container matColumnDef="id">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header>Nº</th>
-                    <td mat-cell class="userId" *matCellDef="let element"> {{element.id}} </td>
+                    <td mat-cell *matCellDef="let element"> {{element.id}} </td>
                 </ng-container>
-                  <!-- Email Column -->
-                <ng-container matColumnDef="email" class="email">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
-                    <td mat-cell *matCellDef="let element"> {{element.email}} </td>
+                <!-- Username Column -->
+                <ng-container matColumnDef="username">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Usuario</th>
+                    <td mat-cell *matCellDef="let element"> {{element.username }} </td>
                 </ng-container>
                 <!-- Name Column -->
-                <ng-container matColumnDef="name" class="name">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
+                <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Apellidos y nombres</th>
                     <td mat-cell *matCellDef="let element"> {{element.name || ''}} </td>
                 </ng-container>
                 <!-- Role Column -->
-                <ng-container matColumnDef="role" class="role">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Roles</th>
+                <ng-container matColumnDef="role">
+                    <th mat-header-cell *matHeaderCellDef>Roles</th>
                     <td mat-cell *matCellDef="let element">
-                        {{element.roles_names?.join(', ') || element.id_rol || 'Sin rol'}}
+                        <mat-chip-set aria-label="Roles seleccionados">
+                            @for (role of element.roles_names; track role) {
+                                <mat-chip>{{role}}</mat-chip>
+                            }   
+                        </mat-chip-set>
+                        <!-- {{element.roles_names?.join(', ') || element.id_rol || 'Sin rol'}} -->
                     </td>
                 </ng-container>
                 <!-- State Column -->
-                <ng-container matColumnDef="state" class="state">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
-                    <td mat-cell *matCellDef="let element" class="userState">
+                <ng-container matColumnDef="state">
+                    <th mat-header-cell *matHeaderCellDef>Estado</th>
+                    <td mat-cell *matCellDef="let element">
                         @if (element.state === 'Activo') {
-                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" class="state-active" matTooltip="{{element.state}}" matTooltipPosition="below">
-                                <path d="M0 0h24v24H0z" fill="none" />
-                                <path fill="currentColor" d="M23 12c0 6.075-4.925 11-11 11S1 18.075 1 12S5.925 1 12 1s11 4.925 11 11M9.305 18.11l9.402-9.403l-1.414-1.414l-7.883 7.883l-2.476-3.01l-1.511 1.31l3.882 4.633z" />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="state-active" matTooltip="{{element.state}}" matTooltipPosition="below">
+                                <path fill="hsl(206, 87%, 56%)" d="M23 12c0 6.075-4.925 11-11 11S1 18.075 1 12S5.925 1 12 1s11 4.925 11 11M9.305 18.11l9.402-9.403l-1.414-1.414l-7.883 7.883l-2.476-3.01l-1.511 1.31l3.882 4.633z" />
                             </svg>
                         }
                         @else {
-                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" class="state-deactive" matTooltip="{{element.state}}" matTooltipPosition="below">
-                                <path d="M0 0h24v24H0z" fill="none" />
-                                <path fill="currentColor" fill-rule="evenodd" d="M12 23c6.075 0 11-4.925 11-11S18.075 1 12 1S1 5.925 1 12s4.925 11 11 11m-1.414-11l-3.293 3.293l1.414 1.414L12 13.414l3.293 3.293l1.414-1.414L13.414 12l3.293-3.293l-1.414-1.414L12 10.586L8.707 7.293L7.293 8.707z" clip-rule="evenodd" />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" matTooltip="{{element.state}}" matTooltipPosition="below">
+                                <path fill="hsl(357, 74%, 65%)" fill-rule="evenodd" d="M12 23c6.075 0 11-4.925 11-11S18.075 1 12 1S1 5.925 1 12s4.925 11 11 11m-1.414-11l-3.293 3.293l1.414 1.414L12 13.414l3.293 3.293l1.414-1.414L13.414 12l3.293-3.293l-1.414-1.414L12 10.586L8.707 7.293L7.293 8.707z" clip-rule="evenodd" />
                             </svg>
                         }
                     </td>
                 </ng-container>
                 <!-- Options Column -->
-                <ng-container matColumnDef="actions" class="actions">
+                <ng-container matColumnDef="actions">
                     <th mat-header-cell *matHeaderCellDef>Acciones</th>
-                    <td mat-cell *matCellDef="let element" class="userActions">
-                        <button type="button" class="btn btn-edit" matTooltip="Editar" matTooltipPosition="right" (click)="createUser(element)">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"  viewBox="0 0 24 24">
-                                <path fill="currentColor" fill-rule="evenodd" d="M17.204 10.796L19 9c.545-.545.818-.818.964-1.112a2 2 0 0 0 0-1.776C19.818 5.818 19.545 5.545 19 5s-.818-.818-1.112-.964a2 2 0 0 0-1.776 0c-.294.146-.567.419-1.112.964l-1.819 1.819a10.9 10.9 0 0 0 4.023 3.977m-5.477-2.523l-6.87 6.87c-.426.426-.638.638-.778.9c-.14.26-.199.555-.316 1.145l-.616 3.077c-.066.332-.1.498-.005.593s.26.061.593-.005l3.077-.616c.59-.117.885-.176 1.146-.316s.473-.352.898-.777l6.89-6.89a12.9 12.9 0 0 1-4.02-3.98" clip-rule="evenodd" />
+                    <td mat-cell *matCellDef="let element">
+                        <button type="button" class="btn-edit" matTooltip="Editar" matTooltipPosition="below" (click)="createUser(element)">
+                            <svg class="icon-edit" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path fill-rule="evenodd" d="M17.204 10.796L19 9c.545-.545.818-.818.964-1.112a2 2 0 0 0 0-1.776C19.818 5.818 19.545 5.545 19 5s-.818-.818-1.112-.964a2 2 0 0 0-1.776 0c-.294.146-.567.419-1.112.964l-1.819 1.819a10.9 10.9 0 0 0 4.023 3.977m-5.477-2.523l-6.87 6.87c-.426.426-.638.638-.778.9c-.14.26-.199.555-.316 1.145l-.616 3.077c-.066.332-.1.498-.005.593s.26.061.593-.005l3.077-.616c.59-.117.885-.176 1.146-.316s.473-.352.898-.777l6.89-6.89a12.9 12.9 0 0 1-4.02-3.98" clip-rule="evenodd" stroke-width="1" />
+                            </svg>
+                        </button>
+                        <button type="button" class="btn-read-user" matTooltip="Ver usuario"  matTooltipPosition="below">
+                            <svg class="icon-read-user" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M12 9a3 3 0 0 0-3 3a3 3 0 0 0 3 3a3 3 0 0 0 3-3a3 3 0 0 0-3-3m0 8a5 5 0 0 1-5-5a5 5 0 0 1 5-5a5 5 0 0 1 5 5a5 5 0 0 1-5 5m0-12.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5" />
+                            </svg>
+                        </button>
+                        <button type="button" class="btn-reset-pass" matTooltip="Restablecer contraseña" matTooltipPosition="below">
+                            <svg class="icon-reset-pass" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M21.213 15.9q-.788 1.825-2.138 3.175T15.9 21.213T12 22q-1.925 0-3.65-.687t-3.05-1.9t-2.187-2.863T2.05 13q-.05-.45.238-.7t.662-.275t.725.2t.4.775q.375 3.025 2.638 5.025t5.287 2q3.35 0 5.675-2.325T20 12.025T17.675 6.35T12 4.025q-2.225 0-4.038 1.088T5.1 8H7q.425 0 .713.288T8 9t-.288.713T7 10H3q-.425 0-.712-.288T2 9V5q0-.425.288-.712T3 4t.713.288T4 5v1q1.375-1.825 3.45-2.912T12 2q2.075 0 3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9M10 16q-.425 0-.712-.288T9 15v-3q0-.425.288-.712T10 11v-1q0-.825.588-1.412T12 8t1.413.588T14 10v1q.425 0 .713.288T15 12v3q0 .425-.288.713T14 16zm1-5h2v-1q0-.425-.288-.712T12 9t-.712.288T11 10z" />
                             </svg>
                         </button>
                     </td>
@@ -99,10 +112,8 @@
                     </td>
                 </tr>
             </table>
-        </div>
-        <div class="pagination-container">
-            <mat-paginator [length]="totalUsers()" [pageSize]="pageSize()" [pageIndex]="paginatorPageIndex()" [pageSizeOptions]="[5, 10, 20, 25]" (page)="onPageChange($event)"showFirstLastButtons aria-label="Seleccionar página">
+            <mat-paginator [length]="totalUsers()" [pageSize]="pageSize()" [pageIndex]="paginatorPageIndex()" [pageSizeOptions]="[5, 10, 20]" (page)="onPageChange($event)"showFirstLastButtons aria-label="Seleccionar página">
             </mat-paginator>
-        </div>
+        </section>
     </div>
 </section>

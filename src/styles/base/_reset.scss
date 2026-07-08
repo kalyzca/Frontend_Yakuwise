@@ -308,6 +308,14 @@ body {
         row-item-label-text-size: 0.875rem,
     ));
 
+    // Estilos de los chips
+    @include mat.chips-overrides((
+        container-shape-radius: 1rem,
+        outline-color: v.$primary-color,
+        container-height: 2rem,
+        hover-state-layer-color: v.$light-secondary-color,
+    ));
+
 }
 
 // Estilos del input buscador
