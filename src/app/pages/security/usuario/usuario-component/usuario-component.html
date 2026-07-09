@@ -62,6 +62,7 @@
                                 <mat-chip>{{role}}</mat-chip>
                             }   
                         </mat-chip-set>
+
                         <!-- {{element.roles_names?.join(', ') || element.id_rol || 'Sin rol'}} -->
                     </td>
                 </ng-container>
@@ -107,8 +108,13 @@
 
                 <!-- Row shown when there is no matching data. -->
                 <tr class="mat-row" *matNoDataRow>
-                    <td class="mat-cell" colspan="6" style="text-align: center;">
-                        No se encontraron usuarios que coincidieran con "{{ searchTerm() }}."
+                    <td class="mat-cell" colspan="6">
+                        @if (totalUsers() === 0 && !searchTerm()) {
+                            <p class="no-data-message">"No se encontraron usuarios en el sistema."</p>
+                        }
+                        @else {
+                            <p class="searchTerm-message">"No se encontraron resultados para tu búsqueda."</p>
+                        }
                     </td>
                 </tr>
             </table>

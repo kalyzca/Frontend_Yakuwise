@@ -378,4 +378,10 @@ body {
     .mat-mdc-row:hover .mat-mdc-cell {
         background-color:  v.$gray-100;
     }
+
+    .no-data-message,
+    .searchTerm-message {
+        @include m.layout-flex();
+    }
+    
 }
