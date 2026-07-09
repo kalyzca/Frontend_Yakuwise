@@ -13,6 +13,9 @@ export class ApiConfigService {
   // Endpoint específico para usuarios
   readonly usersEndpoint = signal(`${this.baseUrl()}/security/usuarios/`);
 
+  // Endpoint específico para tipos de documento
+  readonly tiposDocumentoEndpoint = signal(`${this.baseUrl()}/security/tipos-documento/`);
+
   constructor() {}
 
   // Método para obtener la URL base

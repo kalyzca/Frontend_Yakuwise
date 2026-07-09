@@ -231,73 +231,60 @@ export class UsuarioComponent {
       disableClose: true
     });
 
-    dialogRef.afterClosed().subscribe((result: UserData | undefined) => {
+    dialogRef.afterClosed().subscribe((result: any) => {
       if (!result) return;
 
-      if (user?.id) {
-        this.isLoading.set(true);
-        this.error.set(null);
-        const apiRequest = this.mapToApiRequest(result);
-
-        this.usersService.updateUser(user.id, apiRequest).subscribe({
-          next: () => {
-            this.loadUsers();
-            this.isLoading.set(false);
-            // Mostrar alerta de éxito
-            this.snackBar.open('Usuario actualizado exitosamente', 'Cerrar', {
-              duration: 3000,
-              horizontalPosition: 'end',
-              verticalPosition: 'top',
-              panelClass: ['success-snackbar']
-            });
-          },
-          error: (err) => {
-            this.error.set('Error al actualizar el usuario. Por favor, inténtelo de nuevo.');
-            this.isLoading.set(false);
-            // Mostrar alerta de error con mensaje del backend si está disponible
-            const errorMessage = err.error?.detail || err.error?.message || 'Error al actualizar el usuario. Por favor, inténtelo de nuevo.';
-            this.snackBar.open(errorMessage, 'Cerrar', {
-              duration: 5000,
-              horizontalPosition: 'end',
-              verticalPosition: 'top',
-              panelClass: ['error-snackbar']
-            });
-          }
+      // Si el resultado es una acción de éxito, recargar la lista de usuarios
+      if (result.action === 'success') {
+        this.loadUsers();
+        const message = user?.id ? 'Usuario actualizado exitosamente' : 'Usuario creado exitosamente';
+        this.snackBar.open(message, 'Cerrar', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['success-snackbar']
         });
-      }
-      else {
-        // MODO CREACIÓN: Consumimos el endpoint del API
-        this.isLoading.set(true);
-        this.error.set(null);
-
-        const apiRequest = this.mapToApiRequest(result);
-
-        this.usersService.createUser(apiRequest).subscribe({
-          next: (apiResponse) => {
-            this.loadUsers();
-            this.isLoading.set(false);
-            // Mostrar alerta de éxito
-            this.snackBar.open('Usuario creado exitosamente', 'Cerrar', {
-              duration: 3000,
-              horizontalPosition: 'end',
-              verticalPosition: 'top',
-              panelClass: ['success-snackbar']
-            });
-          },
-          error: (err) => {
-            this.error.set('Error al crear el usuario. Por favor, inténtelo de nuevo.');
-            this.isLoading.set(false);
-            // Mostrar alerta de error con mensaje del backend si está disponible
-            const errorMessage = err.error?.detail || err.error?.message || 'Error al crear el usuario. Por favor, inténtelo de nuevo.';
-            this.snackBar.open(errorMessage, 'Cerrar', {
-              duration: 5000,
-              horizontalPosition: 'end',
-              verticalPosition: 'top',
-              panelClass: ['error-snackbar']
-            });
-          }
-        });
+      } else if (result.action === 'cancel') {
+        // El usuario canceló, no hacer nada
+        return;
       }
     });
+  }
+
+  // Método para extraer errores de campos específicos del backend
+  private extractFieldErrors(errorResponse: any): Record<string, string> {
+    const fieldErrors: Record<string, string> = {};
+    
+    if (!errorResponse) return fieldErrors;
+    
+    // Manejar estructura específica del backend: { "detalles": { "campo": ["error"], "persona": { "campo": ["error"] } } }
+    const detalles = errorResponse.detalles || errorResponse;
+    
+    if (typeof detalles === 'object') {
+      // Procesar campos directos (email_institucional, id_roles, etc.)
+      for (const [key, value] of Object.entries(detalles)) {
+        if (key === 'persona') continue; // Procesar persona por separado
+        
+        if (Array.isArray(value) && value.length > 0) {
+          fieldErrors[key] = value[0];
+        } else if (typeof value === 'string') {
+          fieldErrors[key] = value;
+        }
+      }
+      
+      // Procesar campos anidados en persona
+      if (detalles.persona && typeof detalles.persona === 'object') {
+        for (const [key, value] of Object.entries(detalles.persona)) {
+          if (Array.isArray(value) && value.length > 0) {
+            // Mapear nombres de campos de persona al formato usado en el frontend
+            fieldErrors[key] = value[0];
+          } else if (typeof value === 'string') {
+            fieldErrors[key] = value;
+          }
+        }
+      }
+    }
+    
+    return fieldErrors;
   }
 }

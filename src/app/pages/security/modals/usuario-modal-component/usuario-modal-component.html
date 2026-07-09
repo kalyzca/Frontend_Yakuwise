@@ -5,15 +5,22 @@
     <fieldset class="persona-section">
         <legend>Datos Personales</legend>
         <!-- Campo Tipo de Documento -->
-        <div class="form-input-container">
-            <label for="tipoDocumento" class="label-input-container">Tipo de documento:</label>
-            <mat-form-field appearance="outline" class="custom-select">
-                <mat-select id="tipoDocumento" [ngModel]="idTipoDocumento()" (ngModelChange)="idTipoDocumento.set($event)">
+        <div class="form-input-container" [ngClass]="{ 'con-error': idTipoDocumentoError() }">
+            <label for="tipoDocumento" class="label-input-container" [ngClass]="{ 'con-error': idTipoDocumentoError() }">Tipo de documento:</label>
+            <mat-form-field appearance="outline" class="custom-select" subscriptSizing="dynamic">
+                <mat-select id="tipoDocumento" [ngModel]="idTipoDocumento()" (ngModelChange)="idTipoDocumento.set($event)" (blur)="idTipoDocumentoTouched.set(true)">
                     <mat-option [value]="0" selected>Seleccione una opción</mat-option>
-                    <mat-option [value]="1">Documento nacional de identidad</mat-option>
-                    <mat-option [value]="2">Carnet de extranjería</mat-option>
-                    <mat-option [value]="3">Pasaporte</mat-option>
+                    @for (tipo of tiposDocumento(); track tipo.id_tipo_documento) {
+                        <mat-option [value]="tipo.id_tipo_documento">{{ tipo.nombre_tipo_documento }}</mat-option>
+                    }
                 </mat-select>
+                
+                @if (idTipoDocumentoError()) {
+                    <mat-error class="error-with-icon">
+                        <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                        {{ idTipoDocumentoError() }}
+                    </mat-error>
+                }
             </mat-form-field>
         </div>
         <!-- Campo Número de Documento -->
@@ -21,56 +28,52 @@
             <label for="numeroDocumento" class="label-input-container" [ngClass]="{ 'con-error': numeroDocumentoError() }">Número de Documento: (*)</label>
             <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
                 <input matInput id="numeroDocumento" [ngModel]="numeroDocumento()" (ngModelChange)="numeroDocumento.set($event)" (blur)="numeroDocumentoTouched.set(true)" placeholder="Ej. 12345678" required>
-                
-                @if (numeroDocumentoError()) {
-                    <mat-error class="error-with-icon">
-                        <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                        {{ numeroDocumentoError() }}
-                    </mat-error>
-                }
             </mat-form-field>
+            @if (numeroDocumentoError()) {
+                <div class="error-with-icon" style="color: #f44336; font-size: 12px; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+                    <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                    {{ numeroDocumentoError() }}
+                </div>
+            }
         </div>
         <!-- Campo Nombres -->
         <div class="form-input-container" [ngClass]="{ 'con-error': nombresError() }">
             <label for="nombres" class="label-input-container">Nombres: (*)</label>
             <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
                 <input matInput id="nombres" [ngModel]="nombres()" (ngModelChange)="nombres.set($event)" (blur)="nombresTouched.set(true)" placeholder="Ej. Juan Carlos" required>
-                
-                @if (nombresError()) {
-                    <mat-error class="error-with-icon">
-                        <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                        {{ nombresError() }}
-                    </mat-error>
-                }
             </mat-form-field>
+            @if (nombresError()) {
+                <div class="error-with-icon" style="color: #f44336; font-size: 12px; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+                    <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                    {{ nombresError() }}
+                </div>
+            }
         </div>
         <!-- Campo Apellido Paterno -->
         <div class="form-input-container" [ngClass]="{ 'con-error': apellidoPaternoError() }">
             <label for="apellidoPaterno" class="label-input-container">Apellido Paterno: (*)</label>
             <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
                 <input matInput id="apellidoPaterno" [ngModel]="apellidoPaterno()" (ngModelChange)="apellidoPaterno.set($event)" (blur)="apellidoPaternoTouched.set(true)" placeholder="Ej. Pérez" required>
-                
-                @if (apellidoPaternoError()) {
-                    <mat-error class="error-with-icon">
-                        <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                        {{ apellidoPaternoError() }}
-                    </mat-error>
-                }
             </mat-form-field>
+            @if (apellidoPaternoError()) {
+                <div class="error-with-icon" style="color: #f44336; font-size: 12px; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+                    <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                    {{ apellidoPaternoError() }}
+                </div>
+            }
         </div>
         <!-- Campo Apellido Materno -->
         <div class="form-input-container" [ngClass]="{ 'con-error': apellidoMaternoError() }">
             <label for="apellidoMaterno" class="label-input-container">Apellido Materno: (*)</label>
             <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
                 <input matInput id="apellidoMaterno" [ngModel]="apellidoMaterno()" (ngModelChange)="apellidoMaterno.set($event)" (blur)="apellidoMaternoTouched.set(true)" placeholder="Ej. López" required>
-                
-                @if (apellidoMaternoError()) {
-                    <mat-error class="error-with-icon">
-                        <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                        {{ apellidoMaternoError() }}
-                    </mat-error>
-                }
             </mat-form-field>
+            @if (apellidoMaternoError()) {
+                <div class="error-with-icon" style="color: #f44336; font-size: 12px; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+                    <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                    {{ apellidoMaternoError() }}
+                </div>
+            }
         </div>
         <!-- Campo Género -->
         <div class="form-input-container" [ngClass]="{ 'con-error': generoError() }">
@@ -81,42 +84,39 @@
                     <mat-option value="M">Masculino</mat-option>
                     <mat-option value="F">Femenino</mat-option>
                 </mat-select>
-                
-                @if (generoError()) {
-                    <mat-error class="error-with-icon">
-                        <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                        {{ generoError() }}
-                    </mat-error>
-                }
             </mat-form-field>
+            @if (generoError()) {
+                <div class="error-with-icon" style="color: #f44336; font-size: 12px; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+                    <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                    {{ generoError() }}
+                </div>
+            }
         </div>
         <!-- Campo Teléfono -->
         <div class="form-input-container" [ngClass]="{ 'con-error': telefonoError() }">
             <label for="telefono" class="label-input-container">Teléfono: (*)</label>
             <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
                 <input matInput id="telefono" [ngModel]="telefono()" (ngModelChange)="telefono.set($event)" (blur)="telefonoTouched.set(true)" placeholder="Ej. 999999999" required>
-                
-                @if (telefonoError()) {
-                    <mat-error class="error-with-icon">
-                        <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                        {{ telefonoError() }}
-                    </mat-error>
-                }
             </mat-form-field>
+            @if (telefonoError()) {
+                <div class="error-with-icon" style="color: #f44336; font-size: 12px; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+                    <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                    {{ telefonoError() }}
+                </div>
+            }
         </div>
         <!-- Campo Correo Personal -->
         <div class="form-input-container" [ngClass]="{ 'con-error': correoPersonalError() }">
             <label for="correoPersonal" class="label-input-container">Correo Personal: (*)</label>
             <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
                 <input matInput id="correoPersonal" [ngModel]="correoPersonal()" (ngModelChange)="correoPersonal.set($event)" (blur)="correoPersonalTouched.set(true)" placeholder="Ej. juan@gmail.com" required>
-                
-                @if (correoPersonalError()) {
-                    <mat-error class="error-with-icon">
-                        <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                        {{ correoPersonalError() }}
-                    </mat-error>
-                }
             </mat-form-field>
+            @if (correoPersonalError()) {
+                <div class="error-with-icon" style="color: #f44336; font-size: 12px; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+                    <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                    {{ correoPersonalError() }}
+                </div>
+            }
         </div>
     </fieldset>
 
@@ -128,14 +128,13 @@
             <label for="emailInstitucional" class="label-input-container">Email Institucional: (*)</label>
             <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
                 <input matInput id="emailInstitucional" [ngModel]="email()" (ngModelChange)="email.set($event)" (blur)="emailTouched.set(true)" placeholder="Ej. usuario@institucion.edu.pe" required>
-                
-                @if (emailError()) {
-                    <mat-error class="error-with-icon">
-                        <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                        {{ emailError() }}
-                    </mat-error>
-                }
             </mat-form-field>
+            @if (emailError()) {
+                <div class="error-with-icon" style="color: #f44336; font-size: 12px; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+                    <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                    {{ emailError() }}
+                </div>
+            }
         </div>
         <!-- Campo estado del usuario -->
         <div class="form-input-container">
@@ -149,7 +148,7 @@
         </div>
         
         <!-- Campo Rol -->
-        <div class="form-input-container" [ngClass]="{ 'con-error': emailError() }">
+        <div class="form-input-container" [ngClass]="{ 'con-error': idRolesError() }">
             <label for="rol" class="label-input-container">Roles: (*)</label>
             <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
                 <mat-select id="rol" [ngModel]="idRoles()" (ngModelChange)="idRoles.set($event)" (blur)="idRolesTouched.set(true)" multiple required>
@@ -157,14 +156,13 @@
                         <mat-option [value]="role.id_rol || role.id">{{ role.nombre_rol }}</mat-option>
                     }
                 </mat-select>
-
-                @if (idRolesError()) {
-                    <mat-error class="error-with-icon">
-                        <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                        {{ idRolesError() }}
-                    </mat-error>
-                }
             </mat-form-field>
+            @if (idRolesError()) {
+                <div class="error-with-icon" style="color: #f44336; font-size: 12px; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+                    <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                    {{ idRolesError() }}
+                </div>
+            }
         </div>
         
     </fieldset>
@@ -173,5 +171,11 @@
 
 <mat-dialog-actions align="end">
     <button mat-button  (click)="onCancel()">Cancelar</button>
-    <button mat-button color="primary" type="submit" [disabled]="isFormInvalid()" (click)="onSave()">{{ isEditMode() ? 'Actualizar' : 'Guardar' }}</button>
+    <button mat-button color="primary" [disabled]="isFormInvalid() || isSaving()" (click)="onSave()">
+        @if (isSaving()) {
+            Guardando...
+        } @else {
+            {{ isEditMode() ? 'Actualizar' : 'Guardar' }}
+        }
+    </button>
 </mat-dialog-actions>
