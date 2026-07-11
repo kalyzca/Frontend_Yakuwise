@@ -15,6 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { UsersService, CreateUserRequest, UserResponse, UsersListResponse } from '../../../../shared/services/users.service';
 import { MatChipsModule } from '@angular/material/chips';
+import { ResetPassModalComponent } from '../../modals/resetPassword/reset-pass-modal-component/reset-pass-modal-component';
 
 @Component({
   selector: 'app-usuario-component',
@@ -286,5 +287,19 @@ export class UsuarioComponent {
     }
     
     return fieldErrors;
+  }
+
+  resetPassword(user?: UserData): void {
+    const dialogRefResetPass = this.dialog.open(ResetPassModalComponent, {
+      width: '24rem',
+      minWidth: 'auto',
+      height: '20rem',
+      data: user,
+      disableClose: true
+    });
+
+    dialogRefResetPass.afterClosed().subscribe((result) => {
+      if (!result) return;
+    });
   }
 }

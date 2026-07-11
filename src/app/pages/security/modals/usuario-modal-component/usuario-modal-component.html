@@ -171,7 +171,7 @@
 
 <mat-dialog-actions align="end">
     <button mat-button  (click)="onCancel()">Cancelar</button>
-    <button mat-button color="primary" [disabled]="isFormInvalid() || isSaving()" (click)="onSave()">
+    <button mat-button [disabled]="isFormInvalid() || isSaving()" (click)="onSave()">
         @if (isSaving()) {
             Guardando...
         } @else {
