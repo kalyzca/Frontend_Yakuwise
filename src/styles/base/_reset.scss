@@ -316,6 +316,12 @@ body {
         hover-state-layer-color: v.$light-secondary-color,
     ));
 
+    // Estilos de icon del boton
+     @include mat.icon-button-overrides((
+        ripple-color: none,
+        state-layer-color: none,
+    ));
+
 }
 
 // Estilos del input buscador
@@ -330,6 +336,7 @@ body {
     @include m.layout-flex(column, center, flex-start);
     height: auto;
     transition: margin-bottom 0.2s ease-in-out;
+    width: 100%;
 
     .con-error {
         margin-bottom: 0.25rem;

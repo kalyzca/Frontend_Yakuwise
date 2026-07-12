@@ -2,13 +2,10 @@
 @use 'abstracts/variables' as v;
 
 .login-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
+    @include m.layout-flex(column, space-between, center);
     width: 100vw;
     height: 100vh;
-    background-color: #fff;
+    background-color: v.$white-color;
     border-radius: 0.5rem;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 
@@ -71,123 +68,31 @@
             margin-right: 8rem;
         }
 
-        .input-container {
-
-            label {
-                font-weight: 600;
-                color: v.$primary-color;
-
-                @include m.respond-to(lg) {
-                    font-size: 1.25rem;
-                }
-
-            }
-            .input-wrapper {
-                position: relative;
-                width: 100%;
-
-                .btn-show-password{
-                    position: absolute;
-                    background: none;
-                    border: none;
-                    z-index:3;
-                    cursor: pointer;
-                    top: 50%;
-                    right: 1rem;
-                    margin: 0;
-                    transform: translateY(-50%);
-                    color: v.$primary-color;
-                    
-                    .icon-password-hide, .icon-password-show {
-                        pointer-events: none;
-                        width: 1.5rem;
-                        height: 1.5rem;
-
-                        @include m.respond-to(lg) {
-                        right: 1rem;
-                        width: 1.75rem;
-                        height: 1.75rem;
-                        }
-                        @include m.respond-to(xl) {
-                            right: 1.25rem;
-                            width: 2rem;
-                            height: 2rem;
-                        }
-                    }
-                }
-                
-                .icon-user {
-                    position: absolute;
-                    top: 50%;
-                    right: 0.75rem;
-                    transform: translateY(-50%);
-                    color: v.$primary-color;
-                    pointer-events: none;
-                    width: 1.5rem;
-                    height: 1.5rem;
-                    
-                    @include m.respond-to(lg) {
-                        right: 1rem;
-                        width: 1.75rem;
-                        height: 1.75rem;
-                    }
-                    @include m.respond-to(xl) {
-                        right: 1.25rem;
-                        width: 2rem;
-                        height: 2rem;
-                    }
-                }
-            }
-            
-            .input-user, .input-password {
-                @include m.layout-flex(row, center, center);
-                width: calc(100vw - 4rem);
-                padding: 0.75rem 2.5rem 0.75rem 0.75rem;
-                border-radius: 0.25rem;
-                border: 1px solid #ccc;
-                margin-top: 0.5rem;
-
-                @include m.respond-to(lg) {
-                    width: 50vw;
-                    padding: 1rem 3rem 1rem 1rem;
-                    font-size: 1.25rem;
-                }
-                @include m.respond-to(xl) {
-                    padding: 1.25rem;
-                    font-size: 1.5rem;
-                }
-                
-
-                &:focus {
-                    border-color: #007BFF;
-                    outline: none;
-                }
-            }
-
-
-            p {
-                font-size: 0.75rem;
-                margin-top: 0.5rem;
-                margin-bottom: 0.5rem;
-
-                @include m.respond-to(md) {
-                    font-size: 1rem;
-                    margin-bottom: 1rem;
-                }
-            }
+        .label-input-container-login {
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            margin-inline: 0;
+            padding: 0;
+            color: v.$primary-color;
+            font-size: 1rem;
+            font-weight: 600;
         }
 
         .forget-password {
             align-self: flex-end;
-            color: hsl(0, 100%, 50%);
-            font-size: 0.75rem;
+            color: v.$forget-pass-color;
+            font-size: 0.875rem;
+            font-weight: 500;
             margin-bottom: 3rem;
-            margin-top: 0;
+            margin-top: 0.5rem;
             cursor: pointer;
 
             @include m.respond-to(md) {
-                font-size: 1rem;
+                font-size: 0.875rem;
             }
+        }
+        .forget-password:hover {
+            text-decoration: underline;
         }
 
         .btn-login {
@@ -207,26 +112,33 @@
             @include m.respond-to(lg) {
                 width: 100%;
                 height: 3.25rem;
-                font-size: 1.25rem;
                 margin-top: initial
             }
 
             @include m.respond-to(xl) {
                 width: 100%;
                 height: 3.5rem;
-                font-size: 1.5rem;
+                font-size: 1.25rem;
                 margin-top: initial
             }
             
             &:hover {
-                background-color: hsl(206, 87%, 45%);
+                background-color: v.$primary-hover-color;
             }
 
             .btn-enter:active {
-                background-color: hsl(207, 86%, 43%);
+                background-color: v.$primary-active-color;
                 opacity: 0.95;
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             }
         }
     }
 }
+
+// Estilos de iconos
+.mat-icon, mat-icon.mat-primary, mat-icon.mat-accent, mat-icon.mat-warn {
+    right: 0.25rem;
+}
+
+
+
