@@ -299,7 +299,14 @@ export class UsuarioComponent {
     });
 
     dialogRefResetPass.afterClosed().subscribe((result) => {
-      if (!result) return;
+      if (result) {
+        this.snackBar.open('Contraseña restablecida exitosamente', 'Cerrar', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['success-snackbar']
+        });
+      }
     });
   }
 }
