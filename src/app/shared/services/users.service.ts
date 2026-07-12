@@ -107,4 +107,12 @@ export class UsersService {
   deleteUser(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiConfig.usersEndpoint()}${id}/`);
   }
+
+  // Restablecer contraseña de un usuario
+  resetPassword(idUsuario: number): Observable<void> {
+    return this.http.post<void>(
+      this.apiConfig.resetPasswordEndpoint(),
+      { id_usuario: idUsuario }
+    );
+  }
 }

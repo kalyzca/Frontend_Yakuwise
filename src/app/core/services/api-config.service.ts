@@ -16,6 +16,9 @@ export class ApiConfigService {
   // Endpoint específico para tipos de documento
   readonly tiposDocumentoEndpoint = signal(`${this.baseUrl()}/security/tipos-documento/`);
 
+  // Endpoint específico para restablecer contraseña
+  readonly resetPasswordEndpoint = signal(`${this.baseUrl()}/security/reset-password/`);
+
   constructor() {}
 
   // Método para obtener la URL base
