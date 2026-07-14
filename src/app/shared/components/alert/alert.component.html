@@ -1,0 +1,9 @@
+<div class="alert-wrapper">
+  <div class="alert-content">
+    <mat-icon class="alert-icon">{{ getIcon() }}</mat-icon>
+    <span class="alert-message">{{ data.message }}</span>
+  </div>
+  <button class="alert-close-btn" (click)="snackBarRef.dismissWithAction()">
+    <mat-icon class="close-icon">close</mat-icon>
+  </button>
+</div>

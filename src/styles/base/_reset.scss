@@ -322,6 +322,81 @@ body {
         state-layer-color: none,
     ));
 
+    // Estilos de alertas
+    @include mat.snack-bar-overrides((
+        button-color: v.$white-color,
+        container-color: v.$white-color,
+        supporting-text-color: v.$dark-color,
+    ));
+
+    .mdc-snackbar__label{
+        padding: 0.5rem;
+    }
+
+    // Modificadores estructurales y cromáticos bajo el namespace común
+    .custom-snackbar {
+        &.mat-mdc-snack-bar-container {
+            min-width: 280px !important; 
+            max-width: 500px !important;
+
+            &.mat-mdc-snack-bar-container {
+                padding: 0 !important;
+
+                .mdc-snackbar__surface {
+                    @include m.layout-flex(row, space-between, center);
+                    padding: 0.5rem !important;
+                    border-radius: v.$radius !important;
+                    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15) !important;
+                    width: 100% !important;
+                }
+            
+                &.alert-success .mdc-snackbar__surface {
+                    border-left: 0.5rem solid hsl(142, 71%, 40%);
+                    color: hsl(142, 71%, 40%);
+                    
+                    .alert-icon,
+                    .close-icon 
+                    {
+                        color: hsl(142, 71%, 40%);
+                    }
+                }
+
+                &.alert-error  .mdc-snackbar__surface {
+                    border-left: 0.5rem solid hsl(357, 74%, 55%);
+                    color: hsl(357, 74%, 55%);
+
+                    .alert-icon,
+                    .close-icon 
+                    {
+                        color: hsl(357, 74%, 55%);
+                    }
+                    
+                }
+
+                &.alert-warning  .mdc-snackbar__surface {
+                    border-left: 0.5rem solid hsl(57, 71%, 45%);
+                    color: hsl(57, 71%,38%);
+
+                    .alert-icon,
+                    .close-icon
+                    {
+                        color: hsl(57, 71%,45%);
+                    }
+                }
+
+                &.alert-info  .mdc-snackbar__surface {
+                    border-left: 0.5rem solid  v.$primary-color;
+                    color:  v.$primary-color;
+                    
+                    .alert-icon,
+                    .close-icon
+                    {
+                        color: v.$primary-color;
+                    }
+                }
+            }
+        }
+    }
 }
 
 // Estilos del input buscador

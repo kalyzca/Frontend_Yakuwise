@@ -14,6 +14,7 @@ import { RolModalComponent, RoleData } from '../../modals/rol-modal-component/ro
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { RolesService, CreateRoleRequest, RoleResponse, RolesListResponse } from '../../../../shared/services/roles.service';
+import { AlertService } from '../../../../shared/services/alert.service';
 
 @Component({
   selector: 'app-rol-component',
@@ -26,6 +27,7 @@ export class RolComponent {
   private readonly dialog = inject(MatDialog);
   private readonly rolesService = inject(RolesService);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly alertService = inject(AlertService);
 
   displayedColumns: string[] = ['id', 'name', 'state', 'actions'];
 
@@ -193,24 +195,14 @@ export class RolComponent {
             this.loadRoles();
             this.isLoading.set(false);
             // Mostrar alerta de éxito
-            this.snackBar.open('Rol actualizado exitosamente', 'Cerrar', {
-              duration: 3000,
-              horizontalPosition: 'end',
-              verticalPosition: 'top',
-              panelClass: ['success-snackbar']
-            });
+            this.alertService.success('Rol actualizado exitosamente');
           },
           error: (err) => {
             this.error.set('Error al actualizar el rol. Por favor, inténtelo de nuevo.');
             this.isLoading.set(false);
             // Mostrar alerta de error con mensaje del backend si está disponible
             const errorMessage = err.error?.detail || err.error?.message || 'Error al actualizar el rol. Por favor, inténtelo de nuevo.';
-            this.snackBar.open(errorMessage, 'Cerrar', {
-              duration: 5000,
-              horizontalPosition: 'end',
-              verticalPosition: 'top',
-              panelClass: ['error-snackbar']
-            });
+            this.alertService.error(errorMessage);
           }
         });
       } 
@@ -226,24 +218,14 @@ export class RolComponent {
             this.loadRoles();
             this.isLoading.set(false);
             // Mostrar alerta de éxito
-            this.snackBar.open('Rol creado exitosamente', 'Cerrar', {
-              duration: 3000,
-              horizontalPosition: 'end',
-              verticalPosition: 'top',
-              panelClass: ['success-snackbar']
-            });
+            this.alertService.success('Rol creado exitosamente');
           },
           error: (err) => {
             this.error.set('Error al crear el rol. Por favor, inténtelo de nuevo.');
             this.isLoading.set(false);
             // Mostrar alerta de error con mensaje del backend si está disponible
             const errorMessage = err.error?.detail || err.error?.message || 'Error al crear el rol. Por favor, inténtelo de nuevo.';
-            this.snackBar.open(errorMessage, 'Cerrar', {
-              duration: 5000,
-              horizontalPosition: 'end',
-              verticalPosition: 'top',
-              panelClass: ['error-snackbar']
-            });
+            this.alertService.error(errorMessage);
           }
         });
       }
