@@ -6,6 +6,8 @@ import { FrontPageComponent } from './core/layout/front-page/front-page-componen
 import { WelcomeComponent } from './pages/welcome/welcome-component/welcome-component';
 import { RolComponent } from './pages/security/rol/rol-component/rol-component';
 import { UsuarioComponent } from './pages/security/usuario/usuario-component/usuario-component';
+import { UpdatePasswordComponent } from './features/auth/pages/update-password/update-password-component/update-password-component';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -17,8 +19,14 @@ export const routes: Routes = [
     component:LoginComponent
   },
   {
+    path: 'update-password',
+    component: UpdatePasswordComponent,
+    canActivate: [authGuard]
+  },
+  {
     path: 'home',
     component: HomeComponent,
+    canActivate: [authGuard],
     children:[
       {
         path:'welcome',
@@ -29,6 +37,7 @@ export const routes: Routes = [
   {
     path: 'security',
     component: HomeComponent,
+    canActivate: [authGuard],
     children:[
       {
         path:'rol',
@@ -42,7 +51,8 @@ export const routes: Routes = [
   },
   {
     path:'dashboard',
-    component:DashboardComponent
+    component:DashboardComponent,
+    canActivate: [authGuard]
   },
   {
     path:'**',

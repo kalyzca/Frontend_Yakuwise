@@ -19,6 +19,12 @@ export class ApiConfigService {
   // Endpoint específico para restablecer contraseña
   readonly resetPasswordEndpoint = signal(`${this.baseUrl()}/security/reset-password/`);
 
+  // Endpoint específico para login
+  readonly loginEndpoint = signal(`${this.baseUrl()}/security/login/`);
+
+  // Endpoint específico para actualizar contraseña
+  readonly updatePasswordEndpoint = signal(`${this.baseUrl()}/security/update-password/`);
+
   constructor() {}
 
   // Método para obtener la URL base

@@ -3,7 +3,7 @@
         <img src="assets/images/logo.png" alt="Logo de yakuwise">
         <p class="title-app-mobile">yakuwise</p>
     </div>
-    <form action="" class="form-login" method="post">
+    <form class="form-login" (submit)="onSubmit($event)">
         <div class="form-input-container">
             <label for="login-user" class="label-input-container-login" >Usuario: (*)</label>
             <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
@@ -46,7 +46,19 @@
             </mat-form-field>
             <span class="forget-password">¿Olvidaste tu contraseña?</span>
         </div>
-        
-        <button type="submit" class="btn-login" routerLink="/home/welcome" routerLinkActive="">Iniciar sesión</button>
+
+        @if (errorMessage()) {
+            <div class="error-message">
+                {{ errorMessage() }}
+            </div>
+        }
+
+        <button type="submit" class="btn-login" [disabled]="isLoading()">
+            @if (isLoading()) {
+                Cargando...
+            } @else {
+                Iniciar sesión
+            }
+        </button>
     </form>
 </section>
