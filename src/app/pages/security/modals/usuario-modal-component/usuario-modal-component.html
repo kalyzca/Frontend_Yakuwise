@@ -1,177 +1,243 @@
 <p mat-dialog-title>{{ isEditMode() ? 'Editar Usuario' : 'Agregar Usuario' }}</p>
 
 <mat-dialog-content>
-    <!-- Sección: Datos de persona -->
-    <fieldset class="persona-section">
-        <legend>Datos Personales</legend>
-        <!-- Campo Tipo de Documento -->
-        <div class="form-input-container" [ngClass]="{ 'con-error': idTipoDocumentoError() }">
-            <label for="tipoDocumento" class="label-input-container" [ngClass]="{ 'con-error': idTipoDocumentoError() }">Tipo de documento:</label>
-            <mat-form-field appearance="outline" class="custom-select" subscriptSizing="dynamic">
-                <mat-select id="tipoDocumento" [ngModel]="idTipoDocumento()" (ngModelChange)="idTipoDocumento.set($event)" (blur)="idTipoDocumentoTouched.set(true)">
-                    <mat-option [value]="0" selected>Seleccione una opción</mat-option>
-                    @for (tipo of tiposDocumento(); track tipo.id_tipo_documento) {
-                        <mat-option [value]="tipo.id_tipo_documento">{{ tipo.nombre_tipo_documento }}</mat-option>
-                    }
-                </mat-select>
-                
-                @if (idTipoDocumentoError()) {
-                    <mat-error class="error-with-icon">
-                        <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                        {{ idTipoDocumentoError() }}
-                    </mat-error>
-                }
-            </mat-form-field>
-        </div>
-        <!-- Campo Número de Documento -->
-        <div class="form-input-container" [ngClass]="{ 'con-error': numeroDocumentoError() }">
-            <label for="numeroDocumento" class="label-input-container" [ngClass]="{ 'con-error': numeroDocumentoError() }">Número de Documento: (*)</label>
-            <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
-                <input matInput id="numeroDocumento" [ngModel]="numeroDocumento()" (ngModelChange)="numeroDocumento.set($event)" (blur)="numeroDocumentoTouched.set(true)" placeholder="Ej. 12345678" required>
-            </mat-form-field>
-            @if (numeroDocumentoError()) {
-                <div class="error-with-icon" style="color: #f44336; font-size: 12px; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
-                    <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                    {{ numeroDocumentoError() }}
+    <form class="form-user" (submit)="onSave($event)">
+        <!-- Sección: Datos de persona -->
+        <fieldset class="persona-section">
+            <legend>Datos Personales</legend>
+            <div class="form-person">
+                <!-- Campo Tipo de Documento -->
+                <div class="form-input-container">
+                    <label for="tipoDocumento" class="label-input-container" >Tipo de documento:</label>
+                    <mat-form-field appearance="outline" class="custom-select" subscriptSizing="dynamic">
+                        <mat-select id="tipoDocumento" [formField]="userForm.persona.id_tipo_documento">
+                            <mat-option [value]="0" selected>Seleccione una opción</mat-option>
+                            @for (tipo of tiposDocumento(); track tipo.id_tipo_documento) {
+                                <mat-option [value]="tipo.id_tipo_documento">{{ tipo.nombre_tipo_documento }}</mat-option>
+                            }
+                        </mat-select>
+                        
+                        @if (userForm.persona.id_tipo_documento().invalid() && userForm.persona.id_tipo_documento().touched()) {
+                            <mat-error class="error-list-container">
+                                <div class="error-list">
+                                    @for (error of userForm.persona.id_tipo_documento().errors(); track error.kind) {
+                                        <div class="error-row">
+                                            <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                                            <span>{{ error.message }}</span>
+                                        </div>
+                                    }
+                                </div>
+                            </mat-error>
+                        }
+                    </mat-form-field>
                 </div>
-            }
-        </div>
-        <!-- Campo Nombres -->
-        <div class="form-input-container" [ngClass]="{ 'con-error': nombresError() }">
-            <label for="nombres" class="label-input-container">Nombres: (*)</label>
-            <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
-                <input matInput id="nombres" [ngModel]="nombres()" (ngModelChange)="nombres.set($event)" (blur)="nombresTouched.set(true)" placeholder="Ej. Juan Carlos" required>
-            </mat-form-field>
-            @if (nombresError()) {
-                <div class="error-with-icon" style="color: #f44336; font-size: 12px; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
-                    <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                    {{ nombresError() }}
+                <!-- Campo Número de Documento -->
+                <div class="form-input-container">
+                    <label for="numeroDocumento" class="label-input-container">Número de Documento: (*)</label>
+                    <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
+                        <input matInput id="numeroDocumento" [formField]="userForm.persona.numero_documento" placeholder="Ej. 12345678">
+                        @if (userForm.persona.numero_documento().invalid() && userForm.persona.numero_documento().touched()) {
+                            <mat-error class="error-list-container">
+                                <div class="error-list">
+                                    @for (error of userForm.persona.numero_documento().errors(); track error.kind) {
+                                        <div class="error-row">
+                                            <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                                            <span>{{ error.message }}</span>
+                                        </div>
+                                    }
+                                </div>
+                            </mat-error>
+                        }
+                    </mat-form-field>
                 </div>
-            }
-        </div>
-        <!-- Campo Apellido Paterno -->
-        <div class="form-input-container" [ngClass]="{ 'con-error': apellidoPaternoError() }">
-            <label for="apellidoPaterno" class="label-input-container">Apellido Paterno: (*)</label>
-            <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
-                <input matInput id="apellidoPaterno" [ngModel]="apellidoPaterno()" (ngModelChange)="apellidoPaterno.set($event)" (blur)="apellidoPaternoTouched.set(true)" placeholder="Ej. Pérez" required>
-            </mat-form-field>
-            @if (apellidoPaternoError()) {
-                <div class="error-with-icon" style="color: #f44336; font-size: 12px; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
-                    <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                    {{ apellidoPaternoError() }}
+                <!-- Campo Género -->
+                <div class="form-input-container">
+                    <label for="genero" class="label-input-container">Género: (*)</label>
+                    <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
+                        <mat-select id="genero" [formField]="userForm.persona.genero">
+                            <mat-option value="" selected>Seleccione una opción</mat-option>
+                            <mat-option value="M">Masculino</mat-option>
+                            <mat-option value="F">Femenino</mat-option>
+                        </mat-select>
+                        @if (userForm.persona.genero().invalid() && userForm.persona.genero().touched()) {
+                            <mat-error class="error-list-container">
+                                <div class="error-list">
+                                    @for (error of userForm.persona.genero().errors(); track error.kind) {
+                                        <div class="error-row">
+                                            <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                                            <span>{{ error.message }}</span>
+                                        </div>
+                                    }
+                                </div>
+                            </mat-error>
+                        }
+                    </mat-form-field>
                 </div>
-            }
-        </div>
-        <!-- Campo Apellido Materno -->
-        <div class="form-input-container" [ngClass]="{ 'con-error': apellidoMaternoError() }">
-            <label for="apellidoMaterno" class="label-input-container">Apellido Materno: (*)</label>
-            <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
-                <input matInput id="apellidoMaterno" [ngModel]="apellidoMaterno()" (ngModelChange)="apellidoMaterno.set($event)" (blur)="apellidoMaternoTouched.set(true)" placeholder="Ej. López" required>
-            </mat-form-field>
-            @if (apellidoMaternoError()) {
-                <div class="error-with-icon" style="color: #f44336; font-size: 12px; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
-                    <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                    {{ apellidoMaternoError() }}
+                <!-- Campo Teléfono -->
+                <div class="form-input-container">
+                    <label for="telefono" class="label-input-container">Teléfono: (*)</label>
+                    <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
+                        <input matInput id="telefono" [formField]="userForm.persona.telefono" placeholder="Ej. 999999999">
+                        @if (userForm.persona.telefono().invalid() && userForm.persona.telefono().touched()) {
+                            <mat-error class="error-list-container">
+                                <div class="error-list">
+                                    @for (error of userForm.persona.telefono().errors(); track error.kind) {
+                                        <div class="error-row">
+                                            <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                                            <span>{{ error.message }}</span>
+                                        </div>
+                                    }
+                                </div>
+                            </mat-error>
+                        }
+                    </mat-form-field>
                 </div>
-            }
-        </div>
-        <!-- Campo Género -->
-        <div class="form-input-container" [ngClass]="{ 'con-error': generoError() }">
-            <label for="genero" class="label-input-container">Género: (*)</label>
-            <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
-                <mat-select id="genero" [ngModel]="genero()" (ngModelChange)="genero.set($event)" (blur)="generoTouched.set(true)" required>
-                    <mat-option value="" selected>Seleccione una opción</mat-option>
-                    <mat-option value="M">Masculino</mat-option>
-                    <mat-option value="F">Femenino</mat-option>
-                </mat-select>
-            </mat-form-field>
-            @if (generoError()) {
-                <div class="error-with-icon" style="color: #f44336; font-size: 12px; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
-                    <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                    {{ generoError() }}
+                <!-- Campo Nombres -->
+                <div class="form-input-container">
+                    <label for="nombres" class="label-input-container">Nombres: (*)</label>
+                    <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
+                        <input matInput id="nombres" [formField]="userForm.persona.nombres" placeholder="Ej. Juan Carlos">
+                        @if (userForm.persona.nombres().invalid() && userForm.persona.nombres().touched()) {
+                            <mat-error class="error-list-container">
+                                <div class="error-list">
+                                    @for (error of userForm.persona.nombres().errors(); track error.kind) {
+                                        <div class="error-row">
+                                            <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                                            <span>{{ error.message }}</span>
+                                        </div>
+                                    }
+                                </div>
+                            </mat-error>
+                        }
+                    </mat-form-field>
                 </div>
-            }
-        </div>
-        <!-- Campo Teléfono -->
-        <div class="form-input-container" [ngClass]="{ 'con-error': telefonoError() }">
-            <label for="telefono" class="label-input-container">Teléfono: (*)</label>
-            <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
-                <input matInput id="telefono" [ngModel]="telefono()" (ngModelChange)="telefono.set($event)" (blur)="telefonoTouched.set(true)" placeholder="Ej. 999999999" required>
-            </mat-form-field>
-            @if (telefonoError()) {
-                <div class="error-with-icon" style="color: #f44336; font-size: 12px; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
-                    <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                    {{ telefonoError() }}
+                <!-- Campo Apellido Paterno -->
+                <div class="form-input-container">
+                    <label for="apellidoPaterno" class="label-input-container">Apellido Paterno: (*)</label>
+                    <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
+                        <input matInput id="apellidoPaterno" [formField]="userForm.persona.apellido_paterno" placeholder="Ej. Pérez">
+                        @if (userForm.persona.apellido_paterno().invalid() && userForm.persona.apellido_paterno().touched()) {
+                            <mat-error class="error-list-container">
+                                <div class="error-list">
+                                    @for (error of userForm.persona.apellido_paterno().errors(); track error.kind) {
+                                        <div class="error-row">
+                                            <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                                            <span>{{ error.message }}</span>
+                                        </div>
+                                    }
+                                </div>
+                            </mat-error>
+                        }
+                    </mat-form-field>
                 </div>
-            }
-        </div>
-        <!-- Campo Correo Personal -->
-        <div class="form-input-container" [ngClass]="{ 'con-error': correoPersonalError() }">
-            <label for="correoPersonal" class="label-input-container">Correo Personal: (*)</label>
-            <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
-                <input matInput id="correoPersonal" [ngModel]="correoPersonal()" (ngModelChange)="correoPersonal.set($event)" (blur)="correoPersonalTouched.set(true)" placeholder="Ej. juan@gmail.com" required>
-            </mat-form-field>
-            @if (correoPersonalError()) {
-                <div class="error-with-icon" style="color: #f44336; font-size: 12px; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
-                    <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                    {{ correoPersonalError() }}
+                <!-- Campo Apellido Materno -->
+                <div class="form-input-container">
+                    <label for="apellidoMaterno" class="label-input-container">Apellido Materno: (*)</label>
+                    <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
+                        <input matInput id="apellidoMaterno" [formField]="userForm.persona.apellido_materno" placeholder="Ej. López">
+                        @if (userForm.persona.apellido_materno().invalid() && userForm.persona.apellido_materno().touched()) {
+                            <mat-error class="error-list-container">
+                                <div class="error-list">
+                                    @for (error of userForm.persona.apellido_materno().errors(); track error.kind) {
+                                        <div class="error-row">
+                                            <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                                            <span>{{ error.message }}</span>
+                                        </div>
+                                    }
+                                </div>
+                            </mat-error>
+                        }
+                    </mat-form-field>
                 </div>
-            }
-        </div>
-    </fieldset>
+                <!-- Campo Correo Personal -->
+                <div class="form-input-container">
+                    <label for="correoPersonal" class="label-input-container">Correo Personal: (*)</label>
+                    <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
+                        <input matInput id="correoPersonal" [formField]="userForm.persona.correo_personal" placeholder="Ej. juan@gmail.com">
+                        @if (userForm.persona.correo_personal().invalid() && userForm.persona.correo_personal().touched()) {
+                            <mat-error class="error-list-container">
+                                <div class="error-list">
+                                    @for (error of userForm.persona.correo_personal().errors(); track error.kind) {
+                                        <div class="error-row">
+                                            <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                                            <span>{{ error.message }}</span>
+                                        </div>
+                                    }
+                                </div>
+                            </mat-error>
+                        }
+                    </mat-form-field>
+                </div>
+            </div>
+        </fieldset>
 
-    <!-- Sección: Datos del usuario -->
-    <fieldset class="usuario-section">
-        <legend>Datos del Usuario</legend>
-        <!-- Campo Email Institucional -->
-        <div class="form-input-container" [ngClass]="{ 'con-error': emailError() }">
-            <label for="emailInstitucional" class="label-input-container">Email Institucional: (*)</label>
-            <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
-                <input matInput id="emailInstitucional" [ngModel]="email()" (ngModelChange)="email.set($event)" (blur)="emailTouched.set(true)" placeholder="Ej. usuario@institucion.edu.pe" required>
-            </mat-form-field>
-            @if (emailError()) {
-                <div class="error-with-icon" style="color: #f44336; font-size: 12px; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
-                    <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                    {{ emailError() }}
+        <!-- Sección: Datos del usuario -->
+        <fieldset class="usuario-section">
+            <legend>Datos del Usuario</legend>
+            <div class="form-users">
+                <!-- Campo Rol -->
+                <div class="form-input-container">
+                    <label for="rol" class="label-input-container">Roles: (*)</label>
+                    <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
+                        <mat-select id="rol" [formField]="userForm.id_roles" multiple>
+                            @for (role of roles(); track role.id_rol || role.id) {
+                                <mat-option [value]="role.id_rol || role.id">{{ role.nombre_rol }}</mat-option>
+                            }
+                        </mat-select>
+                        @if (userForm.id_roles().invalid() && userForm.id_roles().touched()) {
+                            <mat-error class="error-list-container">
+                                <div class="error-list">
+                                    @for (error of userForm.id_roles().errors(); track error.kind) {
+                                        <div class="error-row">
+                                            <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                                            <span>{{ error.message }}</span>
+                                        </div>
+                                    }
+                                </div>
+                            </mat-error>
+                        }
+                    </mat-form-field>
                 </div>
-            }
-        </div>
-        <!-- Campo estado del usuario -->
-        <div class="form-input-container">
-            <label for="state" class="label-input-container custom-switch">Estado:</label>
-            <mat-slide-toggle id="state" [checked]="isActive()" (change)="isActive.set($event.checked)">
-                <p class="txt-switch">
-                   El usuario está &nbsp;
-                   <span class="state-text">{{ statusText().toLowerCase() }}.</span>
-                </p>
-            </mat-slide-toggle>
-        </div>
-        
-        <!-- Campo Rol -->
-        <div class="form-input-container" [ngClass]="{ 'con-error': idRolesError() }">
-            <label for="rol" class="label-input-container">Roles: (*)</label>
-            <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
-                <mat-select id="rol" [ngModel]="idRoles()" (ngModelChange)="idRoles.set($event)" (blur)="idRolesTouched.set(true)" multiple required>
-                    @for (role of roles(); track role.id_rol || role.id) {
-                        <mat-option [value]="role.id_rol || role.id">{{ role.nombre_rol }}</mat-option>
-                    }
-                </mat-select>
-            </mat-form-field>
-            @if (idRolesError()) {
-                <div class="error-with-icon" style="color: #f44336; font-size: 12px; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
-                    <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                    {{ idRolesError() }}
+                <!-- Campo Email Institucional -->
+                <div class="form-input-container">
+                    <label for="emailInstitucional" class="label-input-container">Email Institucional: (*)</label>
+                    <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
+                        <input matInput id="emailInstitucional" [formField]="userForm.email" placeholder="Ej. usuario@institucion.edu.pe">
+                        @if (userForm.email().invalid() && userForm.email().touched()) {
+                            <mat-error class="error-list-container">
+                                <div class="error-list">
+                                    @for (error of userForm.email().errors(); track error.kind) {
+                                        <div class="error-row">
+                                            <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                                            <span>{{ error.message }}</span>
+                                        </div>
+                                    }
+                                </div>
+                            </mat-error>
+                        }
+                    </mat-form-field>
                 </div>
-            }
-        </div>
-        
-    </fieldset>
-
+                <!-- Campo estado del usuario -->
+                <div class="form-input-container">
+                    <label for="state" class="label-input-container custom-switch">Estado:</label>
+                    <mat-slide-toggle id="state" [checked]="userModal().state === 'Activo'" (change)="userModal.update(m => ({...m, state: $event.checked ? 'Activo' : 'Inactivo'}))">
+                        <p class="txt-switch">
+                        El usuario está &nbsp;
+                            <span class="state-text">{{ userModal().state.toLowerCase() }}.</span>
+                        </p>
+                    </mat-slide-toggle>
+                </div>
+            </div>
+            
+            
+            
+        </fieldset>
+    </form>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
     <button mat-button  (click)="onCancel()">Cancelar</button>
-    <button mat-button [disabled]="isFormInvalid() || isSaving()" (click)="onSave()">
+    <button mat-button (click)="onSave($event)" [disabled]="isSaving()">
         @if (isSaving()) {
             Guardando...
         } @else {

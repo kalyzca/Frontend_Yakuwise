@@ -22,10 +22,11 @@
 }
 
 
-@mixin grid {
+@mixin grid ($justify: center, $align: center) {
     display: grid;
-    justify-content: center;
-    align-content: center;
+    justify-content: $justify;
+    align-content: $align;
+    @content;
 }
 
 @mixin button-style($bg-color:$primary-color) {

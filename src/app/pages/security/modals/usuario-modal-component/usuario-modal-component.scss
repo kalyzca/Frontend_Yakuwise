@@ -6,15 +6,29 @@
 .usuario-section {
     border: 1px dotted v.$primary-color;
     border-radius: v.$radius;
-    padding-inline: 2rem;
+    padding-inline: 1.5rem;
     padding-block: 1rem;
-    margin-top: 1rem;
-    margin-inline: 1rem;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+    margin-inline: 0.25rem;
 
     legend {
         text-transform: uppercase;
         text-align: center;
         color: v.$primary-color;
         padding-inline: 0.5rem;
+    }
+}
+
+.form-person,
+.form-users
+{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem; 
+    width: 100%;
+
+    @include m.respond-to(md) {
+        grid-template-columns: repeat(2, 1fr);
     }
 }

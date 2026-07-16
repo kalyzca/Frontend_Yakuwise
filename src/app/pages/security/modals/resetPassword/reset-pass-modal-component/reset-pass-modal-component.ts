@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { UserData } from '../../../../../shared/interfaces/usuario.interface';
+import { UserData } from '../../../../../shared/interfaces/usuario-interface';
 import { UsersService } from '../../../../../shared/services/users.service';
 
 @Component({

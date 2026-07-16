@@ -10,7 +10,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
-import { UsuarioModalComponent, UserData } from '../../modals/usuario-modal-component/usuario-modal-component';
+import { UsuarioModalComponent } from '../../modals/usuario-modal-component/usuario-modal-component';
+import { UserData } from '../../../../shared/interfaces/usuario-interface';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { UsersService, CreateUserRequest, UserResponse, UsersListResponse } from '../../../../shared/services/users.service';
@@ -167,6 +168,7 @@ export class UsuarioComponent {
 
   private mapToApiRequest(userData: UserData): CreateUserRequest {
     return {
+      username: userData.username || '',
       email_institucional: userData.email,
       estado: userData.state === 'Activo',
       persona: {
@@ -226,10 +228,10 @@ export class UsuarioComponent {
 
   createUser(user?: UserData): void {
     const dialogRef = this.dialog.open(UsuarioModalComponent, {
-      width: '30rem',
       height: 'max-content',
       data: user,
-      disableClose: true
+      disableClose: true,
+      panelClass: 'custom-responsive-modal-user'
     });
 
     dialogRef.afterClosed().subscribe((result: any) => {

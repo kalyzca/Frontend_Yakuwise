@@ -18,6 +18,7 @@ export interface PersonaData {
 
 // Interfaces para los datos de usuarios
 export interface CreateUserRequest {
+  username?: string;
   email_institucional: string;
   estado: boolean;
   persona: PersonaData;

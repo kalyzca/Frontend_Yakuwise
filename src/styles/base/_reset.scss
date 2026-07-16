@@ -467,3 +467,19 @@ body {
     }
     
 }
+
+// Estilos del modal
+.mat-mdc-dialog-surface {
+    border-radius: 0.875rem !important;
+}
+
+// Estilos de modal usuarios
+.custom-responsive-modal-user {
+    width: 30rem;
+    max-width: 100vw !important;
+    height: auto;
+    
+    @include m.respond-to(md) {
+        width: 45rem;
+    }
+}

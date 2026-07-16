@@ -21,3 +21,14 @@ export interface UserData {
   name?: string;
   roles_names?: string[];
 }
+
+export interface UserFormData {
+  username: string;
+  email: string;
+  state: string;
+  id_rol: number;
+  id_roles: number[];
+  name: string;
+  roles_names: string[];
+  persona: PersonaData;
+}
