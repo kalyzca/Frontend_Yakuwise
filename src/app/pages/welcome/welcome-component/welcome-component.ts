@@ -1,10 +1,10 @@
-import { UpperCasePipe } from '@angular/common';
+import { TitleCasePipe, UpperCasePipe } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-welcome-component',
-  imports: [UpperCasePipe],
+  imports: [ UpperCasePipe,TitleCasePipe ],
   templateUrl: './welcome-component.html',
   styleUrl: './welcome-component.scss',
 })
