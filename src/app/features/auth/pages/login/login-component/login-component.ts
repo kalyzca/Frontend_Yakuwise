@@ -1,13 +1,14 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoginData } from '../../../../../shared/interfaces/login-interface';
-import { form, FormField, maxLength, minLength, pattern, required } from '@angular/forms/signals';
+import { form, FormField, minLength, required } from '@angular/forms/signals';
 import { MatIcon } from "@angular/material/icon";
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { IconService } from '../../../../../shared/services/icon.service';
 import { AuthService, LoginRequest } from '../../../../../core/services/auth.service';
+import { AlertService } from '../../../../../shared';
 
 @Component({
   selector: 'app-login-component',
@@ -15,14 +16,15 @@ import { AuthService, LoginRequest } from '../../../../../core/services/auth.ser
   templateUrl: './login-component.html',
   styleUrl: './login-component.scss',
 })
+
 export class LoginComponent {
   hide = signal(true);
   isLoading = signal(false);
-  errorMessage = signal('');
-
+  
   private readonly iconService = inject(IconService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly alertService = inject(AlertService);
 
   errorIconPath = computed(() => this.iconService.getIconPath('error')());
   
@@ -34,7 +36,6 @@ export class LoginComponent {
   });
 
   loginForm = form(this.loginModel, (fieldPath) => {
-    // Validators will go here
     required(fieldPath.usuario, {message: 'Usuario es requerido.'});
     required(fieldPath.password, {message: 'La contraseña es requerida.'});
     minLength(fieldPath.password, 1, {message: 'La contraseña es requerida.'});
@@ -55,8 +56,7 @@ export class LoginComponent {
     }
 
     this.isLoading.set(true);
-    this.errorMessage.set('');
-
+    
     const loginRequest: LoginRequest = {
       nombre_usuario: this.loginModel().usuario,
       password: this.loginModel().password
@@ -76,10 +76,9 @@ export class LoginComponent {
       },
       error: (error) => {
         this.isLoading.set(false);
-        this.errorMessage.set('Error al iniciar sesión. Por favor, verifique sus credenciales.');
-        console.error('Login error:', error);
+        this.alertService.error("Error de autenticación. Verifique que sus\ndatos de acceso sean correctos.",0);
+
       }
     });
   }
-  
 }

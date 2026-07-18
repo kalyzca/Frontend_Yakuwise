@@ -17,12 +17,18 @@
         width: 1.25rem;
         height: 1.25rem;
         @include m.layout-flex();
+        transform: scale(1.2);
     }
 
     .alert-message {
         font-size: 0.875rem;
         font-weight: 400;
         line-height: 1.2;
+        margin-left: 0.5rem;
+        
+        @include m.respond-to(md){
+            white-space: pre-line;
+        }
     }
 }
 
@@ -35,8 +41,8 @@
     @include m.layout-flex();
     padding: 0.25rem;
     transition: opacity 0.2s;
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 1.75rem;
+    height: 1.75rem;
     font-size: 1rem;
 
     &:hover {
@@ -44,6 +50,6 @@
     }
 
     .close-icon {
-        font-size: 1.25rem;
+        font-size: 1.5rem;
     }
 }

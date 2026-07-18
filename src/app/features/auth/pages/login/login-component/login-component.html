@@ -23,6 +23,7 @@
                 }
             </mat-form-field>
         </div>
+        
         <div class="form-input-container">
             <label for="login-pass" class="label-input-container-login" >Password: (*)</label>
             <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
@@ -42,16 +43,9 @@
                         </div>
                     </mat-error>
                 }
-
             </mat-form-field>
             <span class="forget-password">¿Olvidaste tu contraseña?</span>
         </div>
-
-        @if (errorMessage()) {
-            <div class="error-message">
-                {{ errorMessage() }}
-            </div>
-        }
 
         <button type="submit" class="btn-login" [disabled]="isLoading()">
             @if (isLoading()) {

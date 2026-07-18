@@ -346,7 +346,7 @@ body {
                     @include m.layout-flex(row, space-between, center);
                     padding: 0.5rem !important;
                     border-radius: v.$radius !important;
-                    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15) !important;
+                    box-shadow: 0 0 12px rgba(0, 0, 0, 0.2) !important;
                     width: 100% !important;
                 }
             
