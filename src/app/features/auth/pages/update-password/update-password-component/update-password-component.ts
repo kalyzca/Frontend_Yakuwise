@@ -6,7 +6,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { IconService } from '../../../../../shared/services/icon.service';
-import { AuthService, UpdatePasswordRequest } from '../../../../../core/services/auth.service';
+import { AuthService } from '../../../../../core/services/auth.service';
+import { UpdatePasswordRequest } from '../../../../../shared/interfaces/login-interface';
 
 @Component({
   selector: 'app-update-password-component',

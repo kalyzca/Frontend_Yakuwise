@@ -2,34 +2,12 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ApiConfigService } from './api-config.service';
-
-export interface LoginRequest {
-  nombre_usuario: string;
-  password: string;
-}
-
-export interface UpdatePasswordRequest {
-  password_actual: string;
-  password_nueva: string;
-  password_confirmacion: string;
-}
-
-export interface LoginResponse {
-  message: string;
-  data: {
-    id_usuario: number;
-    nombre_usuario: string;
-    email_institucional: string;
-    nombre_completo: string;
-    last_login: string;
-    pass_actualizado: boolean;
-    token: string;
-  };
-}
+import { LoginRequest, LoginResponse, UpdatePasswordRequest } from '../../shared/interfaces/login-interface';
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly apiConfig = inject(ApiConfigService);

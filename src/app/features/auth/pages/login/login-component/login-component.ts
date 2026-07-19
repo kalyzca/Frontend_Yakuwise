@@ -1,13 +1,13 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { LoginData } from '../../../../../shared/interfaces/login-interface';
 import { form, FormField, minLength, required } from '@angular/forms/signals';
 import { MatIcon } from "@angular/material/icon";
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { IconService } from '../../../../../shared/services/icon.service';
-import { AuthService, LoginRequest } from '../../../../../core/services/auth.service';
+import { AuthService } from '../../../../../core/services/auth.service';
+import { LoginRequest,LoginData } from '../../../../../shared/interfaces/login-interface';
 import { AlertService } from '../../../../../shared';
 
 @Component({
