@@ -9,16 +9,24 @@ import { AuthService } from '../../../services/auth.service';
   templateUrl: './header-component.html',
   styleUrl: './header-component.scss',
 })
+
 export class HeaderComponent implements OnInit {
   protected sidebar = inject(SidebarService);
   private readonly authService = inject(AuthService);
   
-  nombreCompleto: string = '';
+  role: string | undefined = "";
+  nombreCompleto:string | undefined = "";
+  displayRole: string | undefined | null = "";
 
   ngOnInit(): void {
     const userData = this.authService.getUserData();
-    if (userData) {
+    
+    if (userData !== null) {
       this.nombreCompleto = userData.nombre_completo;
+      this.displayRole = (userData.roles && userData.roles.length > 0) ? userData.roles[0].nombre_rol : userData.nombre_completo;
+    }
+    else {
+      this.displayRole = 'Invitado';
     }
   }
 }

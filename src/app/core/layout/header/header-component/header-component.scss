@@ -74,7 +74,13 @@
         }
     }
 
-    .welcome-message {
-        color: v.$dark-color;
+    .welcome-container {
+        @include m.layout-flex();
+        
+        .welcome-message {
+            color: v.$dark-color;
+            margin: 0;
+            font-style: italic;
+        }
     }
 }
