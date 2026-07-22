@@ -287,6 +287,9 @@ body {
         outlined-input-text-placeholder-color: v.$gray-400,
         container-text-size: 0.875rem,
     ));
+    .mdc-text-field--outlined.mdc-text-field--disabled .mdc-text-field__input {
+        color: v.$dark-color;
+    }
 
     // Estilos del select
     @include mat.select-overrides((
@@ -297,7 +300,9 @@ body {
         margin-bottom: 0;
         padding-bottom: 0;
     }
-
+    .mat-mdc-select-disabled {
+        color: v.$dark-color;
+    }
     // Estilos de la tabla angular material
     @include mat.table-overrides((
         background-color: v.$white-color,

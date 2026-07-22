@@ -1,12 +1,12 @@
 import { Component, computed, inject, signal, ChangeDetectionStrategy, ChangeDetectorRef, NgZone } from '@angular/core';
-import { form, FormField, minLength, min, pattern, required } from '@angular/forms/signals';
+import { form, FormField, minLength, min, pattern, required,  disabled } from '@angular/forms/signals';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MAT_DIALOG_DATA, MatDialogActions,  MatDialogContent, MatDialogRef, MatDialogTitle } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogActions, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule, MatFormField, MatError } from '@angular/material/form-field';
-import{MatSlideToggleModule} from '@angular/material/slide-toggle';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSelectModule } from '@angular/material/select';
 import { RolesService, RoleResponse } from '../../../../shared/services/roles.service';
 import { TiposDocumentoService, TipoDocumentoResponse } from '../../../../shared/services/tipos-documento.service';
@@ -17,10 +17,10 @@ import { UserData, UserFormData } from '../../../../shared/interfaces/usuario-in
 
 @Component({
   selector: 'app-usuario-modal-component',
-  imports: [FormsModule, MatDialogActions, MatFormFieldModule, MatInputModule, MatDialogTitle, MatDialogContent, MatButtonModule,  MatFormField, MatCheckboxModule, MatError, MatSlideToggleModule, MatSelectModule, CommonModule, FormField],
+  imports: [FormsModule, MatDialogActions, MatFormFieldModule, MatInputModule, MatButtonModule,  MatFormField, MatCheckboxModule, MatError, MatSlideToggleModule, MatSelectModule, CommonModule, FormField, MatDialogModule],
   templateUrl: './usuario-modal-component.html',
   styleUrl: './usuario-modal-component.scss',
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
 export class UsuarioModalComponent {
@@ -35,13 +35,12 @@ export class UsuarioModalComponent {
 
   roles = signal<RoleResponse[]>([]);
   tiposDocumento = signal<TipoDocumentoResponse[]>([]);
-
-  // Backend errors signals
+  
   backendErrors = signal<Record<string, string>>((this.inputData as any)?._backendErrors || {});
-
+  
   isEditMode = signal<boolean>(!!this.inputData?.id);
+  isReadOnly = signal<boolean>((this.inputData as any)?.isReadOnly === true);
 
-  // Inicializar userModal con datos de inputData si está en modo edición
   private getInitialUserModal(): UserFormData {
     if (this.inputData) {
       return {
@@ -66,7 +65,6 @@ export class UsuarioModalComponent {
       };
     }
     
-    // Valores por defecto para modo creación
     return {
       username: '',
       email: '',
@@ -92,18 +90,23 @@ export class UsuarioModalComponent {
   userModal = signal<UserFormData>(this.getInitialUserModal());
 
   userForm = form(this.userModal, (fieldPath) => {
-    // Email (obligatorio)
-    required(fieldPath.email, {message: 'Email es requerido.'});
-    pattern(fieldPath.email, /^[^\s@]+@[^\s@]+\.[^\s@]+$/, {message: 'Email inválido.'});
-    
-    // Estado (obligatorio)
-    required(fieldPath.state, {message: 'Estado es requerido.'});
-    
-    // Roles (obligatorio)
+    disabled(fieldPath.persona.id_tipo_documento, () => this.isReadOnly());
+    disabled(fieldPath.persona.numero_documento, () => this.isReadOnly());
+    disabled(fieldPath.persona.nombres, () => this.isReadOnly());
+    disabled(fieldPath.persona.apellido_paterno, () => this.isReadOnly());
+    disabled(fieldPath.persona.apellido_materno, () => this.isReadOnly());
+    disabled(fieldPath.persona.genero, () => this.isReadOnly());
+    disabled(fieldPath.persona.telefono, () => this.isReadOnly());
+    disabled(fieldPath.persona.correo_personal, () => this.isReadOnly());
+    disabled(fieldPath.id_roles, () => this.isReadOnly());
+    disabled(fieldPath.email, () => this.isReadOnly());
+    disabled(fieldPath.state, () => this.isReadOnly());
+
     minLength(fieldPath.id_roles, 1, {message: 'Debe seleccionar al menos un rol.'});
-    
-    // Persona - campos (todos obligatorios en PersonaData)
     min(fieldPath.persona.id_tipo_documento, 1, {message: 'Tipo de documento requerido.'});
+
+    required(fieldPath.email, {message: 'Email es requerido.'});
+    required(fieldPath.state, {message: 'Estado es requerido.'});
     required(fieldPath.persona.numero_documento, {message: 'Número de documento requerido.'});
     required(fieldPath.persona.nombres, {message: 'Nombres requeridos.'});
     required(fieldPath.persona.apellido_paterno, {message: 'Apellido paterno requerido.'});
@@ -111,7 +114,9 @@ export class UsuarioModalComponent {
     required(fieldPath.persona.genero, {message: 'Género requerido.'});
     required(fieldPath.persona.telefono, {message: 'Teléfono requerido.'});
     required(fieldPath.persona.correo_personal, {message: 'Correo personal requerido.'});
+
     pattern(fieldPath.persona.correo_personal, /^[^\s@]+@[^\s@]+\.[^\s@]+$/, {message: 'Correo personal inválido.'});
+    pattern(fieldPath.email, /^[^\s@]+@[^\s@]+\.[^\s@]+$/, {message: 'Email inválido.'});
   });
 
   constructor() {
@@ -119,7 +124,6 @@ export class UsuarioModalComponent {
     this.loadTiposDocumento();
   }
 
-  // Cargar la lista de roles desde el backend
   private loadRoles(): void {
     this.rolesService.getRoles({ page_size: 100 }).subscribe({
       next: (response) => {
@@ -131,7 +135,6 @@ export class UsuarioModalComponent {
     });
   }
 
-  // Cargar la lista de tipos de documento desde el backend
   private loadTiposDocumento(): void {
     this.tiposDocumentoService.getTiposDocumento().subscribe({
       next: (response) => {
@@ -143,13 +146,10 @@ export class UsuarioModalComponent {
     });
   }
 
-  // 4. Estado general del botón del formulario
   isFormInvalid = computed(() => {
-    // Angular Signal Forms maneja las validaciones automáticamente
     return false;
   });
   
-  // Signal para controlar el estado de carga
   isSaving = signal<boolean>(false);
 
   private mapToApiRequest(userData: UserData): CreateUserRequest {
@@ -175,13 +175,10 @@ export class UsuarioModalComponent {
 
   private extractFieldErrors(errorResponse: any): Record<string, string> {
     const fieldErrors: Record<string, string> = {};
-    
     if (!errorResponse) return fieldErrors;
-    
     const detalles = errorResponse.detalles || errorResponse;
     
     if (typeof detalles === 'object') {
-      // Procesar campos directos (email_institucional, id_roles, etc.)
       for (const [key, value] of Object.entries(detalles)) {
         if (key === 'persona') continue;
         
@@ -192,7 +189,6 @@ export class UsuarioModalComponent {
         }
       }
       
-      // Procesar campos anidados en persona
       if (detalles.persona && typeof detalles.persona === 'object') {
         for (const [key, value] of Object.entries(detalles.persona)) {
           if (Array.isArray(value) && value.length > 0) {
@@ -203,17 +199,16 @@ export class UsuarioModalComponent {
         }
       }
     }
-    
     return fieldErrors;
   }
 
   onSave(event: Event): void {
     event.preventDefault();
-    // Limpiar errores previos del backend
+    if (this.isReadOnly()) return;
+    
     this.backendErrors.set({});
 
     if (this.userForm().invalid()) {
-      // Marcar todos los campos como touched para mostrar errores
       this.userForm.email().markAsTouched();
       this.userForm.state().markAsTouched();
       this.userForm.id_roles().markAsTouched();
@@ -230,12 +225,8 @@ export class UsuarioModalComponent {
     
     // Forzar detección de cambios
     this.cdr.detectChanges();
-    
-    
-    
     this.isSaving.set(true);
 
-    // Usar userModal directamente
     const payload: UserData = {
       username: this.userModal().username.trim().toLowerCase(),
       email: this.userModal().email.trim().toLowerCase(),
@@ -258,11 +249,9 @@ export class UsuarioModalComponent {
     const apiRequest = this.mapToApiRequest(payload);
 
     if (this.isEditMode()) {
-      // MODO EDICIÓN: Actualizar usuario existente
       this.usersService.updateUser(this.inputData?.id || 0, apiRequest).subscribe({
         next: () => {
           this.isSaving.set(false);
-          // Cerrar el modal y notificar éxito
           this.dialogRef.close({ action: 'success', data: payload });
         },
         error: (err) => {
@@ -272,11 +261,9 @@ export class UsuarioModalComponent {
         }
       });
     } else {
-      // MODO CREACIÓN: Crear nuevo usuario
       this.usersService.createUser(apiRequest).subscribe({
         next: () => {
           this.isSaving.set(false);
-          // Cerrar el modal y notificar éxito
           this.dialogRef.close({ action: 'success', data: payload });
         },
         error: (err) => {
@@ -288,7 +275,6 @@ export class UsuarioModalComponent {
     }
   }
 
-  // Método público para cerrar el modal (llamado desde el componente padre)
   closeModal(): void {
     this.dialogRef.close();
   }
@@ -298,8 +284,6 @@ export class UsuarioModalComponent {
     this.ngZone.runOutsideAngular(() => {
       this.ngZone.run(() => {
         this.backendErrors.set(errors);
-        // Angular Signal Forms maneja el estado touched automáticamente
-        // Forzar detección de cambios
         this.cdr.detectChanges();
       });
     });

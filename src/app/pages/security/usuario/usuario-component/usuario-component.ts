@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { ButtonComponent } from "../../../../shared";
+import { AlertService, ButtonComponent } from "../../../../shared";
 import { RouterLink } from "@angular/router";
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort } from '@angular/material/sort';
@@ -17,10 +17,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { UsersService, CreateUserRequest, UserResponse, UsersListResponse } from '../../../../shared/services/users.service';
 import { MatChipsModule } from '@angular/material/chips';
 import { ResetPassModalComponent } from '../../modals/resetPassword/reset-pass-modal-component/reset-pass-modal-component';
+import { UpperCasePipe,TitleCasePipe } from '@angular/common';
 
 @Component({
   selector: 'app-usuario-component',
-  imports: [ButtonComponent, RouterLink, MatFormFieldModule, MatInputModule, MatTableModule, MatSortModule, MatPaginatorModule, MatTooltipModule, MatSnackBarModule, FormsModule, MatIconModule, MatButtonModule, MatChipsModule],
+  imports: [ButtonComponent, RouterLink, MatFormFieldModule, MatInputModule, MatTableModule, MatSortModule, MatPaginatorModule, MatTooltipModule, MatSnackBarModule, FormsModule, MatIconModule, MatButtonModule, MatChipsModule, UpperCasePipe,TitleCasePipe],
   templateUrl: './usuario-component.html',
   styleUrl: './usuario-component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -29,19 +30,16 @@ export class UsuarioComponent {
   private readonly dialog = inject(MatDialog);
   private readonly usersService = inject(UsersService);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly alertService = inject(AlertService);
 
   displayedColumns: string[] = ['id', 'username', 'name', 'role', 'state', 'actions'];
 
-  // Signals para manejar estados de carga y error
   isLoading = signal<boolean>(false);
   error = signal<string | null>(null);
 
-  // Guardamos todos los usuarios originales devueltos por la API
   users = signal<UserData[]>([]);
-  // Signal para el total de usuarios (para el paginador)
+  
   totalUsers = signal<number>(0);
-
-  // Señales para controlar la paginación
   pageIndex = signal<number>(1);
   pageSize = signal<number>(5);
   activeSort = signal<Sort>({ active: '', direction: '' });
@@ -49,16 +47,11 @@ export class UsuarioComponent {
   searchTerm = signal<string>('');
 
   constructor() {
-    // Cargar usuarios al iniciar el componente
     this.loadUsers();
   }
 
-  // Método para cargar usuarios desde el API
   loadUsers(): void {
     this.isLoading.set(true);
-    this.error.set(null);
-
-    // Mapear el ordenamiento de Angular Material al formato del API
     let ordering = '';
     if (this.activeSort()?.active && this.activeSort()?.direction) {
       const field = this.mapSortField(this.activeSort().active);
@@ -67,21 +60,17 @@ export class UsuarioComponent {
     }
 
     const rawSearch = this.searchTerm().toLowerCase().trim();
-
-    // SOLUCIÓN: Si es una palabra de estado, NO se la enviamos a la API para que no falle.
-    // Si es un nombre/email normal, sí lo enviamos.
     const palabrasEstado = ['activo', 'inactivo', 'act', 'inac', 'ina', 'activ', 'inactiv'];
     const esBusquedaDeEstado = palabrasEstado.includes(rawSearch);
     const apiSearchParam = esBusquedaDeEstado ? undefined : (this.searchTerm() || undefined);
 
     this.usersService.getUsers({
-      search: apiSearchParam, // Solo enviamos texto si no es "activo/inactivo"
+      search: apiSearchParam,
       ordering: ordering || 'id_usuario',
       page: this.pageIndex(),
       page_size: this.pageSize()
     }).subscribe({
       next: (response: UsersListResponse) => {
-        console.log('usuarios 1', response);
         const mappedUsers = response.results
           .map(user => this.mapFromApiResponse(user))
           .filter((user): user is UserData => user !== null);
@@ -89,8 +78,8 @@ export class UsuarioComponent {
         this.totalUsers.set(response.count);
         this.isLoading.set(false);
       },
-      error: (err) => {
-        this.error.set('Error al cargar usuarios. Por favor, inténtelo de nuevo.');
+      error: () => {
+        this.alertService.error("Error al cargar usuarios. Por favor, inténtelo de nuevo.");
         this.isLoading.set(false);
       }
     });
@@ -107,7 +96,6 @@ export class UsuarioComponent {
     return fieldMap[field] || field;
   }
 
-  // SEÑAL COMPUTADA: Filtra de manera fulminante en el navegador cualquier coincidencia
   displayedUsers = computed(() => {
     const currentUsers = this.users();
     const search = this.searchTerm().toLowerCase().trim();
@@ -127,19 +115,17 @@ export class UsuarioComponent {
         return userStateLower === search;
       }
 
-      // Si busca por abreviaciones de estado
       if (['act', 'activ', 'activo'].includes(search)) {
         return userStateLower === 'activo';
       }
       if (['inac', 'ina', 'inactiv', 'inactivo'].includes(search)) {
         return userStateLower === 'inactivo';
       }
-      // Si no es una palabra de estado, busca normalmente por email, nombre o ID usando .includes()
+      
       return emailLower.includes(search) || nameLower.includes(search) || userIdStr.includes(search) || userNameLower.includes(search);
     });
   });
 
-  // Señal computada para actualizar dinámicamente el paginador con los resultados filtrados
   filteredUsersCount = computed(() => {
     return this.displayedUsers().length;
   });
@@ -148,9 +134,6 @@ export class UsuarioComponent {
 
   onSearchChange(value: string): void {
     this.searchTerm.set(value ?? '');
-
-    // Si busca un texto normal o vacía el input, refresca desde el API.
-    // Si busca un estado, la señal computada 'displayedUsers' filtrará los 5 registros en pantalla al instante.
     this.loadUsers();
   }
 
@@ -188,12 +171,11 @@ export class UsuarioComponent {
   }
 
   private mapFromApiResponse(apiResponse: UserResponse): UserData | null {
-    console.log('api user response', apiResponse);
     const persona = apiResponse.persona;
     if (!persona) {
       return null;
     }
-    // Extraer nombres de roles del campo roles del backend
+    
     const rolesNames = apiResponse.roles?.map(r => r.nombre_rol.charAt(0).toUpperCase() + r.nombre_rol.slice(1).toLowerCase()) || [];
     const rolesIds = apiResponse.roles?.map(r => r.id_rol) || [];
     const apellidoPaterno = persona.apellido_paterno;
@@ -204,13 +186,13 @@ export class UsuarioComponent {
       if (!fullName) return '';
 
       return fullName
-        .toLowerCase()                   // 1. Pasa todo a minúsculas primero
-        .split(' ')                      // 2. Divide la cadena por cada espacio
+        .toLowerCase()
+        .split(' ')
         .map(word => {
-          if (!word) return '';          // Evita errores si hay espacios dobles
-          return word.charAt(0).toUpperCase() + word.slice(1); // 3. Capitaliza cada palabra
+          if (!word) return '';
+          return word.charAt(0).toUpperCase() + word.slice(1);
         })
-        .join(' ');                      // 4. Une todo de nuevo con espacios
+        .join(' ');
     };
     
     return {
@@ -237,20 +219,26 @@ export class UsuarioComponent {
     dialogRef.afterClosed().subscribe((result: any) => {
       if (!result) return;
 
-      // Si el resultado es una acción de éxito, recargar la lista de usuarios
       if (result.action === 'success') {
         this.loadUsers();
         const message = user?.id ? 'Usuario actualizado exitosamente' : 'Usuario creado exitosamente';
-        this.snackBar.open(message, 'Cerrar', {
-          duration: 3000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['success-snackbar']
-        });
+        this.alertService.success(message);
       } else if (result.action === 'cancel') {
-        // El usuario canceló, no hacer nada
         return;
       }
+    });
+  }
+
+  viewUser(user: UserData): void {
+    const dialogRef = this.dialog.open(UsuarioModalComponent, {
+      height: 'max-content',
+      data: { ...user, isReadOnly: true },
+      disableClose: true,
+      panelClass: 'custom-responsive-modal-user'
+    });
+
+    dialogRef.afterClosed().subscribe((result: any) => {
+      if (!result) return;
     });
   }
 
@@ -260,14 +248,11 @@ export class UsuarioComponent {
     
     if (!errorResponse) return fieldErrors;
     
-    // Manejar estructura específica del backend: { "detalles": { "campo": ["error"], "persona": { "campo": ["error"] } } }
     const detalles = errorResponse.detalles || errorResponse;
     
     if (typeof detalles === 'object') {
-      // Procesar campos directos (email_institucional, id_roles, etc.)
       for (const [key, value] of Object.entries(detalles)) {
-        if (key === 'persona') continue; // Procesar persona por separado
-        
+        if (key === 'persona') continue;        
         if (Array.isArray(value) && value.length > 0) {
           fieldErrors[key] = value[0];
         } else if (typeof value === 'string') {
@@ -275,11 +260,9 @@ export class UsuarioComponent {
         }
       }
       
-      // Procesar campos anidados en persona
       if (detalles.persona && typeof detalles.persona === 'object') {
         for (const [key, value] of Object.entries(detalles.persona)) {
           if (Array.isArray(value) && value.length > 0) {
-            // Mapear nombres de campos de persona al formato usado en el frontend
             fieldErrors[key] = value[0];
           } else if (typeof value === 'string') {
             fieldErrors[key] = value;
@@ -287,7 +270,6 @@ export class UsuarioComponent {
         }
       }
     }
-    
     return fieldErrors;
   }
 
@@ -302,13 +284,9 @@ export class UsuarioComponent {
 
     dialogRefResetPass.afterClosed().subscribe((result) => {
       if (result) {
-        this.snackBar.open('Contraseña restablecida exitosamente', 'Cerrar', {
-          duration: 3000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['success-snackbar']
-        });
+        this.alertService.success("");
       }
     });
   }
+  
 }

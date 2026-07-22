@@ -1,4 +1,4 @@
-<p mat-dialog-title>{{ isEditMode() ? 'Editar Usuario' : 'Agregar Usuario' }}</p>
+<p mat-dialog-title>{{ isReadOnly() ? 'Ver Usuario' : (isEditMode() ? 'Editar Usuario' : 'Agregar Usuario') }}</p>
 
 <mat-dialog-content>
     <form class="form-user" (submit)="onSave($event)">
@@ -16,7 +16,6 @@
                                 <mat-option [value]="tipo.id_tipo_documento">{{ tipo.nombre_tipo_documento }}</mat-option>
                             }
                         </mat-select>
-                        
                         @if (userForm.persona.id_tipo_documento().invalid() && userForm.persona.id_tipo_documento().touched()) {
                             <mat-error class="error-list-container">
                                 <div class="error-list">
@@ -220,7 +219,7 @@
                 <!-- Campo estado del usuario -->
                 <div class="form-input-container">
                     <label for="state" class="label-input-container custom-switch">Estado:</label>
-                    <mat-slide-toggle id="state" [checked]="userModal().state === 'Activo'" (change)="userModal.update(m => ({...m, state: $event.checked ? 'Activo' : 'Inactivo'}))">
+                    <mat-slide-toggle id="state" [checked]="userModal().state === 'Activo'" (change)="userModal.update(m => ({...m, state: $event.checked ? 'Activo' : 'Inactivo'}))" [disabled]="isReadOnly()">
                         <p class="txt-switch">
                         El usuario está &nbsp;
                             <span class="state-text">{{ userModal().state.toLowerCase() }}.</span>
@@ -228,20 +227,22 @@
                     </mat-slide-toggle>
                 </div>
             </div>
-            
-            
-            
         </fieldset>
     </form>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-    <button mat-button  (click)="onCancel()">Cancelar</button>
-    <button mat-button (click)="onSave($event)" [disabled]="isSaving()">
-        @if (isSaving()) {
-            Guardando...
-        } @else {
-            {{ isEditMode() ? 'Actualizar' : 'Guardar' }}
-        }
-    </button>
+    @if (!isReadOnly()) {
+        <button mat-button  (click)="onCancel()">Cancelar</button>
+        <button mat-button (click)="onSave($event)" [disabled]="isSaving()">
+            @if (isSaving()) {
+                Guardando...
+            } @else {
+                {{ isEditMode() ? 'Actualizar' : 'Guardar' }}
+            }
+        </button>
+    }
+    @if (isReadOnly()) {
+        <button mat-button  (click)="closeModal()">Cerrar</button>
+    }
 </mat-dialog-actions>
