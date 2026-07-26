@@ -9,6 +9,8 @@ import { IconService } from '../../../../../shared/services/icon.service';
 import { AuthService } from '../../../../../core/services/auth.service';
 import { LoginRequest,LoginData } from '../../../../../shared/interfaces/login-interface';
 import { AlertService } from '../../../../../shared';
+import { MatDialog } from '@angular/material/dialog';
+import { ForgetPasswordModal } from '../../../../../pages/security/modals/forget-password-modal/forget-password-modal-component';
 
 @Component({
   selector: 'app-login-component',
@@ -25,6 +27,7 @@ export class LoginComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly alertService = inject(AlertService);
+  private readonly dialog = inject(MatDialog);
 
   errorIconPath = computed(() => this.iconService.getIconPath('error')());
   
@@ -78,6 +81,22 @@ export class LoginComponent {
         this.isLoading.set(false);
         this.alertService.error("Error de autenticación. Verifique que sus\ndatos de acceso sean correctos.",0);
 
+      }
+    });
+  }
+
+  openForgetPasswordModal() {
+    const dialogRefForgetPass = this.dialog.open(ForgetPasswordModal,{
+      width: '25rem',
+      minWidth: 'auto',
+      height: 'auto',
+      // data: ,
+      disableClose: true
+    });
+    
+    dialogRefForgetPass.afterClosed().subscribe((result) => {
+      if (result) {
+        this.alertService.info("Se ha enviado un mensaje a su correo electrónico.");
       }
     });
   }

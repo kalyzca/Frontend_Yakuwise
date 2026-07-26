@@ -44,7 +44,9 @@
                     </mat-error>
                 }
             </mat-form-field>
-            <span class="forget-password">¿Olvidaste tu contraseña?</span>
+            <button type="button" class="forget-password" (click)="openForgetPasswordModal()">
+                ¿Olvidaste tu contraseña?
+            </button>
         </div>
 
         <button type="submit" class="btn-login" [disabled]="isLoading()">

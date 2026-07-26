@@ -265,7 +265,7 @@ body {
         margin-block: 0;
     }
     .mat-mdc-dialog-content > :first-child {
-        margin-top: 1.25rem;
+        margin-top: 1rem;
     }
     // Estilos de los botones del modal
     .mat-mdc-dialog-actions.mat-mdc-dialog-actions-align-end, .mat-mdc-dialog-actions[align=end] {
@@ -441,6 +441,7 @@ body {
     @include m.layout-flex();
     width:100%;
 }
+
 .custom-input .mat-mdc-form-field-subscript-wrapper {
     height: auto !important;
     margin-bottom: 0.5rem;

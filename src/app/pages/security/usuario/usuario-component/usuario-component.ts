@@ -29,7 +29,6 @@ import { UpperCasePipe,TitleCasePipe } from '@angular/common';
 export class UsuarioComponent {
   private readonly dialog = inject(MatDialog);
   private readonly usersService = inject(UsersService);
-  private readonly snackBar = inject(MatSnackBar);
   private readonly alertService = inject(AlertService);
 
   displayedColumns: string[] = ['id', 'username', 'name', 'role', 'state', 'actions'];
@@ -275,16 +274,16 @@ export class UsuarioComponent {
 
   resetPassword(user?: UserData): void {
     const dialogRefResetPass = this.dialog.open(ResetPassModalComponent, {
-      width: '24rem',
+      width: '25rem',
       minWidth: 'auto',
-      height: '20rem',
+      height: '21rem',
       data: user,
       disableClose: true
     });
 
     dialogRefResetPass.afterClosed().subscribe((result) => {
       if (result) {
-        this.alertService.success("");
+        this.alertService.success("Se ha restablecido la contraseña.");
       }
     });
   }
