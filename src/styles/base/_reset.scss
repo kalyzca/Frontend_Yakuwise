@@ -402,6 +402,37 @@ body {
             }
         }
     }
+
+    // menu de usuario
+    @include mat.menu-overrides((
+        container-color: v.$white-color,
+        container-shape: 8px,
+        divider-color: v.$gray-200,
+        item-icon-color: v.$primary-color,
+        item-label-text-color: v.$dark-color,
+        item-hover-state-layer-color: v.$light-primary-color,
+        item-focus-state-layer-color: v.$primary-color,
+        item-label-text-font: v.$primary-color,
+        item-label-text-weight: 400,
+        item-spacing: 8px,
+        item-label-text-line-height: 8px,
+    ));
+
+    .mat-mdc-menu-item {
+        min-height: 2.25rem;
+    }
+
+    .mat-mdc-menu-panel {
+        border-radius: v.$radius;
+    }
+
+    .mat-mdc-menu-panel .mat-divider {
+        margin-block: 0;
+    }
+    .mat-mdc-menu-content{
+        padding: 0;
+    }
+    
 }
 
 // Estilos del input buscador
