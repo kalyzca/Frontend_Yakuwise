@@ -29,6 +29,16 @@ export class AuthService {
     );
   }
 
+  resetPasswordCorreo(correo: string, nombreUsuario: string): Observable<any> {
+    return this.http.post(
+      this.apiConfig.resetPasswordCorreoEndpoint(),
+      {
+        correo: correo,
+        nombre_usuario: nombreUsuario
+      }
+    );
+  }
+
   saveToken(token: string): void {
     localStorage.setItem(this.TOKEN_KEY, token);
   }

@@ -20,6 +20,7 @@ export interface UserData {
   persona: PersonaData;
   name?: string;
   roles_names?: string[];
+  bloqueado_hasta?: string | null;
 }
 
 export interface UserFormData {
