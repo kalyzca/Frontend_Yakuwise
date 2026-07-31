@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { AlertService, ButtonComponent } from "../../../../shared";
 import { RouterLink } from "@angular/router";
+import { CommonModule, UpperCasePipe, TitleCasePipe } from '@angular/common';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
@@ -8,7 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { UsuarioModalComponent } from '../../modals/usuario-modal-component/usuario-modal-component';
 import { UserData } from '../../../../shared/interfaces/usuario-interface';
@@ -17,11 +18,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { UsersService, CreateUserRequest, UserResponse, UsersListResponse } from '../../../../shared/services/users.service';
 import { MatChipsModule } from '@angular/material/chips';
 import { ResetPassModalComponent } from '../../modals/resetPassword/reset-pass-modal-component/reset-pass-modal-component';
-import { UpperCasePipe,TitleCasePipe } from '@angular/common';
 
 @Component({
   selector: 'app-usuario-component',
-  imports: [ButtonComponent, RouterLink, MatFormFieldModule, MatInputModule, MatTableModule, MatSortModule, MatPaginatorModule, MatTooltipModule, MatSnackBarModule, FormsModule, MatIconModule, MatButtonModule, MatChipsModule, UpperCasePipe,TitleCasePipe],
+  imports: [CommonModule, ButtonComponent, RouterLink, MatFormFieldModule, MatInputModule, MatTableModule, MatSortModule, MatPaginatorModule, MatTooltipModule, MatSnackBarModule, FormsModule, MatIconModule, MatButtonModule, MatChipsModule, UpperCasePipe,TitleCasePipe],
   templateUrl: './usuario-component.html',
   styleUrl: './usuario-component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -203,7 +203,8 @@ export class UsuarioComponent {
       id_rol: rolesIds[0] || 0,
       id_roles: rolesIds,
       roles_names: rolesNames,
-      persona: persona
+      persona: persona,
+      bloqueado_hasta: apiResponse.bloqueado_hasta
     };
   }
 

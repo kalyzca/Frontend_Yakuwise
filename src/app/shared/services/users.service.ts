@@ -37,6 +37,7 @@ export interface UserResponse {
   id_roles?: number[];
   roles_names?: string[];
   roles?: Array<{ id_rol: number; nombre_rol: string }>;
+  bloqueado_hasta?: string | null;
 }
 
 export interface UsersListResponse {

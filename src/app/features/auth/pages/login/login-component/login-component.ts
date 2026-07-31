@@ -79,7 +79,7 @@ export class LoginComponent {
       },
       error: (error) => {
         this.isLoading.set(false);
-        this.alertService.error("Error de autenticación. Verifique que sus\ndatos de acceso sean correctos.",0);
+        this.alertService.error(`Error de autenticación. Verifique que sus\ndatos de acceso sean correctos.\n${error.error.error}.`,0);
 
       }
     });
