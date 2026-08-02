@@ -1,6 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { form, FormField, minLength, required } from '@angular/forms/signals';
+import { form, FormField, minLength, pattern, required } from '@angular/forms/signals';
 import { MatIcon } from "@angular/material/icon";
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -30,18 +30,18 @@ export class LoginComponent {
   private readonly dialog = inject(MatDialog);
 
   errorIconPath = computed(() => this.iconService.getIconPath('error')());
+  private readonly regexUsuario = /^[a-z]+(?:\.[a-z]+)?$/;
   
   loginModel = signal<LoginData>({
     usuario: '',
-    password: '',
-    forgetPassword: false,
-    showPassword: false
+    password: ''
   });
-
+  
   loginForm = form(this.loginModel, (fieldPath) => {
-    required(fieldPath.usuario, {message: 'Usuario es requerido.'});
+    required(fieldPath.usuario, {message: 'El usuario es requerido.'});
+    pattern(fieldPath.usuario, this.regexUsuario, {message: 'El usuario debe contener solo letras.'});
     required(fieldPath.password, {message: 'La contraseña es requerida.'});
-    minLength(fieldPath.password, 1, {message: 'La contraseña es requerida.'});
+    minLength(fieldPath.password, 10, {message: 'La contraseña debe tener al menos 10 caracteres.'});
   });
 
   tooglePasswordVisibility(event: MouseEvent) {
@@ -79,8 +79,8 @@ export class LoginComponent {
       },
       error: (error) => {
         this.isLoading.set(false);
-        this.alertService.error(`Error de autenticación. Verifique que sus\ndatos de acceso sean correctos.\n${error.error.error}.`,0);
-
+        const errorMessage = error.error.error;
+        this.alertService.error(`${errorMessage}`,0);
       }
     });
   }
@@ -90,7 +90,6 @@ export class LoginComponent {
       width: '25rem',
       minWidth: 'auto',
       height: 'auto',
-      // data: ,
       disableClose: true
     });
     

@@ -61,8 +61,11 @@ export class RolComponent {
         const mappedRoles = response.results.map(role => this.mapFromApiResponse(role)); 
         this.roles.set(mappedRoles); 
         this.totalRoles.set(response.count); 
+      },
+      error: (error) => {
+      console.log('error al obtener roles',error)
       }
-    }); 
+    });
   } 
 
   private mapSortField(field: string): string { 
@@ -114,8 +117,8 @@ export class RolComponent {
 
   openModalCreateRole(role?: RoleData): void { 
     const dialogRef = this.dialog.open(RolModalComponent, { 
-      width: '30rem', 
-      height: '20rem', 
+      width: '30rem',
+      height: 'auto', 
       data: role || null, 
       disableClose: true
     }); 

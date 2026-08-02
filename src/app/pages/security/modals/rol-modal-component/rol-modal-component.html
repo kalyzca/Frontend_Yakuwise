@@ -1,10 +1,10 @@
 <p mat-dialog-title>{{ isEditMode() ? 'Editar Rol' : 'Agregar Rol' }}</p>
 <mat-dialog-content>
-  <form>
+  <form (submit)="onSave($event)">
     <div class="form-input-container">
       <label for="nameRol" class="label-input-container">Nombre: (*)</label>
       <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic" [class.mat-form-field-invalid]="(roleForm.name().invalid() && roleForm.name().touched()) || serverError()">
-        <input matInput id="nameRol" [formField]="roleForm.name" placeholder="Ej. Administrador">
+        <input matInput id="nameRol" class="text-uppercase" [formField]="roleForm.name" (input)="onInputChange()" (keydown)="blockNumbers($event)" placeholder="Ej. Administrador">
       </mat-form-field>
       @if (roleForm.name().invalid() && roleForm.name().touched()) {
         <mat-error class="error-list-container">
@@ -37,11 +37,11 @@
         </p>
       </mat-slide-toggle>
     </div>
+    <mat-dialog-actions align="end">
+      <button mat-button type="button" (click)="onCancel()" [disabled]="isLoading()">Cancelar</button>
+      <button mat-button color="primary" type="submit" [disabled]="isLoading()">
+        {{ isLoading() ? 'Guardando...' : (isEditMode() ? 'Actualizar' : 'Guardar') }} 
+      </button>
+    </mat-dialog-actions>
   </form>
 </mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button mat-button (click)="onCancel()">Cancelar</button>
-  <button mat-button color="primary" type="submit" (click)="onSave()">
-    {{ isEditMode() ? 'Actualizar' : 'Guardar' }}
-  </button>
-</mat-dialog-actions>

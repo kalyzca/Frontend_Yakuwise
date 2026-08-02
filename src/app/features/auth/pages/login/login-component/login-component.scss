@@ -102,7 +102,7 @@
         .btn-login {
             width: 100%;
             height: 3rem;
-            color: #fff;
+            color: v.$white-color;
             border: none;
             border-radius: 4px;
             font-size: 1rem;
@@ -139,10 +139,6 @@
     }
 }
 
-// Estilos de iconos
 .mat-icon, mat-icon.mat-primary, mat-icon.mat-accent, mat-icon.mat-warn {
     right: 0.25rem;
 }
-
-
-

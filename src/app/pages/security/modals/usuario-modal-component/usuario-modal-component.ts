@@ -8,12 +8,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule, MatFormField, MatError } from '@angular/material/form-field';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSelectModule } from '@angular/material/select';
-import { RolesService, RoleResponse } from '../../../../shared/services/roles.service';
+import { RolesService } from '../../../../shared/services/roles.service';
 import { TiposDocumentoService, TipoDocumentoResponse } from '../../../../shared/services/tipos-documento.service';
 import { IconService } from '../../../../shared/services/icon.service';
 import { CommonModule } from '@angular/common';
 import { UsersService, CreateUserRequest } from '../../../../shared/services/users.service';
 import { UserData, UserFormData } from '../../../../shared/interfaces/usuario-interface';
+import { RoleResponse } from '../../../../shared/interfaces/roles-interface';
 
 @Component({
   selector: 'app-usuario-modal-component',

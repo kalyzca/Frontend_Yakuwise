@@ -191,6 +191,9 @@ body {
 
     // Estilos de botones en modales
     .mat-mdc-dialog-actions {
+        padding:0;
+        margin-bottom:1rem;
+        
         .mat-mdc-button {
             border: 1px solid transparent;
             border-radius: v.$radius;
@@ -269,9 +272,7 @@ body {
     }
     // Estilos de los botones del modal
     .mat-mdc-dialog-actions.mat-mdc-dialog-actions-align-end, .mat-mdc-dialog-actions[align=end] {
-        margin-bottom: 0.875rem;
-        padding-block: 0;
-
+        
         .mat-mdc-button {
             height: 2.25rem;
             padding: 0.5rem 0.875rem;
@@ -359,9 +360,13 @@ body {
                     border-left: 0.5rem solid hsl(142, 71%, 40%);
                     color: hsl(142, 71%, 40%);
                     
-                    .alert-icon,
-                    .close-icon 
-                    {
+                    .alert-icon{
+                        padding-left: 0.5rem;
+                        padding-right: 1rem;
+                        color: hsl(142, 71%, 40%);
+
+                    }
+                    .close-icon {
                         color: hsl(142, 71%, 40%);
                     }
                 }
@@ -370,22 +375,27 @@ body {
                     border-left: 0.5rem solid hsl(357, 74%, 55%);
                     color: hsl(357, 74%, 55%);
 
-                    .alert-icon,
-                    .close-icon 
-                    {
+                    .alert-icon{
+                        padding-left: 0.5rem;
+                        padding-right: 1rem;
                         color: hsl(357, 74%, 55%);
                     }
-                    
+                    .close-icon {
+                        color: hsl(357, 74%, 55%);
+                    }
                 }
 
                 &.alert-warning  .mdc-snackbar__surface {
-                    border-left: 0.5rem solid hsl(57, 71%, 45%);
-                    color: hsl(57, 71%,38%);
+                    border-left: 0.5rem solid hsl(57, 100%, 35%);
+                    color: hsl(57, 100%, 35%);
 
-                    .alert-icon,
-                    .close-icon
-                    {
-                        color: hsl(57, 71%,45%);
+                    .alert-icon {
+                        padding-left: 0.5rem;
+                        padding-right: 1rem;
+                        color: hsl(57, 100%, 35%);
+                    }
+                    .close-icon {
+                        color: hsl(57, 100%, 35%);
                     }
                 }
 
@@ -393,9 +403,12 @@ body {
                     border-left: 0.5rem solid  v.$primary-color;
                     color:  v.$primary-color;
                     
-                    .alert-icon,
-                    .close-icon
-                    {
+                    .alert-icon {
+                        padding-left: 0.5rem;
+                        padding-right: 1rem;
+                        color: v.$primary-color;
+                    }
+                    .close-icon {
                         color: v.$primary-color;
                     }
                 }

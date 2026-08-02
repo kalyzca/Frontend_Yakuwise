@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal, computed, OnInit, effect } from '@angular/core'; 
+import { ChangeDetectionStrategy, Component, inject, signal, computed, OnInit } from '@angular/core'; 
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog'; 
 import { MatButtonModule } from '@angular/material/button'; 
 import { MatInputModule } from '@angular/material/input'; 
@@ -26,7 +26,8 @@ import { form, required, FormField, minLength } from '@angular/forms/signals';
   templateUrl: './rol-modal-component.html', 
   styleUrl: './rol-modal-component.scss', 
   changeDetection: ChangeDetectionStrategy.OnPush 
-}) 
+})
+
 export class RolModalComponent implements OnInit { 
   private readonly rolesService = inject(RolesService); 
   private readonly alertService = inject(AlertService); 
@@ -34,26 +35,21 @@ export class RolModalComponent implements OnInit {
   readonly data: RoleData | null = inject(MAT_DIALOG_DATA); 
 
   readonly isEditMode = signal<boolean>(false); 
+  readonly isLoading = signal<boolean>(false);
   readonly isActive = signal<boolean>(false); 
   readonly errorIconPath = signal<string>('assets/icons/error.svg'); 
   readonly serverError = signal<string | null>(null); 
-  readonly statusText = computed(() => this.isActive() ? 'Activo' : 'Inactivo'); 
+  readonly statusText = computed(() => this.isActive() ? 'Activo' : 'Inactivo');
+  private readonly regexRole = /^[a-zA-ZáéíóúÁÉÍÓÚ ]+$/;
   
   readonly roleModel = signal<RoleData>({ name: '', state: 'Inactivo' }); 
   
   readonly roleForm = form( 
     this.roleModel, (fieldPath) => { 
-      required(fieldPath.name, { message: 'El nombre del rol es requerido.' }); 
-      minLength(fieldPath.name, 3, { message: 'El nombre del rol debe tener al menos 3 caracteres.' }); 
+      required(fieldPath.name, { message: 'El nombre del rol es requerido.' });
+      minLength(fieldPath.name, 5, { message: 'El nombre del rol debe tener al menos 5 caracteres.' });
     } 
   ); 
-
-  constructor() {
-    effect(() => {
-      this.roleForm.name().value();
-      this.serverError.set(null);
-    });
-  }
 
   ngOnInit(): void { 
     if (this.data) { 
@@ -68,12 +64,22 @@ export class RolModalComponent implements OnInit {
     } 
   } 
   
-  onSave(): void { 
+  onInputChange(): void {
+    if (this.serverError()) {
+      this.serverError.set(null);
+    }
+  }
+
+  onSave(event: Event) {
+    console.log('error!!',this.serverError())
+    event.preventDefault();
+
     if (this.roleForm().invalid()) { 
       this.roleForm.name().markAsTouched(); 
       return; 
-    } 
+    }
 
+    this.isLoading.set(true); 
     this.serverError.set(null); 
     
     const apiRequest: CreateRoleRequest = { 
@@ -83,25 +89,31 @@ export class RolModalComponent implements OnInit {
     
     if (this.isEditMode() && this.data?.id) { 
       this.rolesService.updateRole(this.data.id, apiRequest).subscribe({ 
-        next: (result) => { 
-          this.alertService.success('Rol actualizado exitosamente'); 
+        next: (result) => {
+          this.isLoading.set(false);
+          this.alertService.success('Rol actualizado exitosamente.'); 
           this.dialogRef.close(result);
         }, 
-        error: (err) => { 
-          const backendMessage = err.error?.detalles?.nombre_rol || err.error?.message || 'Error al actualizar el rol.'; 
+        error: (err) => {
+          this.isLoading.set(false);
+          const backendMessage = err.error?.detalles?.nombre_rol || 'Error al actualizar el rol.'; 
           this.serverError.set(backendMessage); 
+          console.log('error edit',backendMessage);
         } 
       }); 
     } 
     else { 
       this.rolesService.createRole(apiRequest).subscribe({ 
         next: (result) => { 
-          this.alertService.success('Rol creado exitosamente'); 
+          this.isLoading.set(false);
+          this.alertService.success('Rol creado exitosamente.');
           this.dialogRef.close(result);
         }, 
         error: (err) => { 
-          const backendMessage = err.error?.detail || err.error?.detalles?.nombre_rol || err.error?.message || 'Error al crear el rol.'; 
+          this.isLoading.set(false);
+          const backendMessage = err.error?.detalles?.nombre_rol || 'Error al crear el rol.'; 
           this.serverError.set(backendMessage); 
+          this.roleForm.name().markAsTouched();
         } 
       }); 
     } 
@@ -109,6 +121,12 @@ export class RolModalComponent implements OnInit {
 
   onCancel(): void { 
     this.dialogRef.close(false); 
-  } 
+  }
+
+  blockNumbers(event: KeyboardEvent): void {
+    if (!this.regexRole.test(event.key)) {
+      event.preventDefault();
+    }
+  }
 
 }
