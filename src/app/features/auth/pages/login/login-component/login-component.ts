@@ -95,7 +95,7 @@ export class LoginComponent {
     
     dialogRefForgetPass.afterClosed().subscribe((result) => {
       if (result) {
-        this.alertService.info("Se ha enviado un mensaje a su correo electrónico.");
+        this.alertService.info("Hemos enviado sus credenciales de acceso al correo electrónico registrado.",0);
       }
     });
   }
