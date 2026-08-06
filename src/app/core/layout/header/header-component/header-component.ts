@@ -1,5 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { TitleCasePipe } from '@angular/common';
+import { Router } from '@angular/router';
 import { SidebarService } from '../../../../shared/services/sidebar.service';
 import { AuthService } from '../../../services/auth.service';
 import {MatMenuModule} from '@angular/material/menu';
@@ -17,6 +18,7 @@ import { MatDividerModule } from '@angular/material/divider';
 export class HeaderComponent implements OnInit {
   protected sidebar = inject(SidebarService);
   private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
   
   role: string | undefined = "";
   nombreCompleto:string | undefined = "";
@@ -41,5 +43,19 @@ export class HeaderComponent implements OnInit {
 
     console.log('users',this.roles);
 
+  }
+
+  onLogout(): void {
+    this.authService.logout().subscribe({
+      next: () => {
+        this.authService.clearSession();
+        this.router.navigate(['/login']);
+      },
+      error: (error) => {
+        console.error('Error al cerrar sesión:', error);
+        this.authService.clearSession();
+        this.router.navigate(['/login']);
+      }
+    });
   }
 }
