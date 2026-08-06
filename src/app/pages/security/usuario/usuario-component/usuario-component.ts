@@ -250,27 +250,31 @@ export class UsuarioComponent {
     
     const detalles = errorResponse.detalles || errorResponse;
     
-    if (typeof detalles === 'object') {
-      for (const [key, value] of Object.entries(detalles)) {
-        if (key === 'persona') continue;        
-        if (Array.isArray(value) && value.length > 0) {
-          fieldErrors[key] = value[0];
-        } else if (typeof value === 'string') {
-          fieldErrors[key] = value;
-        }
-      }
+    if (typeof detalles !== 'object') return fieldErrors;
+    
+    this.processErrorFields(detalles, fieldErrors, ['persona']);
+    
+    if (detalles.persona && typeof detalles.persona === 'object') {
+      this.processErrorFields(detalles.persona, fieldErrors);
+    }
+    
+    return fieldErrors;
+  }
+
+  private processErrorFields(
+    source: any,
+    fieldErrors: Record<string, string>,
+    skipKeys: string[] = []
+  ): void {
+    for (const [key, value] of Object.entries(source)) {
+      if (skipKeys.includes(key)) continue;
       
-      if (detalles.persona && typeof detalles.persona === 'object') {
-        for (const [key, value] of Object.entries(detalles.persona)) {
-          if (Array.isArray(value) && value.length > 0) {
-            fieldErrors[key] = value[0];
-          } else if (typeof value === 'string') {
-            fieldErrors[key] = value;
-          }
-        }
+      if (Array.isArray(value) && value.length > 0) {
+        fieldErrors[key] = value[0];
+      } else if (typeof value === 'string') {
+        fieldErrors[key] = value;
       }
     }
-    return fieldErrors;
   }
 
   resetPassword(user?: UserData): void {
@@ -285,6 +289,7 @@ export class UsuarioComponent {
     dialogRefResetPass.afterClosed().subscribe((result) => {
       if (result) {
         this.alertService.success("Se ha restablecido la contraseña.");
+        this.loadUsers();
       }
     });
   }

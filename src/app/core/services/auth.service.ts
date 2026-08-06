@@ -60,7 +60,14 @@ export class AuthService {
     return !!this.getToken();
   }
 
-  logout(): void {
+  logout(): Observable<any> {
+    return this.http.post(
+      this.apiConfig.logoutEndpoint(),
+      {}
+    );
+  }
+
+  clearSession(): void {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
   }

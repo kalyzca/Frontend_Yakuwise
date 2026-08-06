@@ -28,6 +28,9 @@ export class ApiConfigService {
   // Endpoint específico para restablecer contraseña por correo
   readonly resetPasswordCorreoEndpoint = signal(`${this.baseUrl()}/security/reset-password-correo/`);
 
+  // Endpoint específico para logout
+  readonly logoutEndpoint = signal(`${this.baseUrl()}/security/logout/`);
+
   constructor() {}
 
   // Método para obtener la URL base
