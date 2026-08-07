@@ -1,8 +1,3 @@
-export interface LoginData {
-  usuario: string;
-  password: string;
-}
-
 export interface LoginRequest {
   nombre_usuario: string;
   password: string;

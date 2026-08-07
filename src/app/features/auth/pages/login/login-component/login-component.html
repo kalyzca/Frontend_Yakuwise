@@ -5,15 +5,15 @@
     </div>
     <form class="form-login" (submit)="onSubmit($event)">
         <div class="form-input-container">
-            <label for="login-user" class="label-input-container-login" >Usuario: (*)</label>
+            <label for="login-user" class="label-input-container-login" >Usuario: *</label>
             <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
-                <input id="login-user" matInput [formField]="loginForm.usuario" placeholder="yhuaman">
+                <input id="login-user" matInput [formField]="loginForm.nombre_usuario"  [errorStateMatcher]="usuarioError.matcher" (input)="errorService.limpiarCampoBackend(backendErrors, 'nombre_usuario')" placeholder="yhuaman" soloLetrasPuntoUsuario>
                 <mat-icon matSuffix>account_circle</mat-icon>
             </mat-form-field>
-            @if (loginForm.usuario().invalid() && loginForm.usuario().touched()) {
+            @if (usuarioError.mostrarErrores()) {
                 <mat-error class="error-list-container">
                     <div class="error-list">
-                        @for (error of loginForm.usuario().errors(); track error.kind) {
+                        @for (error of usuarioError.errores(); track error.kind) {
                             <div class="error-row">
                                 <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
                                 <span>{{ error.message }}</span>
@@ -24,17 +24,17 @@
             }
         </div>
         <div class="form-input-container">
-            <label for="login-pass" class="label-input-container-login" >Password: (*)</label>
+            <label for="login-pass" class="label-input-container-login" >Password: *</label>
             <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
-                <input type="password" matInput [type]="hide() ? 'password' : 'text'" id="login-pass" [formField]="loginForm.password" placeholder="********">
+                <input type="password" matInput [type]="hide() ? 'password' : 'text'" id="login-pass" [formField]="loginForm.password" [errorStateMatcher]="passwordError.matcher" autocomplete="current-password webauthn" placeholder="********" (input)="errorService.limpiarCampoBackend(backendErrors, 'password')">
                 <button type="button" matIconButton matSuffix [attr.aria-label]="'Ocultar contraseña'" [attr.aria-pressed]="hide()" (click)="tooglePasswordVisibility($event)">
                     <mat-icon>{{hide() ? 'visibility_off' : 'visibility'}}</mat-icon>
                 </button>
             </mat-form-field>
-            @if (loginForm.password().invalid() && loginForm.password().touched()) {
+            @if (passwordError.mostrarErrores()) {
                 <mat-error class="error-list-container">
                     <div class="error-list">
-                        @for (error of loginForm.password().errors(); track error.kind) {
+                        @for (error of passwordError.errores(); track error.kind) {
                             <div class="error-row">
                                 <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
                                 <span>{{ error.message }}</span>

@@ -26,7 +26,7 @@
   width: 100%;
   
   .error-row{
-    @include m.layout-flex(row, flex-start, center, nowrap);
+    @include m.layout-flex(row, flex-start, flex-start, nowrap);
     
     .error-icon {
       flex-shrink: 0;
