@@ -95,17 +95,11 @@ export class LoginComponent {
   }
 
   openForgetPasswordModal() {
-    const dialogRefForgetPass = this.dialog.open(ForgetPasswordModal,{
+    this.dialog.open(ForgetPasswordModal,{
       width: '25rem',
       minWidth: 'auto',
       height: 'auto',
       disableClose: true
-    });
-    
-    dialogRefForgetPass.afterClosed().subscribe((result) => {
-      if (result) {
-        this.alertService.info("Hemos enviado sus credenciales de acceso al correo electrónico registrado.",0);
-      }
     });
   }
 }
