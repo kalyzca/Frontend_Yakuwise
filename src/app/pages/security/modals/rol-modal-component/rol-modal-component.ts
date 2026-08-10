@@ -9,6 +9,8 @@ import { RolesService } from '../../../../shared/services/roles.service';
 import { AlertService } from '../../../../shared/services/alert.service'; 
 import { RoleData, CreateRoleRequest } from '../../../../shared/interfaces/roles-interface'; 
 import { form, required, FormField, minLength } from '@angular/forms/signals'; 
+import { FormErrorService } from '../../../../shared/services/form-error.service';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({ 
   selector: 'app-rol-modal', 
@@ -33,23 +35,26 @@ export class RolModalComponent implements OnInit {
   private readonly alertService = inject(AlertService); 
   private readonly dialogRef = inject(MatDialogRef<RolModalComponent>); 
   readonly data: RoleData | null = inject(MAT_DIALOG_DATA); 
+  public errorService = inject(FormErrorService);
 
   readonly isEditMode = signal<boolean>(false); 
   readonly isLoading = signal<boolean>(false);
   readonly isActive = signal<boolean>(false); 
   readonly errorIconPath = signal<string>('assets/icons/error.svg'); 
-  readonly serverError = signal<string | null>(null); 
+  backendErrors = signal<Record<string, string[]>>({});
   readonly statusText = computed(() => this.isActive() ? 'Activo' : 'Inactivo');
   private readonly regexRole = /^[a-zA-ZáéíóúÁÉÍÓÚ ]+$/;
   
-  readonly roleModel = signal<RoleData>({ name: '', state: 'Inactivo' }); 
+  readonly roleModel = signal<RoleData>({ nombre_rol: '', state: 'Inactivo' }); 
   
   readonly roleForm = form( 
     this.roleModel, (fieldPath) => { 
-      required(fieldPath.name, { message: 'El nombre del rol es requerido.' });
-      minLength(fieldPath.name, 5, { message: 'El nombre del rol debe tener al menos 5 caracteres.' });
+      required(fieldPath.nombre_rol, { message: 'El nombre del rol es requerido.' });
+      minLength(fieldPath.nombre_rol, 4, { message: 'El nombre del rol debe tener al menos 4 caracteres.' });
     } 
   ); 
+
+  rolError = this.errorService.createFieldTracker(this.roleForm.nombre_rol, this.backendErrors, 'nombre_rol');
 
   ngOnInit(): void { 
     if (this.data) { 
@@ -58,32 +63,23 @@ export class RolModalComponent implements OnInit {
       
       this.roleModel.set({
         id: this.data.id,
-        name: this.data.name || '',
+        nombre_rol: this.data.nombre_rol || '',
         state: this.data.state || 'Inactivo'
       });
     } 
   } 
   
-  onInputChange(): void {
-    if (this.serverError()) {
-      this.serverError.set(null);
-    }
-  }
-
   onSave(event: Event) {
-    console.log('error!!',this.serverError())
     event.preventDefault();
+    this.isLoading.set(true); 
 
-    if (this.roleForm().invalid()) { 
-      this.roleForm.name().markAsTouched(); 
+    if (this.roleForm.nombre_rol().invalid()) { 
+      this.roleForm.nombre_rol().markAsTouched(); 
       return; 
     }
-
-    this.isLoading.set(true); 
-    this.serverError.set(null); 
     
     const apiRequest: CreateRoleRequest = { 
-      nombre_rol: this.roleModel().name.trim().toUpperCase(), 
+      nombre_rol: this.roleModel().nombre_rol.trim().toUpperCase(), 
       estado: this.isActive() 
     }; 
     
@@ -96,9 +92,8 @@ export class RolModalComponent implements OnInit {
         }, 
         error: (err) => {
           this.isLoading.set(false);
-          const backendMessage = err.error?.detalles?.nombre_rol || 'Error al actualizar el rol.'; 
-          this.serverError.set(backendMessage); 
-          console.log('error edit',backendMessage);
+          this.alertService.error(err.mensajeGeneral);
+          if (err.detalles) return this.backendErrors.set(err.detalles);
         } 
       }); 
     } 
@@ -111,9 +106,8 @@ export class RolModalComponent implements OnInit {
         }, 
         error: (err) => { 
           this.isLoading.set(false);
-          const backendMessage = err.error?.detalles?.nombre_rol || 'Error al crear el rol.'; 
-          this.serverError.set(backendMessage); 
-          this.roleForm.name().markAsTouched();
+          this.alertService.error(err.mensajeGeneral);
+        if (err.detalles) return this.backendErrors.set(err.detalles);
         } 
       }); 
     } 

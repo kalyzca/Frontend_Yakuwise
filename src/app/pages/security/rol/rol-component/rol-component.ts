@@ -80,7 +80,7 @@ export class RolComponent {
       return currentRoles; 
     } 
     return currentRoles.filter(role => { 
-      const roleNameLower = role.name.toLowerCase(); 
+      const roleNameLower = role.nombre_rol.toLowerCase(); 
       const roleStateLower = role.state.toLowerCase(); 
       const roleIdStr = role.id?.toString() || ''; 
       if (['activo', 'inactivo'].includes(search)) return roleStateLower === search; 
@@ -110,7 +110,7 @@ export class RolComponent {
   private mapFromApiResponse(apiResponse: RoleResponse): RoleData { 
     return { 
       id: apiResponse.id_rol || apiResponse.id || 0, 
-      name: apiResponse.nombre_rol,
+      nombre_rol: apiResponse.nombre_rol,
       state: apiResponse.estado ? 'Activo' : 'Inactivo' 
     }; 
   } 

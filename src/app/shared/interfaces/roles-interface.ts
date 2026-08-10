@@ -1,6 +1,6 @@
 export interface RoleData {
   id?: number;
-  name:string;
+  nombre_rol:string;
   state: string;
 }
 
