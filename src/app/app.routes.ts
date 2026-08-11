@@ -6,6 +6,8 @@ import { FrontPageComponent } from './core/layout/front-page/front-page-componen
 import { WelcomeComponent } from './pages/welcome/welcome-component/welcome-component';
 import { RolComponent } from './pages/security/rol/rol-component/rol-component';
 import { UsuarioComponent } from './pages/security/usuario/usuario-component/usuario-component';
+import { ModuloComponent } from './pages/security/modulo/modulo-component/modulo-component';
+import { MenuComponent } from './pages/security/menu/menu-component/menu-component';
 import { UpdatePasswordComponent } from './features/auth/pages/update-password/update-password-component/update-password-component';
 import { authGuard } from './core/guards/auth.guard';
 
@@ -46,6 +48,14 @@ export const routes: Routes = [
       {
         path:'usuario',
         component:UsuarioComponent
+      },
+      {
+        path:'modulo',
+        component:ModuloComponent
+      },
+      {
+        path:'menu',
+        component:MenuComponent
       }
     ]
   },

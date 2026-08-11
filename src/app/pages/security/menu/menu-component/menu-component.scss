@@ -1,0 +1,89 @@
+@use 'abstracts/variables' as v;
+@use 'abstracts/mixins'as m;
+
+th.mat-column-estado,
+th.mat-column-actions {
+    text-align: center;
+}
+
+.mat-column-id_menu {
+    width: 10%;
+    padding-left: 2rem;
+}
+
+.mat-column-nombre_menu {
+    width: 20%;
+}
+
+.mat-column-nombre_modulo {
+    width: 15%;
+}
+
+.mat-column-roles {
+    width: 20%;
+    font-size: 0.9rem;
+}
+
+.no-roles {
+    color: #999;
+    font-style: italic;
+    font-size: 0.85rem;
+}
+
+.mat-column-nivel,
+.mat-column-orden {
+    width: 10%;
+    text-align: center;
+}
+
+.mat-column-estado,
+.mat-column-actions {
+    width: 15%;
+    text-align: center !important;
+}
+
+.btn-edit {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.btn-edit:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.icon-edit {
+    width: 1.25rem;
+    height: 1.25rem;
+    fill: rgb(150, 150, 137);
+}
+
+.btn-edit:hover .icon-edit {
+    fill: #333;
+}
+
+.btn-assign {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.btn-assign:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.icon-assign {
+    width: 1.5rem;
+    height: 1.5rem;
+    fill: v.$primary-color;
+}
+
+.btn-assign:hover .icon-assign {
+    fill: v.$primary-hover-color;
+}

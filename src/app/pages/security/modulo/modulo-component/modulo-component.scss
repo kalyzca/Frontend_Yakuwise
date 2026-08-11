@@ -1,0 +1,51 @@
+@use 'abstracts/variables' as v;
+@use 'abstracts/mixins'as m;
+
+th.mat-column-state,
+th.mat-column-actions {
+    text-align: center;
+}
+
+.mat-column-id {
+    width: 15%;
+    padding-left: 2rem;
+}
+
+.mat-column-name {
+    width: 30%;
+}
+
+.mat-column-menus {
+    width: 30%;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.mat-column-state,
+.mat-column-actions {
+    width: 12.5%;
+    text-align: center !important;
+}
+
+.btn-edit {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.btn-edit:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.icon-edit {
+    width: 1.25rem;
+    height: 1.25rem;
+    fill: rgb(150, 150, 137);
+}
+
+.btn-edit:hover .icon-edit {
+    fill: #333;
+}

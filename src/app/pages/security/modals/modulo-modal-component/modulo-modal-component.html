@@ -1,0 +1,45 @@
+<p mat-dialog-title>
+  {{ isEditMode() ? 'Editar Módulo' : 'Agregar Módulo' }}
+  <button mat-icon-button class="close-button" (click)="closeModal()" matTooltip="Cerrar">
+    <mat-icon>close</mat-icon>
+  </button>
+</p>
+<mat-dialog-content>
+  <form (submit)="onSave($event)">
+    <div class="form-input-container">
+      <label for="nameModulo" class="label-input-container">Nombre: *</label>
+      <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
+        <input matInput id="nameModulo" class="text-uppercase" [formField]="moduloForm.name" 
+          (keydown)="blockNumbers($event)" [errorStateMatcher]="nameError.matcher"
+          (input)="errorService.limpiarCampoBackend(backendErrors, 'nombre_modulo')"
+          placeholder="Ej. Seguridad">
+      </mat-form-field>
+      @if (nameError.mostrarErrores()) {
+        <mat-error class="error-list-container">
+          <div class="error-list">
+            @for (error of nameError.errores(); track error.kind) {
+              <div class="error-row">
+                <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                <span>{{ error.message }}</span>
+              </div>
+            }
+          </div>
+        </mat-error>
+      }
+    </div>
+    <div class="form-input-container">
+      <label for="state" class="label-input-container custom-switch">Estado:</label>
+      <mat-slide-toggle id="state" [checked]="isActive()" (change)="isActive.set($event.checked)">
+        <p class="txt-switch">
+          El módulo está <span class="state-text">&nbsp;{{statusText().toLowerCase()}}.</span>
+        </p>
+      </mat-slide-toggle>
+    </div>
+    <mat-dialog-actions align="end">
+      <button mat-button type="button" mat-dialog-close>Cancelar</button>
+      <button mat-button color="primary" type="submit" [disabled]="isLoading()">
+        {{ isLoading() ? 'Guardando...' : (isEditMode() ? 'Actualizar' : 'Guardar') }} 
+      </button>
+    </mat-dialog-actions>
+  </form>
+</mat-dialog-content>
