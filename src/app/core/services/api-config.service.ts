@@ -10,6 +10,12 @@ export class ApiConfigService {
   // Endpoint específico para roles
   readonly rolesEndpoint = signal(`${this.baseUrl()}/security/roles/`);
 
+  // Endpoint específico para módulos
+  readonly modulosEndpoint = signal(`${this.baseUrl()}/security/modulos/`);
+
+  // Endpoint específico para menús
+  readonly menusEndpoint = signal(`${this.baseUrl()}/security/menus/`);
+
   // Endpoint específico para usuarios
   readonly usersEndpoint = signal(`${this.baseUrl()}/security/usuarios/`);
 
@@ -30,6 +36,9 @@ export class ApiConfigService {
 
   // Endpoint específico para logout
   readonly logoutEndpoint = signal(`${this.baseUrl()}/security/logout/`);
+
+  // Endpoint específico para rol-menus
+  readonly rolMenusEndpoint = signal(`${this.baseUrl()}/security/rol-menus/`);
 
   constructor() {}
 
