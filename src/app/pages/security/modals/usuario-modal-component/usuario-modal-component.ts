@@ -116,8 +116,8 @@ export class UsuarioModalComponent {
     required(fieldPath.persona.telefono, {message: 'Teléfono requerido.'});
     required(fieldPath.persona.correo_personal, {message: 'Correo personal requerido.'});
 
-    pattern(fieldPath.persona.correo_personal, /^[^\s@]+@[^\s@]+\.[^\s@]+$/, {message: 'Correo personal inválido.'});
-    pattern(fieldPath.email, /^[^\s@]+@[^\s@]+\.[^\s@]+$/, {message: 'Email inválido.'});
+    pattern(fieldPath.persona.correo_personal, /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, {message: 'Correo personal inválido.'});
+    pattern(fieldPath.email, /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, {message: 'Email inválido.'});
   });
 
   constructor() {
@@ -174,61 +174,67 @@ export class UsuarioModalComponent {
     };
   }
 
+  private extractFieldValue(value: any): string | null {
+    if (Array.isArray(value) && value.length > 0) {
+      return value[0];
+    }
+    if (typeof value === 'string') {
+      return value;
+    }
+    return null;
+  }
+
+  private extractObjectFieldErrors(obj: any, fieldErrors: Record<string, string>): void {
+    if (!obj || typeof obj !== 'object') return;
+    
+    for (const [key, value] of Object.entries(obj)) {
+      const fieldValue = this.extractFieldValue(value);
+      if (fieldValue) {
+        fieldErrors[key] = fieldValue;
+      }
+    }
+  }
+
   private extractFieldErrors(errorResponse: any): Record<string, string> {
     const fieldErrors: Record<string, string> = {};
     if (!errorResponse) return fieldErrors;
+    
     const detalles = errorResponse.detalles || errorResponse;
     
     if (typeof detalles === 'object') {
+      // Extract non-persona fields
       for (const [key, value] of Object.entries(detalles)) {
         if (key === 'persona') continue;
         
-        if (Array.isArray(value) && value.length > 0) {
-          fieldErrors[key] = value[0];
-        } else if (typeof value === 'string') {
-          fieldErrors[key] = value;
+        const fieldValue = this.extractFieldValue(value);
+        if (fieldValue) {
+          fieldErrors[key] = fieldValue;
         }
       }
       
-      if (detalles.persona && typeof detalles.persona === 'object') {
-        for (const [key, value] of Object.entries(detalles.persona)) {
-          if (Array.isArray(value) && value.length > 0) {
-            fieldErrors[key] = value[0];
-          } else if (typeof value === 'string') {
-            fieldErrors[key] = value;
-          }
-        }
-      }
+      // Extract persona fields
+      this.extractObjectFieldErrors(detalles.persona, fieldErrors);
     }
+    
     return fieldErrors;
   }
 
-  onSave(event: Event): void {
-    event.preventDefault();
-    if (this.isReadOnly()) return;
-    
-    this.backendErrors.set({});
+  private markAllFieldsAsTouched(): void {
+    this.userForm.email().markAsTouched();
+    this.userForm.state().markAsTouched();
+    this.userForm.id_roles().markAsTouched();
+    this.userForm.persona.id_tipo_documento().markAsTouched();
+    this.userForm.persona.numero_documento().markAsTouched();
+    this.userForm.persona.nombres().markAsTouched();
+    this.userForm.persona.apellido_paterno().markAsTouched();
+    this.userForm.persona.apellido_materno().markAsTouched();
+    this.userForm.persona.genero().markAsTouched();
+    this.userForm.persona.telefono().markAsTouched();
+    this.userForm.persona.correo_personal().markAsTouched();
+  }
 
-    if (this.userForm().invalid()) {
-      this.userForm.email().markAsTouched();
-      this.userForm.state().markAsTouched();
-      this.userForm.id_roles().markAsTouched();
-      this.userForm.persona.id_tipo_documento().markAsTouched();
-      this.userForm.persona.numero_documento().markAsTouched();
-      this.userForm.persona.nombres().markAsTouched();
-      this.userForm.persona.apellido_paterno().markAsTouched();
-      this.userForm.persona.apellido_materno().markAsTouched();
-      this.userForm.persona.genero().markAsTouched();
-      this.userForm.persona.telefono().markAsTouched();
-      this.userForm.persona.correo_personal().markAsTouched();
-      return;
-    }
-    
-    // Forzar detección de cambios
-    this.cdr.detectChanges();
-    this.isSaving.set(true);
-
-    const payload: UserData = {
+  private buildPayload(): UserData {
+    return {
       username: this.userModal().username.trim().toLowerCase(),
       email: this.userModal().email.trim().toLowerCase(),
       state: this.userModal().state,
@@ -246,33 +252,49 @@ export class UsuarioModalComponent {
         estado: this.userModal().persona.estado
       }
     };
+  }
 
+  private handleUserApiCall(apiCall: any, payload: UserData): void {
+    apiCall.subscribe({
+      next: () => {
+        this.isSaving.set(false);
+        this.dialogRef.close({ action: 'success', data: payload });
+      },
+      error: (err) => {
+        this.isSaving.set(false);
+        const fieldErrors = this.extractFieldErrors(err.error);
+        this.setBackendErrors(fieldErrors);
+      }
+    });
+  }
+
+  onSave(event: Event): void {
+    event.preventDefault();
+    if (this.isReadOnly()) return;
+    
+    this.backendErrors.set({});
+
+    if (this.userForm().invalid()) {
+      this.markAllFieldsAsTouched();
+      return;
+    }
+    
+    this.cdr.detectChanges();
+    this.isSaving.set(true);
+
+    const payload = this.buildPayload();
     const apiRequest = this.mapToApiRequest(payload);
 
     if (this.isEditMode()) {
-      this.usersService.updateUser(this.inputData?.id || 0, apiRequest).subscribe({
-        next: () => {
-          this.isSaving.set(false);
-          this.dialogRef.close({ action: 'success', data: payload });
-        },
-        error: (err) => {
-          this.isSaving.set(false);
-          const fieldErrors = this.extractFieldErrors(err.error);
-          this.setBackendErrors(fieldErrors);
-        }
-      });
+      this.handleUserApiCall(
+        this.usersService.updateUser(this.inputData?.id || 0, apiRequest),
+        payload
+      );
     } else {
-      this.usersService.createUser(apiRequest).subscribe({
-        next: () => {
-          this.isSaving.set(false);
-          this.dialogRef.close({ action: 'success', data: payload });
-        },
-        error: (err) => {
-          this.isSaving.set(false);
-          const fieldErrors = this.extractFieldErrors(err.error);
-          this.setBackendErrors(fieldErrors);
-        }
-      });
+      this.handleUserApiCall(
+        this.usersService.createUser(apiRequest),
+        payload
+      );
     }
   }
 

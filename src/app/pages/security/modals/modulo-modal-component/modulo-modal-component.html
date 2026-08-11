@@ -1,0 +1,47 @@
+<p mat-dialog-title>{{ isEditMode() ? 'Editar Módulo' : 'Agregar Módulo' }}</p>
+<mat-dialog-content>
+  <form (submit)="onSave($event)">
+    <div class="form-input-container">
+      <label for="nameModulo" class="label-input-container">Nombre: (*)</label>
+      <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic" [class.mat-form-field-invalid]="serverError()">
+        <input matInput id="nameModulo" class="text-uppercase" [ngModel]="moduloModel().name" (ngModelChange)="moduloModel.update(m => ({...m, name: $event}))" (input)="onInputChange()" (keydown)="blockNumbers($event)" placeholder="Ej. Seguridad">
+      </mat-form-field>
+      @if (moduloForm.name().invalid() && moduloForm.name().touched()) {
+        <mat-error class="error-list-container">
+          <div class="error-list">
+            @for (error of moduloForm.name().errors(); track error.kind) {
+              <div class="error-row">
+                <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                <span>{{ error.message }}</span>
+              </div>
+            }
+          </div>
+        </mat-error>
+      }
+      @if (serverError() && !moduloForm.name().invalid()) {
+        <mat-error class="error-list-container">
+          <div class="error-list">
+            <div class="error-row">
+              <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+              <span class="backend-error-text">{{ serverError() }}</span>
+            </div>
+          </div>
+        </mat-error>
+      }
+    </div>
+    <div class="form-input-container">
+      <label for="state" class="label-input-container custom-switch">Estado:</label>
+      <mat-slide-toggle id="state" [checked]="isActive()" (change)="isActive.set($event.checked)">
+        <p class="txt-switch">
+          El módulo está <span class="state-text">&nbsp;{{statusText().toLowerCase()}}.</span>
+        </p>
+      </mat-slide-toggle>
+    </div>
+    <mat-dialog-actions align="end">
+      <button mat-button type="button" (click)="onCancel()" [disabled]="isLoading()">Cancelar</button>
+      <button mat-button color="primary" type="submit" [disabled]="isLoading()">
+        {{ isLoading() ? 'Guardando...' : (isEditMode() ? 'Actualizar' : 'Guardar') }} 
+      </button>
+    </mat-dialog-actions>
+  </form>
+</mat-dialog-content>

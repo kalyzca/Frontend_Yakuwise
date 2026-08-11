@@ -1,0 +1,125 @@
+<p mat-dialog-title>
+  Gestión de Menús - {{ data?.modulo?.name }}
+  <button mat-icon-button class="close-button" (click)="onCancel()" matTooltip="Cerrar">
+    <mat-icon>close</mat-icon>
+  </button>
+</p>
+<mat-dialog-content>
+  <div class="menu-container">
+    <!-- Form Section -->
+    <div class="form-section">
+      <form (submit)="onSave($event)">
+        <div class="form-row">
+          <div class="form-input-container half-width">
+            <label for="nombre_menu" class="label-input-container">Nombre del Menú: (*)</label>
+            <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
+              <input matInput id="nombre_menu" name="nombre_menu" [ngModel]="menuModel().nombre_menu" (ngModelChange)="menuModel.update(m => ({...m, nombre_menu: $event}))" (input)="onInputChange()" placeholder="Ej. Usuarios">
+            </mat-form-field>
+          </div>
+
+          <div class="form-input-container half-width">
+            <label for="nivel" class="label-input-container">Nivel: (*)</label>
+            <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
+              <input matInput id="nivel" name="nivel" type="number" [ngModel]="menuModel().nivel" (ngModelChange)="menuModel.update(m => ({...m, nivel: $event}))" (input)="onInputChange()" placeholder="Ej. 1">
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-input-container half-width">
+            <label for="ruta" class="label-input-container">Ruta: (*)</label>
+            <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic" [class.mat-form-field-invalid]="serverError()">
+              <input matInput id="ruta" name="ruta" [ngModel]="menuModel().ruta" (ngModelChange)="menuModel.update(m => ({...m, ruta: $event}))" (input)="onInputChange()" placeholder="Ej. /usuarios">
+            </mat-form-field>
+            @if (serverError()) {
+              <mat-error class="error-list-container">
+                <div class="error-list">
+                  <div class="error-row">
+                    <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                    <span class="backend-error-text">{{ serverError() }}</span>
+                  </div>
+                </div>
+              </mat-error>
+            }
+          </div>
+          <div class="form-input-container half-width">
+            <label for="state" class="label-input-container custom-switch">Estado:</label>
+            <mat-slide-toggle id="state" [checked]="isActive()" (change)="isActive.set($event.checked)">
+              <p class="txt-switch">
+                El menú está <span class="state-text">&nbsp;{{statusText().toLowerCase()}}.</span>
+              </p>
+            </mat-slide-toggle>
+          </div>
+        </div>
+        <mat-dialog-actions align="end">
+          <button mat-button type="button" (click)="onCancel()" [disabled]="isLoading()">Cancelar</button>
+          <button mat-button color="primary" type="submit" [disabled]="isLoading()">
+            {{ isLoading() ? 'Guardando...' : (selectedMenuId() ? 'Actualizar' : 'Agregar') }} 
+          </button>
+        </mat-dialog-actions>
+      </form>
+    </div>
+
+    <!-- Menus List Section -->
+    <div class="menus-list-section">
+      <div class="section-header">
+        <h3>Menús del módulo</h3>
+        <button mat-button color="primary" type="button" (click)="addNewMenu()" [disabled]="isLoading()">
+          <mat-icon>add</mat-icon>
+          Nuevo Menú
+        </button>
+      </div>
+      
+      @if (menus().length === 0) {
+        <p class="no-menus-message">No hay menús registrados para este módulo.</p>
+      }
+      @else {
+        <div class="menus-list" cdkDropList (cdkDropListDropped)="drop($event)">
+          @for (menu of menus(); track menu.id) {
+            <div class="menu-item" cdkDrag [class.editing]="selectedMenuId() === menu.id">
+              <div class="menu-drag-handle" cdkDragHandle>
+                <mat-icon>drag_indicator</mat-icon>
+              </div>
+              <div class="menu-info">
+                <div class="menu-field">
+                  <span class="field-value field-value-bold-uppercase">{{ menu.nombre_menu }}</span>
+                </div>
+                <div class="menu-field">
+                  <span class="field-label">Orden:</span>
+                  <span class="field-value">{{ menu.orden }}</span>
+                </div>
+                <div class="menu-field">
+                  <span class="field-label">Nivel:</span>
+                  <span class="field-value">{{ menu.nivel }}</span>
+                </div>
+                <div class="menu-field">
+                  <span class="field-label">Ruta:</span>
+                  <span class="field-value">{{ menu.ruta }}</span>
+                </div>
+                <div class="menu-field">
+                  <span class="field-label">Estado:</span>
+                  @if (menu.state === 'Activo') {
+                    <span class="status-badge active">Activo</span>
+                  }
+                  @else {
+                    <span class="status-badge inactive">Inactivo</span>
+                  }
+                </div>
+              </div>
+              <div class="menu-actions">
+                <button mat-icon-button (click)="editMenu(menu)" matTooltip="Editar">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button (click)="assignRoles(menu)" matTooltip="Asignar Roles" class="assign-roles-btn">
+                  <mat-icon>admin_panel_settings</mat-icon>
+                </button>
+                <button mat-icon-button (click)="deleteMenu(menu.id!)" matTooltip="Eliminar" class="delete-btn">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</mat-dialog-content>

@@ -1,0 +1,97 @@
+::ng-deep .mat-mdc-dialog-container {
+  max-width: 500px !important;
+}
+
+::ng-deep .mat-mdc-dialog-surface {
+  max-width: 500px;
+  overflow-x: hidden;
+}
+
+::ng-deep .mat-mdc-dialog-title {
+  position: relative;
+  padding-right: 2.5rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.close-button {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  gap: 1rem;
+}
+
+.no-roles-message {
+  text-align: center;
+  color: #666;
+  padding: 2rem;
+  margin: 0;
+}
+
+.roles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 400px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 0.5rem;
+}
+
+.role-item {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.role-item:hover {
+  background-color: #f5f5f5;
+}
+
+.role-toggle {
+  width: 100%;
+  min-width: 0;
+}
+
+::ng-deep .role-toggle .mat-mdc-slide-toggle {
+  width: 100%;
+}
+
+::ng-deep .role-toggle .mat-mdc-slide-toggle-content {
+  width: calc(100% - 48px);
+  min-width: 0;
+}
+
+.role-name {
+  font-weight: 500;
+  color: #333;
+  margin-left: 0.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  max-width: 100%;
+}
+
+.button-spinner {
+  display: inline-block;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+::ng-deep .mat-mdc-dialog-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-right: 1rem;
+}
