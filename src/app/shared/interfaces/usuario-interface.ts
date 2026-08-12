@@ -15,7 +15,6 @@ export interface UserData {
   username?: string;
   email: string;
   state: string;
-  id_rol: number;
   id_roles?: number[];
   persona: PersonaData;
   name?: string;
@@ -27,7 +26,6 @@ export interface UserFormData {
   username: string;
   email: string;
   state: string;
-  id_rol: number;
   id_roles: number[];
   name: string;
   roles_names: string[];

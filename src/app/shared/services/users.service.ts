@@ -22,22 +22,19 @@ export interface CreateUserRequest {
   email_institucional: string;
   estado: boolean;
   persona: PersonaData;
-  id_rol: number;
-  id_roles?: number[];
+  id_roles: number[];
 }
 
 export interface UserResponse {
-  id?: number;
-  id_usuario?: number;
-  nombre_usuario?: string;
+  id_usuario: number;
+  nombre_usuario: string;
   email_institucional: string;
   estado: boolean;
   persona: PersonaData;
-  id_rol: number;
-  id_roles?: number[];
-  roles_names?: string[];
-  roles?: Array<{ id_rol: number; nombre_rol: string }>;
-  bloqueado_hasta?: string | null;
+  roles: Array<{ id_rol: number; nombre_rol: string }>;
+  bloqueado_hasta: string | null;
+  fecha_creacion: string;
+  fecha_modificacion: string;
 }
 
 export interface UsersListResponse {

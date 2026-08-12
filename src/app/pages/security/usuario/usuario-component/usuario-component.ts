@@ -164,8 +164,7 @@ export class UsuarioComponent {
         correo_personal: userData.persona.correo_personal,
         estado: userData.persona.estado
       },
-      id_rol: userData.id_rol,
-      id_roles: userData.id_roles
+      id_roles: userData.id_roles || []
     };
   }
 
@@ -174,13 +173,13 @@ export class UsuarioComponent {
     if (!persona) {
       return null;
     }
-    
+
     const rolesNames = apiResponse.roles?.map(r => r.nombre_rol.charAt(0).toUpperCase() + r.nombre_rol.slice(1).toLowerCase()) || [];
     const rolesIds = apiResponse.roles?.map(r => r.id_rol) || [];
     const apellidoPaterno = persona.apellido_paterno;
     const apellidoMaterno = persona.apellido_materno;
     const nombres = persona.nombres;
-    
+
     const capitalizeNames = (fullName: string): string => {
       if (!fullName) return '';
 
@@ -193,14 +192,13 @@ export class UsuarioComponent {
         })
         .join(' ');
     };
-    
+
     return {
-      id: apiResponse.id_usuario || apiResponse.id || 0,
+      id: apiResponse.id_usuario,
       username: apiResponse.nombre_usuario,
       email: apiResponse.email_institucional,
       state: apiResponse.estado ? 'Activo' : 'Inactivo',
       name: `${apellidoPaterno} ${apellidoMaterno}, ${capitalizeNames(nombres)}`,
-      id_rol: rolesIds[0] || 0,
       id_roles: rolesIds,
       roles_names: rolesNames,
       persona: persona,

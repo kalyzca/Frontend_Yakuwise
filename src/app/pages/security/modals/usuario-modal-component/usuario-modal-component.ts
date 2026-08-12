@@ -48,7 +48,6 @@ export class UsuarioModalComponent {
         username: this.inputData.username || '',
         email: this.inputData.email,
         state: this.inputData.state,
-        id_rol: this.inputData.id_rol,
         id_roles: this.inputData.id_roles || [],
         name: this.inputData.name || '',
         roles_names: this.inputData.roles_names || [],
@@ -65,12 +64,11 @@ export class UsuarioModalComponent {
         }
       };
     }
-    
+
     return {
       username: '',
       email: '',
       state: 'Inactivo',
-      id_rol: 0,
       id_roles: [],
       name: '',
       roles_names: [],
@@ -169,8 +167,7 @@ export class UsuarioModalComponent {
         correo_personal: userData.persona.correo_personal,
         estado: userData.persona.estado
       },
-      id_rol: userData.id_rol,
-      id_roles: userData.id_roles
+      id_roles: userData.id_roles || []
     };
   }
 
@@ -232,7 +229,6 @@ export class UsuarioModalComponent {
       username: this.userModal().username.trim().toLowerCase(),
       email: this.userModal().email.trim().toLowerCase(),
       state: this.userModal().state,
-      id_rol: this.userModal().id_rol,
       id_roles: this.userModal().id_roles,
       persona: {
         id_tipo_documento: this.userModal().persona.id_tipo_documento,
