@@ -5,7 +5,7 @@
     </div>
     <form class="form-login" (submit)="onSubmit($event)">
         <div class="form-input-container">
-            <label for="login-user" class="label-input-container-login" >Usuario: *</label>
+            <label for="login-user" class="label-input-container-login" >Usuario:</label>
             <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
                 <input id="login-user" matInput [formField]="loginForm.nombre_usuario"  [errorStateMatcher]="usuarioError.matcher" (input)="errorService.limpiarCampoBackend(backendErrors, 'nombre_usuario')" placeholder="yhuaman" soloLetrasPuntoUsuario>
                 <mat-icon matSuffix>account_circle</mat-icon>
@@ -24,7 +24,7 @@
             }
         </div>
         <div class="form-input-container">
-            <label for="login-pass" class="label-input-container-login" >Password: *</label>
+            <label for="login-pass" class="label-input-container-login" >Password:</label>
             <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
                 <input type="password" matInput [type]="hide() ? 'password' : 'text'" id="login-pass" [formField]="loginForm.password" [errorStateMatcher]="passwordError.matcher" autocomplete="current-password webauthn" placeholder="********" (input)="errorService.limpiarCampoBackend(backendErrors, 'password')">
                 <button type="button" matIconButton matSuffix [attr.aria-label]="'Ocultar contraseña'" [attr.aria-pressed]="hide()" (click)="tooglePasswordVisibility($event)">
@@ -47,7 +47,7 @@
                 ¿Olvidaste tu contraseña?
             </button>
         </div>
-        <button type="submit" class="btn-login">
+        <button type="submit" class="btn-login" [disabled]="isLoading()">
             {{ isLoading() ? "Cargando..." : "Iniciar sesión" }}
         </button>
     </form>

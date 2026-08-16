@@ -75,6 +75,12 @@
             color: v.$primary-color;
             font-size: 1rem;
             font-weight: 600;
+
+            &::after {
+                content: " *";
+                color: v.$error-icon-color;
+                font-weight: bold;
+            }
         }
 
         .forget-password {
@@ -134,6 +140,11 @@
                 background-color: v.$primary-active-color;
                 opacity: 0.95;
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            }
+            &:disabled {
+                background-color: v.$gray-200;
+                color: v.$dark-color;
+                cursor: not-allowed;
             }
         }
     }

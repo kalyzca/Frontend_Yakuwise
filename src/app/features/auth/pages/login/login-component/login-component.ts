@@ -46,7 +46,7 @@ export class LoginComponent {
     minLength(fieldPath.nombre_usuario, 3, {message: 'El usuario debe tener al menos 3 caracteres.'});
     maxLength(fieldPath.nombre_usuario, 30, {message: 'El usuario no puede exceder los 30 caracteres.'});
     required(fieldPath.password, {message: 'La contraseña es requerida.'});
-    minLength(fieldPath.password, 1, {message: 'La contraseña debe tener al menos 1 carácter.'});
+    minLength(fieldPath.password, 2, {message: 'La contraseña debe tener al menos 2 caracteres.'});
     maxLength(fieldPath.password, 50, {message: 'La contraseña no puede exceder los 50 caracteres.'});
   });
 
@@ -75,9 +75,9 @@ export class LoginComponent {
 
     this.authService.login(loginRequest).subscribe({
       next: (response) => {
+        this.isLoading.set(false);
         this.authService.saveUserData(response.data);
         this.authService.saveToken(response.data.token);
-        this.isLoading.set(false);
         
         if (response.data.pass_actualizado) {
           this.router.navigate(['/home/welcome']);
