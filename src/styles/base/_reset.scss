@@ -480,6 +480,13 @@ body {
     color: v.$primary-color;
     font-size: 0.875rem;
     font-weight: 600;
+    
+    &::after {
+        content: " *";
+        color: v.$error-icon-color;
+        font-weight: bold;
+        vertical-align: super;
+    }
 }
 
 .custom-input {
@@ -534,31 +541,3 @@ body {
         width: 45rem;
     }
 }
-
-// Estilos del borde del input material
-// .custom-input.mat-form-field-invalid {
-    
-//     .mdc-notched-outline__leading,
-//     .mdc-notched-outline__notch,
-//     .mdc-notched-outline__trailing,
-//     .mat-mdc-text-field-wrapper {
-//       border-color: v.$error-input-color !important;
-//       border-width: 1px !important;
-
-//     &.mat-focused {
-//       .mdc-notched-outline__leading,
-//       .mdc-notched-outline__notch,
-//       .mdc-notched-outline__trailing,
-//       .mat-mdc-text-field-wrapper {
-//         border-color: v.$error-input-color !important;
-//         border-width: 2px !important;
-//       }
-//     }
-
-//     .mat-mdc-floating-label,
-//     .mdc-floating-label,
-//     .mat-mdc-form-field-label {
-//       color: #f44336 !important;
-//     }
-//   }
-// }

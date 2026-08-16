@@ -8,6 +8,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { IconService } from '../../../../../shared/services/icon.service';
 import { AuthService } from '../../../../../core/services/auth.service';
 import { UpdatePasswordRequest } from '../../../../../shared/interfaces/login-interface';
+import { AlertService } from '../../../../../shared';
+import { AppHttpError } from '../../../../../shared/interfaces/error-interface';
+import { FormErrorService } from '../../../../../shared/services/form-error.service';
 
 @Component({
   selector: 'app-update-password-component',
@@ -15,34 +18,46 @@ import { UpdatePasswordRequest } from '../../../../../shared/interfaces/login-in
   templateUrl: './update-password-component.html',
   styleUrl: './update-password-component.scss',
 })
+
 export class UpdatePasswordComponent {
   hideCurrentPassword = signal(true);
   hideNewPassword = signal(true);
   hideConfirmPassword = signal(true);
   isLoading = signal(false);
-  errorMessage = signal('');
-  successMessage = signal('');
-
+  
   private readonly iconService = inject(IconService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly alertService = inject(AlertService);
+  public errorService = inject(FormErrorService);
 
   errorIconPath = signal(this.iconService.getIconPath('error')());
+  backendErrors = signal<Record<string, string[]>>({});
 
-  updatePasswordModel = signal({
-    password_actual: '',
-    password_nueva: '',
-    password_confirmacion: ''
+  passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+  updatePasswordModel = signal<UpdatePasswordRequest>({
+      password_actual: '',
+      password_nueva: '',
+      password_confirmacion: ''
   });
 
   updatePasswordForm = form(this.updatePasswordModel, (fieldPath) => {
     required(fieldPath.password_actual, {message: 'La contraseña actual es requerida.'});
     required(fieldPath.password_nueva, {message: 'La nueva contraseña es requerida.'});
-    minLength(fieldPath.password_nueva, 8, {message: 'La contraseña debe tener mínimo 8 caracteres.'});
-    maxLength(fieldPath.password_nueva, 50, {message: 'La contraseña debe tener máximo 50 caracteres.'});
-    pattern(fieldPath.password_nueva, /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, {message: 'La contraseña debe tener una mayúscula, una minúscula, un número y un carácter especial.'});
     required(fieldPath.password_confirmacion, {message: 'La confirmación de contraseña es requerida.'});
+    minLength(fieldPath.password_actual, 1, {message: 'La contraseña debe tener mínimo 1 caracteres.'});
+    minLength(fieldPath.password_nueva, 8, {message: 'La contraseña debe tener mínimo 8 caracteres.'});
+    maxLength(fieldPath.password_actual, 50, {message: 'La contraseña debe tener máximo 50 caracteres.'});
+    maxLength(fieldPath.password_nueva, 50, {message: 'La contraseña debe tener máximo 50 caracteres.'});
+    maxLength(fieldPath.password_confirmacion, 50, {message: 'La contraseña debe tener máximo 50 caracteres.'});
+    pattern(fieldPath.password_nueva, this.passwordRegex, {message: 'La contraseña debe tener al menos una letra mayúscula, minúscula, un número y un carácter especial.'});
+
   });
+
+  passwordActualError = this.errorService.createFieldTracker(this.updatePasswordForm.password_actual, this.backendErrors,'password_actual');
+  passwordNuevoError = this.errorService.createFieldTracker(this.updatePasswordForm.password_nueva, this.backendErrors,'password_nueva');
+  passwordConfirmacionError = this.errorService.createFieldTracker(this.updatePasswordForm.password_confirmacion, this.backendErrors, 'password_confirmacion');
 
   togglePasswordVisibility(field: 'current' | 'new' | 'confirm', event: MouseEvent) {
     event.stopPropagation();
@@ -57,6 +72,7 @@ export class UpdatePasswordComponent {
 
   onSubmit(event: Event) {
     event.preventDefault();
+    this.isLoading.set(true);
 
     if (this.updatePasswordForm.password_actual().invalid() || 
         this.updatePasswordForm.password_nueva().invalid() || 
@@ -66,16 +82,7 @@ export class UpdatePasswordComponent {
       this.updatePasswordForm.password_confirmacion().markAsTouched();
       return;
     }
-
-    if (this.updatePasswordModel().password_nueva !== this.updatePasswordModel().password_confirmacion) {
-      this.errorMessage.set('Las contraseñas nueva y de confirmación no coinciden.');
-      return;
-    }
-
-    this.isLoading.set(true);
-    this.errorMessage.set('');
-    this.successMessage.set('');
-
+    
     const request: UpdatePasswordRequest = {
       password_actual: this.updatePasswordModel().password_actual,
       password_nueva: this.updatePasswordModel().password_nueva,
@@ -83,25 +90,20 @@ export class UpdatePasswordComponent {
     };
 
     this.authService.updatePassword(request).subscribe({
-      next: (response) => {
-        this.isLoading.set(false);
-        this.successMessage.set('Contraseña actualizada exitosamente. Redirigiendo...');
-        
-        // Actualizar pass_actualizado en localStorage
+      next: () => {
         const userData = this.authService.getUserData();
         if (userData) {
+          this.isLoading.set(false);
           userData.pass_actualizado = true;
           this.authService.saveUserData(userData);
-        }
-
-        setTimeout(() => {
           this.router.navigate(['/home/welcome']);
-        }, 2000);
+          this.alertService.success("Contraseña actualizada exitosamente.\nRedirigiendo...");
+        }
       },
-      error: (error) => {
+      error: (err:AppHttpError) => {
         this.isLoading.set(false);
-        this.errorMessage.set('Error al actualizar la contraseña. Por favor, verifique su contraseña actual.');
-        console.error('Update password error:', error);
+        this.alertService.error(err.mensajeGeneral);
+        if (err.detalles) return this.backendErrors.set(err.detalles);
       }
     });
   }
