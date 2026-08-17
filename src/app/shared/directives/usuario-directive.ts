@@ -5,8 +5,6 @@ import { Directive, HostListener } from '@angular/core';
 })
 
 export class UsuarioDirective {
-  private readonly regexUsuario = /^[a-z]+(?:\.[a-z]+)?$/;
-
   @HostListener('input', ['$event'])
 
   onInput(event: Event): void {
@@ -14,11 +12,11 @@ export class UsuarioDirective {
     const start = input.selectionStart;
     let val = input.value.toLowerCase().replace(/[^a-z.]/g, '');
 
-    if (val.startsWith('.')) val = val.substring(1); // No punto al inicio
+    if (val.startsWith('.')) val = val.substring(1);
     
     const parts = val.split('.');
     if (parts.length > 2) {
-      val = `${parts[0]}.${parts.slice(1).join('')}`; // Máximo un solo punto
+      val = `${parts[0]}.${parts.slice(1).join('')}`;
     }
 
     if (input.value !== val) {

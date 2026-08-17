@@ -8,9 +8,9 @@ import { FormsModule } from '@angular/forms';
 import { RolesService } from '../../../../shared/services/roles.service'; 
 import { AlertService } from '../../../../shared/services/alert.service'; 
 import { RoleData, CreateRoleRequest } from '../../../../shared/interfaces/roles-interface'; 
-import { form, required, FormField, minLength } from '@angular/forms/signals'; 
+import { form, required, FormField, minLength,maxLength } from '@angular/forms/signals'; 
 import { FormErrorService } from '../../../../shared/services/form-error.service';
-import { MatIcon } from '@angular/material/icon';
+import { LetrasDirective } from '../../../../shared/directives/letras-directive';
 
 @Component({ 
   selector: 'app-rol-modal', 
@@ -23,7 +23,8 @@ import { MatIcon } from '@angular/material/icon';
     MatSlideToggleModule, 
     FormsModule, 
     FormField, 
-    MatError
+    MatError,
+    LetrasDirective
   ], 
   templateUrl: './rol-modal-component.html', 
   styleUrl: './rol-modal-component.scss', 
@@ -43,14 +44,13 @@ export class RolModalComponent implements OnInit {
   readonly errorIconPath = signal<string>('assets/icons/error.svg'); 
   backendErrors = signal<Record<string, string[]>>({});
   readonly statusText = computed(() => this.isActive() ? 'Activo' : 'Inactivo');
-  private readonly regexRole = /^[a-zA-ZáéíóúÁÉÍÓÚ ]+$/;
-  
   readonly roleModel = signal<RoleData>({ nombre_rol: '', state: 'Inactivo' }); 
   
   readonly roleForm = form( 
     this.roleModel, (fieldPath) => { 
       required(fieldPath.nombre_rol, { message: 'El nombre del rol es requerido.' });
       minLength(fieldPath.nombre_rol, 4, { message: 'El nombre del rol debe tener al menos 4 caracteres.' });
+      maxLength(fieldPath.nombre_rol, 40, { message: 'El nombre del rol debe tener máximo 40 caracteres.' });
     } 
   ); 
 
@@ -112,15 +112,5 @@ export class RolModalComponent implements OnInit {
       }); 
     } 
   } 
-
-  onCancel(): void { 
-    this.dialogRef.close(false); 
-  }
-
-  blockNumbers(event: KeyboardEvent): void {
-    if (!this.regexRole.test(event.key)) {
-      event.preventDefault();
-    }
-  }
 
 }

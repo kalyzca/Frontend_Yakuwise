@@ -2,24 +2,24 @@
 <mat-dialog-content>
     <form (submit)="onSave($event)">
         <div class="form-input-container">
-            <label for="nameRol" class="label-input-container">Nombre: (*)</label>
+            <label for="nameRol" class="label-input-container">Nombre:</label>
             <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
                 <input matInput id="nameRol" class="text-uppercase" [formField]="roleForm.nombre_rol"
-                    (keydown)="blockNumbers($event)" [errorStateMatcher]="rolError.matcher"
+                    [errorStateMatcher]="rolError.matcher" soloLetras
                     (input)="errorService.limpiarCampoBackend(backendErrors, 'nombre_rol')"
                     placeholder="Ej. Administrador">
             </mat-form-field>
             @if (rolError.mostrarErrores()) {
-            <mat-error class="error-list-container">
-                <div class="error-list">
-                    @for (error of rolError.errores(); track error.kind) {
-                    <div class="error-row">
-                        <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                        <span>{{ error.message }}</span>
+                <mat-error class="error-list-container">
+                    <div class="error-list">
+                        @for (error of rolError.errores(); track error.kind) {
+                        <div class="error-row">
+                            <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                            <span>{{ error.message }}</span>
+                        </div>
+                        }
                     </div>
-                    }
-                </div>
-            </mat-error>
+                </mat-error>
             }
         </div>
         <div class="form-input-container">
@@ -32,7 +32,7 @@
         </div>
         <mat-dialog-actions align="end">
             <button mat-button type="button" mat-dialog-close>Cancelar</button>
-            <button mat-button color="primary" type="submit" [disabled]="isLoading()">
+            <button mat-button type="submit" [disabled]="isLoading()">
                 {{ isLoading() ? 'Guardando...' : (isEditMode() ? 'Actualizar' : 'Guardar') }}
             </button>
         </mat-dialog-actions>
