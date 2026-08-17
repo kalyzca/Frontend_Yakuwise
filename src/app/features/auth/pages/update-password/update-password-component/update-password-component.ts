@@ -80,6 +80,7 @@ export class UpdatePasswordComponent {
       this.updatePasswordForm.password_actual().markAsTouched();
       this.updatePasswordForm.password_nueva().markAsTouched();
       this.updatePasswordForm.password_confirmacion().markAsTouched();
+      this.isLoading.set(false);
       return;
     }
     
@@ -91,19 +92,27 @@ export class UpdatePasswordComponent {
 
     this.authService.updatePassword(request).subscribe({
       next: () => {
+        this.isLoading.set(false);
         const userData = this.authService.getUserData();
-        if (userData) {
-          this.isLoading.set(false);
-          userData.pass_actualizado = true;
-          this.authService.saveUserData(userData);
-          this.router.navigate(['/home/welcome']);
-          this.alertService.success("Contraseña actualizada exitosamente.\nRedirigiendo...");
+
+        // Sin datos de sesión no se puede continuar autenticado, aunque la
+        // contraseña sí se actualizó.
+        if (!userData) {
+          this.authService.clearSession();
+          this.router.navigate(['/login']);
+          this.alertService.warning("Contraseña actualizada, pero tu sesión ya no es válida. Inicia sesión nuevamente.");
+          return;
         }
+
+        userData.pass_actualizado = true;
+        this.authService.saveUserData(userData);
+        this.router.navigate(['/home/welcome']);
+        this.alertService.success("Contraseña actualizada exitosamente.\nRedirigiendo...");
       },
       error: (err:AppHttpError) => {
         this.isLoading.set(false);
         this.alertService.error(err.mensajeGeneral);
-        if (err.detalles) return this.backendErrors.set(err.detalles);
+        this.backendErrors.set(err.detalles ?? {});
       }
     });
   }

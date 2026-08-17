@@ -18,6 +18,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { UsersService, CreateUserRequest, UserResponse, UsersListResponse } from '../../../../shared/services/users.service';
 import { MatChipsModule } from '@angular/material/chips';
 import { ResetPassModalComponent } from '../../modals/resetPassword/reset-pass-modal-component/reset-pass-modal-component';
+import { AppHttpError } from '../../../../shared/interfaces/error-interface';
 
 @Component({
   selector: 'app-usuario-component',
@@ -75,10 +76,14 @@ export class UsuarioComponent {
           .filter((user): user is UserData => user !== null);
         this.users.set(mappedUsers);
         this.totalUsers.set(response.count);
+        this.error.set(null);
         this.isLoading.set(false);
       },
-      error: () => {
-        this.alertService.error("Error al cargar usuarios. Por favor, inténtelo de nuevo.");
+      error: (err: AppHttpError) => {
+        this.users.set([]);
+        this.totalUsers.set(0);
+        this.error.set(err.mensajeGeneral);
+        this.alertService.error(`No se pudieron cargar los usuarios: ${err.mensajeGeneral}`);
         this.isLoading.set(false);
       }
     });
@@ -238,41 +243,6 @@ export class UsuarioComponent {
     dialogRef.afterClosed().subscribe((result: any) => {
       if (!result) return;
     });
-  }
-
-  // Método para extraer errores de campos específicos del backend
-  private extractFieldErrors(errorResponse: any): Record<string, string> {
-    const fieldErrors: Record<string, string> = {};
-    
-    if (!errorResponse) return fieldErrors;
-    
-    const detalles = errorResponse.detalles || errorResponse;
-    
-    if (typeof detalles !== 'object') return fieldErrors;
-    
-    this.processErrorFields(detalles, fieldErrors, ['persona']);
-    
-    if (detalles.persona && typeof detalles.persona === 'object') {
-      this.processErrorFields(detalles.persona, fieldErrors);
-    }
-    
-    return fieldErrors;
-  }
-
-  private processErrorFields(
-    source: any,
-    fieldErrors: Record<string, string>,
-    skipKeys: string[] = []
-  ): void {
-    for (const [key, value] of Object.entries(source)) {
-      if (skipKeys.includes(key)) continue;
-      
-      if (Array.isArray(value) && value.length > 0) {
-        fieldErrors[key] = value[0];
-      } else if (typeof value === 'string') {
-        fieldErrors[key] = value;
-      }
-    }
   }
 
   resetPassword(user?: UserData): void {

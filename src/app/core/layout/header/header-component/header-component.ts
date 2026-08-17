@@ -7,6 +7,8 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
+import { AlertService } from '../../../../shared/services/alert.service';
+import { AppHttpError } from '../../../../shared/interfaces/error-interface';
 
 @Component({
   selector: 'app-header-component',
@@ -19,6 +21,7 @@ export class HeaderComponent implements OnInit {
   protected sidebar = inject(SidebarService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly alertService = inject(AlertService);
   
   role: string | undefined = "";
   nombreCompleto:string | undefined = "";
@@ -51,10 +54,12 @@ export class HeaderComponent implements OnInit {
         this.authService.clearSession();
         this.router.navigate(['/login']);
       },
-      error: (error) => {
-        console.error('Error al cerrar sesión:', error);
+      error: (err: AppHttpError) => {
+        // La sesión local se limpia igualmente, pero el usuario debe saber que
+        // el servidor no confirmó el cierre de sesión.
         this.authService.clearSession();
         this.router.navigate(['/login']);
+        this.alertService.warning(`No se pudo confirmar el cierre de sesión en el servidor: ${err.mensajeGeneral}`);
       }
     });
   }
