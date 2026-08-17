@@ -76,7 +76,7 @@ export class RolModalComponent implements OnInit {
 
     if (this.roleForm.nombre_rol().invalid()) { 
       this.roleForm.nombre_rol().markAsTouched(); 
-      this.isLoading.set(false); 
+      this.isLoading.set(false);
       return; 
     }
     
