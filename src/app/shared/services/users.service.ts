@@ -1,55 +1,14 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ApiConfigService } from '../../core/services/api-config.service';
-
-// Interfaces para los datos de personas
-export interface PersonaData {
-  id_tipo_documento: number;
-  numero_documento: string;
-  nombres: string;
-  apellido_paterno: string;
-  apellido_materno: string;
-  genero: string;
-  telefono: string;
-  correo_personal: string;
-  estado: boolean;
-}
-
-// Interfaces para los datos de usuarios
-export interface CreateUserRequest {
-  username?: string;
-  email_institucional: string;
-  estado: boolean;
-  persona: PersonaData;
-  id_roles: number[];
-}
-
-export interface UserResponse {
-  id_usuario: number;
-  nombre_usuario: string;
-  email_institucional: string;
-  estado: boolean;
-  persona: PersonaData;
-  roles: Array<{ id_rol: number; nombre_rol: string }>;
-  bloqueado_hasta: string | null;
-  fecha_creacion: string;
-  fecha_modificacion: string;
-}
-
-export interface UsersListResponse {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: UserResponse[];
-}
-
-export interface GetUsersParams {
-  search?: string;
-  ordering?: string;
-  page?: number;
-  page_size?: number;
-}
+import {
+  CreateUserRequest,
+  GetUsersParams,
+  UserResponse,
+  UsersListResponse
+} from '../interfaces/usuario-interface';
+import { buildListHttpParams } from '../utils/http-params.util';
 
 @Injectable({
   providedIn: 'root'
@@ -68,27 +27,9 @@ export class UsersService {
 
   // Obtener usuarios con parámetros de búsqueda, paginación y ordenamiento
   getUsers(params: GetUsersParams = {}): Observable<UsersListResponse> {
-    let httpParams = new HttpParams();
-
-    if (params.search !== undefined && params.search !== null) {
-      httpParams = httpParams.set('search', params.search);
-    }
-
-    if (params.ordering !== undefined && params.ordering !== null) {
-      httpParams = httpParams.set('ordering', params.ordering);
-    }
-
-    if (params.page !== undefined && params.page !== null) {
-      httpParams = httpParams.set('page', params.page.toString());
-    }
-
-    if (params.page_size !== undefined && params.page_size !== null) {
-      httpParams = httpParams.set('page_size', params.page_size.toString());
-    }
-
     return this.http.get<UsersListResponse>(
       this.apiConfig.usersEndpoint(),
-      { params: httpParams }
+      { params: buildListHttpParams(params) }
     );
   }
 

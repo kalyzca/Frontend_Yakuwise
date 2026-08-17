@@ -1,3 +1,5 @@
+import { ListQueryParams, PaginatedResponse } from './list-query-interface';
+
 export interface RoleData {
   id?: number;
   nombre_rol:string;
@@ -16,16 +18,6 @@ export interface RoleResponse {
   estado: boolean;
 }
 
-export interface RolesListResponse {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: RoleResponse[];
-}
+export type RolesListResponse = PaginatedResponse<RoleResponse>;
 
-export interface GetRolesParams {
-  search?: string;
-  ordering?: string;
-  page?: number;
-  page_size?: number;
-}
+export type GetRolesParams = ListQueryParams;

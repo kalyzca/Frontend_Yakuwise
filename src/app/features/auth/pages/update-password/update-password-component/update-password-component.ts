@@ -31,7 +31,7 @@ export class UpdatePasswordComponent {
   private readonly alertService = inject(AlertService);
   public errorService = inject(FormErrorService);
 
-  errorIconPath = signal(this.iconService.getIconPath('error')());
+  errorIconPath = this.iconService.errorIcon;
   backendErrors = signal<Record<string, string[]>>({});
 
   passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -100,11 +100,7 @@ export class UpdatePasswordComponent {
           this.alertService.success("Contraseña actualizada exitosamente.\nRedirigiendo...");
         }
       },
-      error: (err:AppHttpError) => {
-        this.isLoading.set(false);
-        this.alertService.error(err.mensajeGeneral);
-        if (err.detalles) return this.backendErrors.set(err.detalles);
-      }
+      error: (err: AppHttpError) => this.errorService.handleBackendError(err, this.backendErrors, this.isLoading)
     });
   }
 }

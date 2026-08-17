@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule,  MatFormField, MatError } from '@angular/material/form-field';
 import { form, required, FormField, pattern, minLength, maxLength } from '@angular/forms/signals';
@@ -33,7 +33,7 @@ export class ForgetPasswordModal {
   private readonly emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   isLoading = signal(false);
 
-  errorIconPath = computed(() => this.iconService.getIconPath('error')());
+  errorIconPath = this.iconService.errorIcon;
   backendErrors = signal<Record<string, string[]>>({});
   
   forgetPassModel = signal<ForgetPasswordData>({
@@ -70,11 +70,7 @@ export class ForgetPasswordModal {
         this.dialogRef.close(response);
         
       },
-      error: (err:AppHttpError) => {
-        this.isLoading.set(false);
-        this.alertService.error(err.mensajeGeneral);
-        if (err.detalles) return this.backendErrors.set(err.detalles);
-      }
+      error: (err: AppHttpError) => this.errorService.handleBackendError(err, this.backendErrors, this.isLoading)
     });
   }
 }
