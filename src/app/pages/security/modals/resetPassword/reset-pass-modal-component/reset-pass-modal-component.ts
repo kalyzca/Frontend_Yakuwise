@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { UserData } from '../../../../../shared/interfaces/usuario-interface';
@@ -17,18 +17,19 @@ export class ResetPassModalComponent {
   public readonly dataUser = inject<UserData | undefined>(MAT_DIALOG_DATA);
   private readonly usersService = inject(UsersService);
   private readonly alertService = inject(AlertService);
+  isLoading = signal(false);
   
-  closeModalResetPass(): void {
-    this.dialogRef.close();
-  }
-
   resetPassword(): void {
+    this.isLoading.set(true);
+
     if (this.dataUser?.id) {
       this.usersService.resetPassword(this.dataUser.id).subscribe({
-        next: () => {
-          this.dialogRef.close(true);
+        next: (response) => {
+          this.isLoading.set(false);
+          this.dialogRef.close(response);
         },
         error: () => {
+          this.isLoading.set(false);
           this.alertService.error("Error al restablecer contraseña.\nPor favor, inténtelo de nuevo.");
         }
       });
