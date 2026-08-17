@@ -1,11 +1,12 @@
 import { Injectable, signal } from '@angular/core';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiConfigService {
   // URL base del servidor API
-  private readonly baseUrl = signal('http://127.0.0.1:8000');
+  private readonly baseUrl = signal(environment.apiBaseUrl);
 
   // Endpoint específico para roles
   readonly rolesEndpoint = signal(`${this.baseUrl()}/security/roles/`);
@@ -41,5 +42,14 @@ export class ApiConfigService {
   // Método para construir URLs completas
   buildUrl(endpoint: string): string {
     return `${this.baseUrl()}${endpoint}`;
+  }
+
+  // Indica si una URL apunta a la API propia (evita enviar credenciales a terceros)
+  isApiUrl(url: string): boolean {
+    const base = this.baseUrl();
+    if (!base) {
+      return !/^[a-z][a-z\d+\-.]*:\/\//i.test(url);
+    }
+    return url === base || url.startsWith(`${base}/`);
   }
 }

@@ -53,7 +53,13 @@ export class AuthService {
 
   getUserData(): LoginResponse['data'] | null {
     const userData = localStorage.getItem(this.USER_KEY);
-    return userData ? JSON.parse(userData) : null;
+    if (!userData) return null;
+    try {
+      return JSON.parse(userData) as LoginResponse['data'];
+    } catch {
+      this.clearSession();
+      return null;
+    }
   }
 
   isLoggedIn(): boolean {
