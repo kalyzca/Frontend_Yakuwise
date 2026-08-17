@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { form, FormField, maxLength, minLength, required } from '@angular/forms/signals';
 import { MatIcon } from "@angular/material/icon";
@@ -8,7 +8,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { IconService } from '../../../../../shared/services/icon.service';
 import { AuthService } from '../../../../../core/services/auth.service';
 import { LoginRequest } from '../../../../../shared/interfaces/login-interface';
-import { AlertService } from '../../../../../shared';
 import { MatDialog } from '@angular/material/dialog';
 import { ForgetPasswordModal } from '../../../../../pages/security/modals/forget-password-modal/forget-password-modal-component';
 import { FormErrorService } from '../../../../../shared/services/form-error.service';
@@ -29,12 +28,11 @@ export class LoginComponent {
   private readonly iconService = inject(IconService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
-  private readonly alertService = inject(AlertService);
   private readonly dialog = inject(MatDialog);
   public errorService = inject(FormErrorService);
   
   backendErrors = signal<Record<string, string[]>>({});
-  errorIconPath = computed(() => this.iconService.getIconPath('error')());
+  errorIconPath = this.iconService.errorIcon;
   
   loginModel = signal<LoginRequest> ({
     nombre_usuario: '',
@@ -85,11 +83,7 @@ export class LoginComponent {
           this.router.navigate(['/update-password']);
         }
       },
-      error: (err:AppHttpError) => {
-        this.isLoading.set(false);
-        this.alertService.error(err.mensajeGeneral);
-        if (err.detalles) return this.backendErrors.set(err.detalles);
-      }
+      error: (err: AppHttpError) => this.errorService.handleBackendError(err, this.backendErrors, this.isLoading)
     });
 
   }

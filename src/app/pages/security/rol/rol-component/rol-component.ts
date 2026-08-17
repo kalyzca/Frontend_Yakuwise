@@ -1,8 +1,8 @@
 import { Component, computed, inject, signal } from '@angular/core'; 
 import { ButtonComponent } from "../../../../shared"; 
 import { RouterLink } from "@angular/router"; 
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator'; 
-import { MatSortModule, Sort } from '@angular/material/sort'; 
+import { MatPaginatorModule } from '@angular/material/paginator'; 
+import { MatSortModule } from '@angular/material/sort'; 
 import { MatTableModule } from '@angular/material/table'; 
 import { MatInputModule } from '@angular/material/input'; 
 import { MatFormFieldModule } from '@angular/material/form-field'; 
@@ -14,6 +14,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button'; 
 import { RolesService } from '../../../../shared/services/roles.service'; 
 import { RoleData, RoleResponse, RolesListResponse } from '../../../../shared/interfaces/roles-interface';
+import { PaginatedListStore } from '../../../../shared/state/paginated-list.store';
+import { ESTADO_ACTIVO, ESTADO_INACTIVO, resolveEstadoSearch } from '../../../../shared/utils/list-query.util';
 
 @Component({
   selector: 'app-rol-component', 
@@ -22,45 +24,29 @@ import { RoleData, RoleResponse, RolesListResponse } from '../../../../shared/in
   styleUrl: './rol-component.scss', 
 })
 
-export class RolComponent { 
+export class RolComponent extends PaginatedListStore { 
   private readonly dialog = inject(MatDialog); 
   private readonly rolesService = inject(RolesService); 
-  
+
+  protected readonly sortFieldMap: Record<string, string> = { 'id': 'id_rol', 'name': 'nombre_rol', 'state': 'estado' };
+  protected readonly defaultOrdering = 'id_rol';
+
   displayedColumns: string[] = ['id', 'name', 'state', 'actions']; 
   roles = signal<RoleData[]>([]); 
-  totalRoles = signal<number>(0); 
-  pageIndex = signal<number>(1); 
-  pageSize = signal<number>(5); 
-  activeSort = signal<Sort>({ active: '', direction: '' }); 
-  paginatorPageIndex = computed(() => this.pageIndex() - 1); 
-  searchTerm = signal<string>(''); 
+
+  readonly totalRoles = this.total;
 
   constructor() { 
+    super();
     this.loadRoles(); 
   } 
 
   loadRoles(): void { 
-    let ordering = ''; 
-    if (this.activeSort()?.active && this.activeSort()?.direction) { 
-      const field = this.mapSortField(this.activeSort().active); 
-      const direction = this.activeSort().direction === 'asc' ? '' : '-'; 
-      ordering = `${direction}${field}`; 
-    } 
-    const rawSearch = this.searchTerm().toLowerCase().trim(); 
-    const palabrasEstado = ['activo', 'inactivo', 'act', 'inac', 'ina', 'activ', 'inactiv']; 
-    const esBusquedaDeEstado = palabrasEstado.includes(rawSearch); 
-    const apiSearchParam = esBusquedaDeEstado ? undefined : (this.searchTerm() || undefined); 
-
-    this.rolesService.getRoles({ 
-      search: apiSearchParam, 
-      ordering: ordering || 'id_rol', 
-      page: this.pageIndex(), 
-      page_size: this.pageSize() 
-    }).subscribe({ 
+    this.rolesService.getRoles(this.listQueryParams()).subscribe({ 
       next: (response: RolesListResponse) => { 
         const mappedRoles = response.results.map(role => this.mapFromApiResponse(role)); 
         this.roles.set(mappedRoles); 
-        this.totalRoles.set(response.count); 
+        this.total.set(response.count); 
       },
       error: (error) => {
       console.log('error al obtener roles',error)
@@ -68,10 +54,9 @@ export class RolComponent {
     });
   } 
 
-  private mapSortField(field: string): string { 
-    const fieldMap: { [key: string]: string } = { 'id': 'id_rol', 'name': 'nombre_rol', 'state': 'estado' }; 
-    return fieldMap[field] || field; 
-  } 
+  protected override load(): void {
+    this.loadRoles();
+  }
 
   displayedRoles = computed(() => { 
     const currentRoles = this.roles(); 
@@ -79,39 +64,22 @@ export class RolComponent {
     if (!search) { 
       return currentRoles; 
     } 
+    const estado = resolveEstadoSearch(search);
+    if (estado) {
+      return currentRoles.filter(role => role.state.toLowerCase() === estado.toLowerCase());
+    }
     return currentRoles.filter(role => { 
       const roleNameLower = role.nombre_rol.toLowerCase(); 
-      const roleStateLower = role.state.toLowerCase(); 
       const roleIdStr = role.id?.toString() || ''; 
-      if (['activo', 'inactivo'].includes(search)) return roleStateLower === search; 
-      if (['act', 'activ', 'activa'].includes(search)) return roleStateLower === 'activo'; 
-      if (['inac', 'ina', 'inactiv', 'inactiva'].includes(search)) return roleStateLower === 'inactivo'; 
       return roleNameLower.includes(search) || roleIdStr.includes(search); 
     }); 
   }); 
-  
-  onSearchChange(value: string): void { 
-    this.searchTerm.set(value ?? ''); 
-    this.loadRoles(); 
-  } 
-
-  onPageChange(event: PageEvent): void { 
-    this.pageIndex.set(event.pageIndex + 1); 
-    this.pageSize.set(event.pageSize); 
-    this.loadRoles(); 
-  } 
-
-  onSortChange(sort: Sort): void { 
-    this.activeSort.set(sort); 
-    this.pageIndex.set(1); 
-    this.loadRoles(); 
-  } 
 
   private mapFromApiResponse(apiResponse: RoleResponse): RoleData { 
     return { 
       id: apiResponse.id_rol || apiResponse.id || 0, 
       nombre_rol: apiResponse.nombre_rol,
-      state: apiResponse.estado ? 'Activo' : 'Inactivo' 
+      state: apiResponse.estado ? ESTADO_ACTIVO : ESTADO_INACTIVO 
     }; 
   } 
 

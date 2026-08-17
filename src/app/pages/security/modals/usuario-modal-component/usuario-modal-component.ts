@@ -12,9 +12,11 @@ import { RolesService } from '../../../../shared/services/roles.service';
 import { TiposDocumentoService, TipoDocumentoResponse } from '../../../../shared/services/tipos-documento.service';
 import { IconService } from '../../../../shared/services/icon.service';
 import { CommonModule } from '@angular/common';
-import { UsersService, CreateUserRequest } from '../../../../shared/services/users.service';
+import { UsersService } from '../../../../shared/services/users.service';
 import { UserData, UserFormData } from '../../../../shared/interfaces/usuario-interface';
 import { RoleResponse } from '../../../../shared/interfaces/roles-interface';
+import { mapUserToApiRequest } from '../../../../shared/mappers/usuario-mapper';
+import { extractFieldErrors } from '../../../../shared/utils/backend-error.util';
 
 @Component({
   selector: 'app-usuario-modal-component',
@@ -151,55 +153,6 @@ export class UsuarioModalComponent {
   
   isSaving = signal<boolean>(false);
 
-  private mapToApiRequest(userData: UserData): CreateUserRequest {
-    return {
-      username: userData.username || '',
-      email_institucional: userData.email,
-      estado: userData.state === 'Activo',
-      persona: {
-        id_tipo_documento: userData.persona.id_tipo_documento,
-        numero_documento: userData.persona.numero_documento,
-        nombres: userData.persona.nombres,
-        apellido_paterno: userData.persona.apellido_paterno,
-        apellido_materno: userData.persona.apellido_materno,
-        genero: userData.persona.genero,
-        telefono: userData.persona.telefono,
-        correo_personal: userData.persona.correo_personal,
-        estado: userData.persona.estado
-      },
-      id_roles: userData.id_roles || []
-    };
-  }
-
-  private extractFieldErrors(errorResponse: any): Record<string, string> {
-    const fieldErrors: Record<string, string> = {};
-    if (!errorResponse) return fieldErrors;
-    const detalles = errorResponse.detalles || errorResponse;
-    
-    if (typeof detalles === 'object') {
-      for (const [key, value] of Object.entries(detalles)) {
-        if (key === 'persona') continue;
-        
-        if (Array.isArray(value) && value.length > 0) {
-          fieldErrors[key] = value[0];
-        } else if (typeof value === 'string') {
-          fieldErrors[key] = value;
-        }
-      }
-      
-      if (detalles.persona && typeof detalles.persona === 'object') {
-        for (const [key, value] of Object.entries(detalles.persona)) {
-          if (Array.isArray(value) && value.length > 0) {
-            fieldErrors[key] = value[0];
-          } else if (typeof value === 'string') {
-            fieldErrors[key] = value;
-          }
-        }
-      }
-    }
-    return fieldErrors;
-  }
-
   onSave(event: Event): void {
     event.preventDefault();
     if (this.isReadOnly()) return;
@@ -243,33 +196,22 @@ export class UsuarioModalComponent {
       }
     };
 
-    const apiRequest = this.mapToApiRequest(payload);
+    const apiRequest = mapUserToApiRequest(payload);
 
-    if (this.isEditMode()) {
-      this.usersService.updateUser(this.inputData?.id || 0, apiRequest).subscribe({
-        next: () => {
-          this.isSaving.set(false);
-          this.dialogRef.close({ action: 'success', data: payload });
-        },
-        error: (err) => {
-          this.isSaving.set(false);
-          const fieldErrors = this.extractFieldErrors(err.error);
-          this.setBackendErrors(fieldErrors);
-        }
-      });
-    } else {
-      this.usersService.createUser(apiRequest).subscribe({
-        next: () => {
-          this.isSaving.set(false);
-          this.dialogRef.close({ action: 'success', data: payload });
-        },
-        error: (err) => {
-          this.isSaving.set(false);
-          const fieldErrors = this.extractFieldErrors(err.error);
-          this.setBackendErrors(fieldErrors);
-        }
-      });
-    }
+    const save$ = this.isEditMode()
+      ? this.usersService.updateUser(this.inputData?.id || 0, apiRequest)
+      : this.usersService.createUser(apiRequest);
+
+    save$.subscribe({
+      next: () => {
+        this.isSaving.set(false);
+        this.dialogRef.close({ action: 'success', data: payload });
+      },
+      error: (err: { error?: unknown }) => {
+        this.isSaving.set(false);
+        this.setBackendErrors(extractFieldErrors(err.error));
+      }
+    });
   }
 
   closeModal(): void {
@@ -290,5 +232,5 @@ export class UsuarioModalComponent {
     this.dialogRef.close({ action: 'cancel' });
   }
 
-  errorIconPath = computed(() => this.iconService.getIconPath('error')());
+  errorIconPath = this.iconService.errorIcon;
 }

@@ -1,5 +1,7 @@
-import { Injectable, computed, Signal } from '@angular/core';
+import { Injectable, WritableSignal, computed, inject, Signal } from '@angular/core';
 import { ErrorStateMatcher } from '@angular/material/core';
+import { AppHttpError } from '../interfaces/error-interface';
+import { AlertService } from './alert.service';
 
 export interface UnifiedError {
   kind: string;
@@ -11,6 +13,21 @@ export interface UnifiedError {
 })
 
 export class FormErrorService {
+  private readonly alertService = inject(AlertService);
+
+  /**
+   * Muestra el mensaje general de un error del backend y publica sus errores por campo.
+   */
+  handleBackendError(
+    err: AppHttpError,
+    backendErrorsSignal: WritableSignal<Record<string, string[]>>,
+    isLoadingSignal?: WritableSignal<boolean>
+  ): void {
+    isLoadingSignal?.set(false);
+    this.alertService.error(err.mensajeGeneral);
+
+    if (err.detalles) backendErrorsSignal.set(err.detalles);
+  }
   
   createFieldTracker(formFieldSignal: any, backendErrorsSignal: Signal<Record<string, string[]>>, campoNombre: string) {
     const errores = computed<UnifiedError[]>(() => {
