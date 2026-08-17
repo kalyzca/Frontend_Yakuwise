@@ -11,7 +11,7 @@ export const errorParserInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     catchError((err: HttpErrorResponse) => {
       if (err.status === 401) {
-        authService.logout();
+        authService.clearSession();
         router.navigate(['/login']);
         return throwError(() => ({ status: 401, mensajeGeneral: 'Tu sesión ha expirado. Por favor, inicia sesión nuevamente.' }));
       }

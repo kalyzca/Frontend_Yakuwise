@@ -40,9 +40,6 @@ export class HeaderComponent implements OnInit {
     else {
       this.displayRole = 'Invitado';
     }
-
-    console.log('users',this.roles);
-
   }
 
   onLogout(): void {
