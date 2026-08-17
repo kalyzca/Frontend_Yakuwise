@@ -66,6 +66,7 @@ export class ForgetPasswordModal {
       next: (response) => {
         this.isLoading.set(false);
         this.alertService.success("Hemos enviado un correo. Revise su bandeja de entrada.", 8000);
+        this.alertService.success(response.message,4000);
         this.dialogRef.close(response);
         
       },

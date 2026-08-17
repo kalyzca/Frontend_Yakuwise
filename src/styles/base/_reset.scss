@@ -234,6 +234,13 @@ body {
                     background-color: v.$primary-active-color;
                     border-color: v.$primary-active-color;
                 }
+                
+                &:disabled {
+                    background-color: v.$gray-200;
+                    color: v.$dark-color;
+                    cursor: not-allowed;
+                    border-color: v.$gray-400;
+                }
             }
         }
     }
