@@ -59,6 +59,7 @@ export class ForgetPasswordModal {
     if (this.forgetPassForm.nombre_usuario().invalid() || this.forgetPassForm.email().invalid()) {
       this.forgetPassForm.nombre_usuario().markAsTouched();
       this.forgetPassForm.email().markAsTouched();
+      this.isLoading.set(false);
       return;
     }
 
@@ -73,7 +74,7 @@ export class ForgetPasswordModal {
       error: (err:AppHttpError) => {
         this.isLoading.set(false);
         this.alertService.error(err.mensajeGeneral);
-        if (err.detalles) return this.backendErrors.set(err.detalles);
+        this.backendErrors.set(err.detalles ?? {});
       }
     });
   }

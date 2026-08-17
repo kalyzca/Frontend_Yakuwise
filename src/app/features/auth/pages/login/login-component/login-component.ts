@@ -65,6 +65,7 @@ export class LoginComponent {
     if (this.loginForm.nombre_usuario().invalid() || this.loginForm.password().invalid()) {
       this.loginForm.nombre_usuario().markAsTouched();
       this.loginForm.password().markAsTouched();
+      this.isLoading.set(false);
       return;
     }
 
@@ -88,7 +89,7 @@ export class LoginComponent {
       error: (err:AppHttpError) => {
         this.isLoading.set(false);
         this.alertService.error(err.mensajeGeneral);
-        if (err.detalles) return this.backendErrors.set(err.detalles);
+        this.backendErrors.set(err.detalles ?? {});
       }
     });
 

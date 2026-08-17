@@ -15,6 +15,8 @@ import { CommonModule } from '@angular/common';
 import { UsersService, CreateUserRequest } from '../../../../shared/services/users.service';
 import { UserData, UserFormData } from '../../../../shared/interfaces/usuario-interface';
 import { RoleResponse } from '../../../../shared/interfaces/roles-interface';
+import { AppHttpError } from '../../../../shared/interfaces/error-interface';
+import { AlertService } from '../../../../shared/services/alert.service';
 
 @Component({
   selector: 'app-usuario-modal-component',
@@ -33,6 +35,7 @@ export class UsuarioModalComponent {
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly ngZone = inject(NgZone);
   private readonly usersService = inject(UsersService);
+  private readonly alertService = inject(AlertService);
 
   roles = signal<RoleResponse[]>([]);
   tiposDocumento = signal<TipoDocumentoResponse[]>([]);
@@ -128,8 +131,8 @@ export class UsuarioModalComponent {
       next: (response) => {
         this.roles.set(response.results);
       },
-      error: (err) => {
-        console.error('Error al cargar roles:', err);
+      error: (err: AppHttpError) => {
+        this.alertService.error(`No se pudieron cargar los roles: ${err.mensajeGeneral}`);
       }
     });
   }
@@ -139,8 +142,8 @@ export class UsuarioModalComponent {
       next: (response) => {
         this.tiposDocumento.set(response.data);
       },
-      error: (err) => {
-        console.error('Error al cargar tipos de documento:', err);
+      error: (err: AppHttpError) => {
+        this.alertService.error(`No se pudieron cargar los tipos de documento: ${err.mensajeGeneral}`);
       }
     });
   }
@@ -171,33 +174,20 @@ export class UsuarioModalComponent {
     };
   }
 
-  private extractFieldErrors(errorResponse: any): Record<string, string> {
+  private toFieldErrors(detalles?: Record<string, string[]>): Record<string, string> {
     const fieldErrors: Record<string, string> = {};
-    if (!errorResponse) return fieldErrors;
-    const detalles = errorResponse.detalles || errorResponse;
-    
-    if (typeof detalles === 'object') {
-      for (const [key, value] of Object.entries(detalles)) {
-        if (key === 'persona') continue;
-        
-        if (Array.isArray(value) && value.length > 0) {
-          fieldErrors[key] = value[0];
-        } else if (typeof value === 'string') {
-          fieldErrors[key] = value;
-        }
-      }
-      
-      if (detalles.persona && typeof detalles.persona === 'object') {
-        for (const [key, value] of Object.entries(detalles.persona)) {
-          if (Array.isArray(value) && value.length > 0) {
-            fieldErrors[key] = value[0];
-          } else if (typeof value === 'string') {
-            fieldErrors[key] = value;
-          }
-        }
+    for (const [campo, mensajes] of Object.entries(detalles ?? {})) {
+      if (mensajes.length > 0) {
+        fieldErrors[campo] = mensajes[0];
       }
     }
     return fieldErrors;
+  }
+
+  private handleSaveError(err: AppHttpError): void {
+    this.isSaving.set(false);
+    this.alertService.error(err.mensajeGeneral);
+    this.setBackendErrors(this.toFieldErrors(err.detalles));
   }
 
   onSave(event: Event): void {
@@ -251,10 +241,8 @@ export class UsuarioModalComponent {
           this.isSaving.set(false);
           this.dialogRef.close({ action: 'success', data: payload });
         },
-        error: (err) => {
-          this.isSaving.set(false);
-          const fieldErrors = this.extractFieldErrors(err.error);
-          this.setBackendErrors(fieldErrors);
+        error: (err: AppHttpError) => {
+          this.handleSaveError(err);
         }
       });
     } else {
@@ -263,10 +251,8 @@ export class UsuarioModalComponent {
           this.isSaving.set(false);
           this.dialogRef.close({ action: 'success', data: payload });
         },
-        error: (err) => {
-          this.isSaving.set(false);
-          const fieldErrors = this.extractFieldErrors(err.error);
-          this.setBackendErrors(fieldErrors);
+        error: (err: AppHttpError) => {
+          this.handleSaveError(err);
         }
       });
     }

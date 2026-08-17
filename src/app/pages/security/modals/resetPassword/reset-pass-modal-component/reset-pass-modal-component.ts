@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { UserData } from '../../../../../shared/interfaces/usuario-interface';
 import { UsersService } from '../../../../../shared/services/users.service';
 import { AlertService } from '../../../../../shared/services/alert.service';
+import { AppHttpError } from '../../../../../shared/interfaces/error-interface';
 
 @Component({
   selector: 'app-reset-pass-modal-component',
@@ -20,19 +21,22 @@ export class ResetPassModalComponent {
   isLoading = signal(false);
   
   resetPassword(): void {
+    if (!this.dataUser?.id) {
+      this.alertService.error('No se pudo identificar al usuario. Cierre el diálogo e inténtelo de nuevo.');
+      return;
+    }
+
     this.isLoading.set(true);
 
-    if (this.dataUser?.id) {
-      this.usersService.resetPassword(this.dataUser.id).subscribe({
-        next: (response) => {
-          this.isLoading.set(false);
-          this.dialogRef.close(response);
-        },
-        error: () => {
-          this.isLoading.set(false);
-          this.alertService.error("Error al restablecer contraseña.\nPor favor, inténtelo de nuevo.");
-        }
-      });
-    }
+    this.usersService.resetPassword(this.dataUser.id).subscribe({
+      next: () => {
+        this.isLoading.set(false);
+        this.dialogRef.close(true);
+      },
+      error: (err: AppHttpError) => {
+        this.isLoading.set(false);
+        this.alertService.error(`Error al restablecer contraseña: ${err.mensajeGeneral}`);
+      }
+    });
   }
 }

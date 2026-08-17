@@ -1,5 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core'; 
-import { ButtonComponent } from "../../../../shared"; 
+import { AlertService, ButtonComponent } from "../../../../shared"; 
 import { RouterLink } from "@angular/router"; 
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator'; 
 import { MatSortModule, Sort } from '@angular/material/sort'; 
@@ -14,6 +14,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button'; 
 import { RolesService } from '../../../../shared/services/roles.service'; 
 import { RoleData, RoleResponse, RolesListResponse } from '../../../../shared/interfaces/roles-interface';
+import { AppHttpError } from '../../../../shared/interfaces/error-interface';
 
 @Component({
   selector: 'app-rol-component', 
@@ -25,9 +26,11 @@ import { RoleData, RoleResponse, RolesListResponse } from '../../../../shared/in
 export class RolComponent { 
   private readonly dialog = inject(MatDialog); 
   private readonly rolesService = inject(RolesService); 
+  private readonly alertService = inject(AlertService); 
   
   displayedColumns: string[] = ['id', 'name', 'state', 'actions']; 
   roles = signal<RoleData[]>([]); 
+  error = signal<string | null>(null); 
   totalRoles = signal<number>(0); 
   pageIndex = signal<number>(1); 
   pageSize = signal<number>(5); 
@@ -61,9 +64,13 @@ export class RolComponent {
         const mappedRoles = response.results.map(role => this.mapFromApiResponse(role)); 
         this.roles.set(mappedRoles); 
         this.totalRoles.set(response.count); 
+        this.error.set(null); 
       },
-      error: (error) => {
-      console.log('error al obtener roles',error)
+      error: (err: AppHttpError) => {
+        this.roles.set([]); 
+        this.totalRoles.set(0); 
+        this.error.set(err.mensajeGeneral); 
+        this.alertService.error(`No se pudieron cargar los roles: ${err.mensajeGeneral}`); 
       }
     });
   } 

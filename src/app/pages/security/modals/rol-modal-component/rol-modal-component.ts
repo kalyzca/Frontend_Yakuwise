@@ -11,6 +11,7 @@ import { RoleData, CreateRoleRequest } from '../../../../shared/interfaces/roles
 import { form, required, FormField, minLength,maxLength } from '@angular/forms/signals'; 
 import { FormErrorService } from '../../../../shared/services/form-error.service';
 import { LetrasDirective } from '../../../../shared/directives/letras-directive';
+import { AppHttpError } from '../../../../shared/interfaces/error-interface';
 
 @Component({ 
   selector: 'app-rol-modal', 
@@ -91,10 +92,10 @@ export class RolModalComponent implements OnInit {
           this.alertService.success('Rol actualizado exitosamente.'); 
           this.dialogRef.close(result);
         }, 
-        error: (err) => {
+        error: (err: AppHttpError) => {
           this.isLoading.set(false);
           this.alertService.error(err.mensajeGeneral);
-          if (err.detalles) return this.backendErrors.set(err.detalles);
+          this.backendErrors.set(err.detalles ?? {});
         } 
       }); 
     } 
@@ -105,10 +106,10 @@ export class RolModalComponent implements OnInit {
           this.alertService.success('Rol creado exitosamente.');
           this.dialogRef.close(result);
         }, 
-        error: (err) => { 
+        error: (err: AppHttpError) => { 
           this.isLoading.set(false);
           this.alertService.error(err.mensajeGeneral);
-        if (err.detalles) return this.backendErrors.set(err.detalles);
+          this.backendErrors.set(err.detalles ?? {});
         } 
       }); 
     } 
