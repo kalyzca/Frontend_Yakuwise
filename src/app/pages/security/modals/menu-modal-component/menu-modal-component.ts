@@ -7,7 +7,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule, ReactiveFormsModule } from '@angular/forms'; 
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MenusService } from '../../../../shared/services/menus.service'; 
 import { ModulosService } from '../../../../shared/services/modulos.service';
 import { AlertService } from '../../../../shared/services/alert.service'; 
@@ -18,6 +19,7 @@ import { CreateMenuRequest } from '../../../../shared/interfaces/menus-interface
 import { ModuloData } from '../../../../shared/interfaces/modulos-interface';
 import { form, required, FormField } from '@angular/forms/signals'; 
 import { Role } from '../../../../shared/interfaces/menus-interface';
+import { FormControl } from '@angular/forms';
 
 export interface MenuData {
   id_menu: number;
@@ -29,6 +31,7 @@ export interface MenuData {
   nombre_modulo: string;
   estado: boolean;
   roles?: Role[];
+  id_depende: number;
 } 
 
 @Component({ 
@@ -44,9 +47,11 @@ export interface MenuData {
     MatIconModule,
     MatTooltipModule,
     FormsModule,
+    ReactiveFormsModule,
     MatFormField,
     MatError,
-    FormField
+    FormField,
+    MatAutocompleteModule
   ], 
   templateUrl: './menu-modal-component.html', 
   styleUrl: './menu-modal-component.scss', 
@@ -69,6 +74,15 @@ export class MenuModalComponent implements OnInit {
   readonly backendErrors = signal<Record<string, string[]>>({});
   readonly statusText = computed(() => this.isActive() ? 'Activo' : 'Inactivo');
   readonly modulos = signal<ModuloData[]>([]);
+  readonly menus = signal<{id: number, name: string}[]>([]);
+  readonly menuParentControl = new FormControl<number | null>(null);
+  readonly menuSearch = signal<string>('');
+  readonly filteredMenus = computed(() => {
+    const search = this.menuSearch().toLowerCase();
+    return this.menus().filter(menu => 
+      menu.name.toLowerCase().includes(search)
+    );
+  });
   
   readonly menuModel = signal<MenuData>({ 
     id_menu: 0,
@@ -78,7 +92,8 @@ export class MenuModalComponent implements OnInit {
     id_modulo: 0, 
     nombre_modulo: '',
     nombre_menu: '',
-    estado: false
+    estado: false,
+    id_depende: 0
   });
 
   readonly menuForm = form(this.menuModel, (fieldPath) => {
@@ -88,6 +103,8 @@ export class MenuModalComponent implements OnInit {
     required(fieldPath.ruta, { message: 'La ruta es requerida.' });
   });
 
+  readonly showIdDepiende = computed(() => this.menuModel().nivel === 2);
+
   moduloError = this.errorService.createFieldTracker(this.menuForm.id_modulo, this.backendErrors, 'id_modulo');
   nombreMenuError = this.errorService.createFieldTracker(this.menuForm.nombre_menu, this.backendErrors, 'nombre_menu');
   nivelError = this.errorService.createFieldTracker(this.menuForm.nivel, this.backendErrors, 'nivel');
@@ -96,6 +113,7 @@ export class MenuModalComponent implements OnInit {
 
   ngOnInit(): void { 
     this.loadModulos();
+    this.loadMenus();
     if (this.data) { 
       this.isEditMode.set(true); 
       this.isActive.set(this.data.estado); 
@@ -108,7 +126,8 @@ export class MenuModalComponent implements OnInit {
         id_modulo: this.data.id_modulo,
         nombre_modulo: this.data.nombre_modulo,
         nombre_menu: this.data.nombre_menu,
-        estado: this.data.estado
+        estado: this.data.estado,
+        id_depende: this.data.id_depende || 0
       });
     } 
   }
@@ -128,6 +147,60 @@ export class MenuModalComponent implements OnInit {
       }
     });
   }
+
+  loadMenus(): void {
+    this.menusService.getMenus({ page: 1, page_size: 100 }).subscribe({
+      next: (response) => {
+        const mappedMenus = response.results.map(menu => ({
+          id: menu.id_menu || menu.id || 0,
+          name: menu.nombre_menu
+        }));
+        this.menus.set(mappedMenus);
+
+        // Establecer el ID del menú padre seleccionado si existe
+        if (this.data && this.data.id_depende) {
+          this.menuParentControl.setValue(this.data.id_depende);
+        }
+      },
+      error: (error) => {
+        console.log('Error al cargar menús', error);
+      }
+    });
+  }
+
+  onNivelChange(): void {
+    if (this.menuModel().nivel !== 2) {
+      this.menuModel.update(current => ({ ...current, id_depende: 0 }));
+      this.menuSearch.set('');
+      this.menuParentControl.setValue(null);
+      this.errorService.limpiarCampoBackend(this.backendErrors, 'id_depende');
+    }
+  }
+
+  onMenuInput(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.menuSearch.set(value);
+    this.errorService.limpiarCampoBackend(this.backendErrors, 'id_depende');
+    
+    // Si el input está vacío, resetear el ID
+    if (!value) {
+      this.menuModel.update(current => ({ ...current, id_depende: 0 }));
+      this.menuParentControl.setValue(null);
+    }
+  }
+
+  onMenuSelected(event: any): void {
+    const selectedMenu = this.menus().find(m => m.id === event.option.value);
+    if (selectedMenu) {
+      this.menuParentControl.setValue(selectedMenu.id);
+      this.menuModel.update(current => ({ ...current, id_depende: selectedMenu.id }));
+    }
+  }
+
+  displayMenuName = (menuId: number): string => {
+    const menu = this.menus().find(m => m.id === menuId);
+    return menu ? menu.name : '';
+  };
   
   onSave(event: Event) {
     event.preventDefault();
@@ -143,6 +216,11 @@ export class MenuModalComponent implements OnInit {
       return;
     }
 
+    if (this.menuModel().nivel === 2 && this.menuModel().id_depende === 0) {
+      this.backendErrors.set({ id_depende: ['El menú padre es requerido cuando el nivel es 2.'] });
+      return;
+    }
+
     this.isLoading.set(true);
     this.backendErrors.set({});
     
@@ -152,8 +230,12 @@ export class MenuModalComponent implements OnInit {
       ruta: this.menuModel().ruta.trim(),
       id_modulo: this.menuModel().id_modulo,
       nombre_menu: this.menuModel().nombre_menu.trim(),
-      estado: this.isActive() 
-    }; 
+      estado: this.isActive()
+    };
+
+    if (this.menuModel().nivel === 2 && this.menuModel().id_depende !== 0) {
+      apiRequest.id_depende = this.menuModel().id_depende;
+    } 
     
     if (this.isEditMode() && this.data?.id_menu) { 
       this.menusService.updateMenu(this.data.id_menu, apiRequest).subscribe({ 

@@ -5,6 +5,7 @@ export interface CreateMenuRequest {
   id_modulo: number;
   nombre_menu: string;
   estado: boolean;
+  id_depende?: number;
 }
 
 export interface Role {
@@ -23,6 +24,7 @@ export interface MenuResponse {
   nombre_menu: string;
   estado: boolean;
   roles?: Role[];
+  id_depende?: number;
 }
 
 export interface MenusListResponse {
