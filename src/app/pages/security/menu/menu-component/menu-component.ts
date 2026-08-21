@@ -130,7 +130,8 @@ export class MenuComponent {
       orden: apiResponse.orden,
       estado: apiResponse.estado,
       id_modulo: apiResponse.id_modulo,
-      roles: apiResponse.roles || []
+      roles: apiResponse.roles || [],
+      id_depende: apiResponse.id_depende || 0
     }; 
   } 
 
