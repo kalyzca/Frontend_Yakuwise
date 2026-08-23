@@ -30,10 +30,10 @@
             <span>Perfil</span>
         </button>
         
-        @for (item of roles; track $index) {
-            <button mat-menu-item>
-                <mat-icon>person</mat-icon>
-                <span>{{ item | titlecase }}</span>
+        @for (role of roles; track role.id_rol) {
+            <button mat-menu-item (click)="onRoleSelect(role.id_rol)" [class.selected-role]="selectedRoleId === role.id_rol">
+                <mat-icon>{{ selectedRoleId === role.id_rol ? 'check_circle' : 'person' }}</mat-icon>
+                <span>{{ role.nombre_rol | titlecase }}</span>
             </button>
         }
         <mat-divider></mat-divider>

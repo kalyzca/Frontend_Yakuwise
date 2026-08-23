@@ -7,7 +7,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms'; 
+import { FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms'; 
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MenusService } from '../../../../shared/services/menus.service'; 
 import { ModulosService } from '../../../../shared/services/modulos.service';
@@ -15,11 +15,9 @@ import { AlertService } from '../../../../shared/services/alert.service';
 import { FormErrorService } from '../../../../shared/services/form-error.service';
 import { AppHttpError } from '../../../../shared/interfaces/error-interface';
 import { IconService } from '../../../../shared/services/icon.service';
-import { CreateMenuRequest } from '../../../../shared/interfaces/menus-interface'; 
+import { CreateMenuRequest, Role } from '../../../../shared/interfaces/menus-interface'; 
 import { ModuloData } from '../../../../shared/interfaces/modulos-interface';
-import { form, required, FormField } from '@angular/forms/signals'; 
-import { Role } from '../../../../shared/interfaces/menus-interface';
-import { FormControl } from '@angular/forms';
+import { form, required, FormField } from '@angular/forms/signals';
 
 export interface MenuData {
   id_menu: number;
@@ -158,7 +156,7 @@ export class MenuModalComponent implements OnInit {
         this.menus.set(mappedMenus);
 
         // Establecer el ID del menú padre seleccionado si existe
-        if (this.data && this.data.id_depende) {
+        if (this.data?.id_depende) {
           this.menuParentControl.setValue(this.data.id_depende);
         }
       },
