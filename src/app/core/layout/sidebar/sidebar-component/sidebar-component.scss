@@ -27,6 +27,10 @@
     }
 
     .menu{
+        li {
+            list-style: none !important;
+        }
+        
         .home-menu {
             position: relative;
 
@@ -100,25 +104,68 @@
                 
                 li {
                     padding-left: 3.5rem;
-                    padding-block: 1rem;
+                    padding-block: 0.5rem;
+                    list-style: none;
                     
-                    &:hover{
+                    .menu-item {
+                        @include m.layout-flex(row, flex-start, center);
+                        width: 100%;
+                        padding: 0.75rem;
+                        border-radius: 0.25rem;
+                    }
+                    
+                    &:hover > .menu-item {
                         background-color: v.$white-color;
-                        border-color: v.$light-info-color;
-
-                        svg{
-                            color:v.$primary-active-color;
-    
-                        }
                         
-                        a {
-                            color:v.$primary-active-color;
+                        svg, a {
+                            color: v.$primary-active-color;
+                        }
+                    }
+                    
+                    &.has-submenu-hover > .menu-item {
+                        background-color: v.$white-color;
+                        
+                        svg, a {
+                            color: v.$primary-active-color;
                         }
                     }
                     
                     a{
                         text-decoration: none;
                         color:#fff;
+                    }
+
+                    .submenu {
+                        list-style: none;
+                        padding-left: 0;
+                        margin-top: 0.25rem;
+                        width: 100%;
+                        
+                        li {
+                            padding-left: 2rem;
+                            padding-block: 0.5rem;
+                            list-style: none;
+                            
+                            .menu-item {
+                                @include m.layout-flex(row, flex-start, center);
+                                width: 100%;
+                                padding: 0.75rem;
+                                border-radius: 0.25rem;
+                            }
+                            
+                            &:hover > .menu-item {
+                                background-color: v.$light-primary-color;
+                                
+                                svg, a {
+                                    color: v.$primary-active-color;
+                                }
+                            }
+                            
+                            a{
+                                text-decoration: none;
+                                color:#fff;
+                            }
+                        }
                     }
                 }
             }

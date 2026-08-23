@@ -7,6 +7,7 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
+import { LoginResponse } from '../../../../shared/interfaces/login-interface';
 
 @Component({
   selector: 'app-header-component',
@@ -24,7 +25,8 @@ export class HeaderComponent implements OnInit {
   nombreCompleto:string | undefined = "";
   displayRole: string | undefined | null = "";
   nombreUsuario: string | undefined = "";
-  roles:string[] = [];
+  roles: LoginResponse['data']['roles'] = [];
+  selectedRoleId: number | null = null;
   nombres:string = "";
 
   ngOnInit(): void {
@@ -32,17 +34,38 @@ export class HeaderComponent implements OnInit {
     
     if (userData !== null) {
       this.nombreCompleto = userData.nombre_completo;
-      this.displayRole = (userData.roles && userData.roles.length > 0) ? userData.roles[0].nombre_rol : userData.nombre_completo;
       this.nombreUsuario = userData.nombre_usuario;
       this.nombres = userData.nombre;
-      this.roles = userData.roles.map((role: { nombre_rol: string }) => role.nombre_rol);
+      this.roles = userData.roles;
+      
+      // Set default role if none is selected
+      let currentSelectedRole = this.authService.getSelectedRole();
+      if (!currentSelectedRole) {
+        currentSelectedRole = this.authService.getDefaultRole(userData);
+        this.authService.saveSelectedRole(currentSelectedRole);
+      }
+      
+      this.selectedRoleId = currentSelectedRole;
+      const selectedRoleObj = this.roles.find(role => role.id_rol === currentSelectedRole);
+      this.displayRole = selectedRoleObj ? selectedRoleObj.nombre_rol : userData.nombre_completo;
     }
     else {
       this.displayRole = 'Invitado';
     }
 
-    console.log('users',this.roles);
+    console.log('users', this.roles);
+    console.log('selectedRoleId', this.selectedRoleId);
 
+  }
+
+  onRoleSelect(roleId: number): void {
+    this.selectedRoleId = roleId;
+    this.authService.saveSelectedRole(roleId);
+    const selectedRoleObj = this.roles.find(role => role.id_rol === roleId);
+    this.displayRole = selectedRoleObj ? selectedRoleObj.nombre_rol : '';
+    
+    // Navigate to home/welcome when role changes
+    this.router.navigate(['/home/welcome']);
   }
 
   onLogout(): void {

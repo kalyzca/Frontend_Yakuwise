@@ -16,7 +16,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MenuResponse, MenusListResponse } from '../../../../shared/interfaces/menus-interface';
 import { AssignRolesModalComponent, AssignRolesData } from '../../modals/assign-roles-modal/assign-roles-modal.component';
-import { Role } from '../../../../shared/interfaces/menus-interface';
 
 @Component({
   selector: 'app-menu-component', 

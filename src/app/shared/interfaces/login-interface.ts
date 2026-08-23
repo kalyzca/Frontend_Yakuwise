@@ -26,5 +26,24 @@ export interface LoginResponse {
       id_rol: number;
       nombre_rol: string;
     }>;
+    modulos: Array<{
+      id_modulo: number;
+      nombre_modulo: string;
+      estado: boolean;
+      menus: Array<{
+        id_menu: number;
+        nivel: number;
+        orden: number;
+        ruta: string;
+        nombre_menu: string;
+        id_modulo: number;
+        id_depende: number | null;
+        estado: boolean;
+        roles: Array<{
+          id_rol: number;
+          nombre_rol: string;
+        }>;
+      }>;
+    }>;
   };
 }
