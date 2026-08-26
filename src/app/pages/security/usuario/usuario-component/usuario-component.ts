@@ -12,12 +12,13 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { UsuarioModalComponent } from '../../modals/usuario-modal-component/usuario-modal-component';
-import { UserData } from '../../../../shared/interfaces/usuario-interface';
+import { UserData, UserResponse, UsersListResponse } from '../../../../shared/interfaces/usuario-interface';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { UsersService, CreateUserRequest, UserResponse, UsersListResponse } from '../../../../shared/services/users.service';
+import { UsersService } from '../../../../shared/services/users.service';
 import { MatChipsModule } from '@angular/material/chips';
 import { ResetPassModalComponent } from '../../modals/resetPassword/reset-pass-modal-component/reset-pass-modal-component';
+
 
 @Component({
   selector: 'app-usuario-component',
@@ -26,24 +27,28 @@ import { ResetPassModalComponent } from '../../modals/resetPassword/reset-pass-m
   styleUrl: './usuario-component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+
 export class UsuarioComponent {
   private readonly dialog = inject(MatDialog);
   private readonly usersService = inject(UsersService);
   private readonly alertService = inject(AlertService);
 
-  displayedColumns: string[] = ['id', 'username', 'name', 'role', 'state', 'actions'];
+  private readonly DISPLAYED_COLUMNS = ['id', 'username', 'name', 'role', 'state', 'actions'];
+  private readonly ESTADO_BUSQUEDA_PALABRAS = ['activo', 'inactivo', 'act', 'inac', 'ina', 'activ', 'inactiv'];
+  private readonly ACTIVO_VARIACIONES = ['act', 'activ', 'activo'];
+  private readonly INACTIVO_VARIACIONES = ['inac', 'ina', 'inactiv', 'inactivo'];
+  private readonly DEFAULT_PAGE_SIZE = 5;
+  private readonly DEFAULT_ORDERING = 'id_usuario';
 
-  isLoading = signal<boolean>(false);
-  error = signal<string | null>(null);
-
-  users = signal<UserData[]>([]);
-  
-  totalUsers = signal<number>(0);
-  pageIndex = signal<number>(1);
-  pageSize = signal<number>(5);
-  activeSort = signal<Sort>({ active: '', direction: '' });
-
-  searchTerm = signal<string>('');
+  readonly displayedColumns = this.DISPLAYED_COLUMNS;
+  readonly isLoading = signal<boolean>(false);
+  readonly error = signal<string | null>(null);
+  readonly users = signal<UserData[]>([]);
+  readonly totalUsers = signal<number>(0);
+  readonly pageIndex = signal<number>(1);
+  readonly pageSize = signal<number>(this.DEFAULT_PAGE_SIZE);
+  readonly activeSort = signal<Sort>({ active: '', direction: '' });
+  readonly searchTerm = signal<string>('');
 
   constructor() {
     this.loadUsers();
@@ -51,79 +56,116 @@ export class UsuarioComponent {
 
   loadUsers(): void {
     this.isLoading.set(true);
-    let ordering = '';
-    if (this.activeSort()?.active && this.activeSort()?.direction) {
-      const field = this.mapSortField(this.activeSort().active);
-      const direction = this.activeSort().direction === 'asc' ? '' : '-';
-      ordering = `${direction}${field}`;
-    }
 
-    const rawSearch = this.searchTerm().toLowerCase().trim();
-    const palabrasEstado = ['activo', 'inactivo', 'act', 'inac', 'ina', 'activ', 'inactiv'];
-    const esBusquedaDeEstado = palabrasEstado.includes(rawSearch);
-    const apiSearchParam = esBusquedaDeEstado ? undefined : (this.searchTerm() || undefined);
+    const ordering = this.buildOrdering();
+    const searchParam = this.buildSearchParam();
 
     this.usersService.getUsers({
-      search: apiSearchParam,
-      ordering: ordering || 'id_usuario',
+      search: searchParam,
+      ordering: ordering,
       page: this.pageIndex(),
       page_size: this.pageSize()
     }).subscribe({
-      next: (response: UsersListResponse) => {
-        const mappedUsers = response.results
-          .map(user => this.mapFromApiResponse(user))
-          .filter((user): user is UserData => user !== null);
-        this.users.set(mappedUsers);
-        this.totalUsers.set(response.count);
-        this.isLoading.set(false);
-      },
-      error: () => {
-        this.alertService.error("Error al cargar usuarios. Por favor, inténtelo de nuevo.");
-        this.isLoading.set(false);
-      }
+      next: (response: UsersListResponse) => this.handleUsersResponse(response),
+      error: () => this.handleLoadError()
     });
   }
 
+  private buildOrdering(): string {
+    const sort = this.activeSort();
+    if (!sort.active || !sort.direction) {
+      return this.DEFAULT_ORDERING;
+    }
+
+    const field = this.mapSortField(sort.active);
+    const direction = sort.direction === 'asc' ? '' : '-';
+    return `${direction}${field}`;
+  }
+
+  private buildSearchParam(): string | undefined {
+    const rawSearch = this.searchTerm().toLowerCase().trim();
+    const esBusquedaDeEstado = this.ESTADO_BUSQUEDA_PALABRAS.includes(rawSearch);
+
+    return esBusquedaDeEstado ? undefined : (this.searchTerm() || undefined);
+  }
+
+  private handleUsersResponse(response: UsersListResponse): void {
+    const mappedUsers = response.results
+      .map(user => this.mapFromApiResponse(user))
+      .filter((user): user is UserData => user !== null);
+
+    this.users.set(mappedUsers);
+    this.isLoading.set(false);
+    this.totalUsers.set(response.count);
+  }
+
+  private handleLoadError(): void {
+    this.alertService.error("Error al cargar usuarios. Por favor, inténtelo de nuevo.");
+    this.isLoading.set(false);
+  }
+
+  private readonly FIELD_MAP: Record<string, string> = {
+    'id': 'id_usuario',
+    'username': 'nombre_usuario',
+    'name': 'persona__nombres',
+    'role': 'id_rol',
+    'state': 'estado'
+  };
+
   private mapSortField(field: string): string {
-    const fieldMap: { [key: string]: string } = {
-      'id': 'id_usuario',
-      'username': 'nombre_usuario',
-      'name': 'persona__nombres',
-      'role': 'id_rol',
-      'state': 'estado'
-    };
-    return fieldMap[field] || field;
+    return this.FIELD_MAP[field] || field;
   }
 
   displayedUsers = computed(() => {
     const currentUsers = this.users();
     const search = this.searchTerm().toLowerCase().trim();
-    
+
     if (!search) {
       return currentUsers;
     }
 
-    return currentUsers.filter(user => {
-      const userNameLower = user.username?.toLowerCase() || '';
-      const emailLower = user.email.toLowerCase();
-      const nameLower = user.name?.toLowerCase() || '';
-      const userStateLower = user.state.toLowerCase();
-      const userIdStr = user.id?.toString() || '';
-
-      if (['activo', 'inactivo'].includes(search)) {
-        return userStateLower === search;
-      }
-
-      if (['act', 'activ', 'activo'].includes(search)) {
-        return userStateLower === 'activo';
-      }
-      if (['inac', 'ina', 'inactiv', 'inactivo'].includes(search)) {
-        return userStateLower === 'inactivo';
-      }
-      
-      return emailLower.includes(search) || nameLower.includes(search) || userIdStr.includes(search) || userNameLower.includes(search);
-    });
+    return currentUsers.filter(user => this.matchesSearch(user, search));
   });
+
+  private matchesSearch(user: UserData, search: string): boolean {
+    if (this.isEstadoSearch(search)) {
+      return this.matchesEstado(user.state, search);
+    }
+
+    return this.matchesGeneralFields(user, search);
+  }
+
+  private isEstadoSearch(search: string): boolean {
+    return ['activo', 'inactivo'].includes(search) ||
+           this.ACTIVO_VARIACIONES.includes(search) ||
+           this.INACTIVO_VARIACIONES.includes(search);
+  }
+
+  private matchesEstado(userState: string, search: string): boolean {
+    const userStateLower = userState.toLowerCase();
+
+    if (this.ACTIVO_VARIACIONES.includes(search)) {
+      return userStateLower === 'activo';
+    }
+
+    if (this.INACTIVO_VARIACIONES.includes(search)) {
+      return userStateLower === 'inactivo';
+    }
+
+    return userStateLower === search;
+  }
+
+  private matchesGeneralFields(user: UserData, search: string): boolean {
+    const userNameLower = user.username?.toLowerCase() || '';
+    const emailLower = user.email.toLowerCase();
+    const nameLower = user.name?.toLowerCase() || '';
+    const userIdStr = user.id?.toString() || '';
+
+    return emailLower.includes(search) ||
+           nameLower.includes(search) ||
+           userIdStr.includes(search) ||
+           userNameLower.includes(search);
+  }
 
   filteredUsersCount = computed(() => {
     return this.displayedUsers().length;
@@ -148,135 +190,65 @@ export class UsuarioComponent {
     this.loadUsers();
   }
 
-  private mapToApiRequest(userData: UserData): CreateUserRequest {
-    return {
-      username: userData.username || '',
-      email_institucional: userData.email,
-      estado: userData.state === 'Activo',
-      persona: {
-        id_tipo_documento: userData.persona.id_tipo_documento,
-        numero_documento: userData.persona.numero_documento,
-        nombres: userData.persona.nombres,
-        apellido_paterno: userData.persona.apellido_paterno,
-        apellido_materno: userData.persona.apellido_materno,
-        genero: userData.persona.genero,
-        telefono: userData.persona.telefono,
-        correo_personal: userData.persona.correo_personal,
-        estado: userData.persona.estado
-      },
-      id_roles: userData.id_roles || []
-    };
-  }
-
   private mapFromApiResponse(apiResponse: UserResponse): UserData | null {
-    const persona = apiResponse.persona;
-    if (!persona) {
+    if (!apiResponse.persona) {
       return null;
     }
-
-    const rolesNames = apiResponse.roles?.map(r => r.nombre_rol.charAt(0).toUpperCase() + r.nombre_rol.slice(1).toLowerCase()) || [];
-    const rolesIds = apiResponse.roles?.map(r => r.id_rol) || [];
-    const apellidoPaterno = persona.apellido_paterno;
-    const apellidoMaterno = persona.apellido_materno;
-    const nombres = persona.nombres;
-
-    const capitalizeNames = (fullName: string): string => {
-      if (!fullName) return '';
-
-      return fullName
-        .toLowerCase()
-        .split(' ')
-        .map(word => {
-          if (!word) return '';
-          return word.charAt(0).toUpperCase() + word.slice(1);
-        })
-        .join(' ');
-    };
 
     return {
       id: apiResponse.id_usuario,
       username: apiResponse.nombre_usuario,
       email: apiResponse.email_institucional,
-      state: apiResponse.estado ? 'Activo' : 'Inactivo',
-      name: `${apellidoPaterno} ${apellidoMaterno}, ${capitalizeNames(nombres)}`,
-      id_roles: rolesIds,
-      roles_names: rolesNames,
-      persona: persona,
+      state: this.formatEstado(apiResponse.estado),
+      name: apiResponse.persona.nombres + ' ' + apiResponse.persona.apellido_paterno + ' ' + apiResponse.persona.apellido_materno,
+      id_roles: this.extractRoleIds(apiResponse.roles),
+      roles_names: this.extractRoleNames(apiResponse.roles),
+      persona: apiResponse.persona,
       bloqueado_hasta: apiResponse.bloqueado_hasta
     };
   }
 
+  private formatEstado(estado: boolean): string {
+    return estado ? 'Activo' : 'Inactivo';
+  }
+
+  private extractRoleIds(roles: any[]): number[] {
+    return roles?.map(r => r.id_rol) || [];
+  }
+
+  private extractRoleNames(roles: any[]): string[] {
+    return roles?.map(r => this.capitalizeRoleName(r.nombre_rol)) || [];
+  }
+
+  private capitalizeRoleName(roleName: string): string {
+    return roleName.charAt(0).toUpperCase() + roleName.slice(1).toLowerCase();
+  }
+
   createUser(user?: UserData): void {
-    const dialogRef = this.dialog.open(UsuarioModalComponent, {
-      height: 'max-content',
-      data: user,
-      disableClose: true,
-      panelClass: 'custom-responsive-modal-user'
-    });
-
-    dialogRef.afterClosed().subscribe((result: any) => {
-      if (!result) return;
-
-      if (result.action === 'success') {
-        this.loadUsers();
-        const message = user?.id ? 'Usuario actualizado exitosamente' : 'Usuario creado exitosamente';
-        this.alertService.success(message);
-      } else if (result.action === 'cancel') {
-        return;
-      }
-    });
+    this.openUserModal(user, false);
   }
 
   viewUser(user: UserData): void {
+    this.openUserModal(user, true);
+  }
+
+  private openUserModal(data: UserData | undefined, isReadOnly: boolean): void {
     const dialogRef = this.dialog.open(UsuarioModalComponent, {
       height: 'max-content',
-      data: { ...user, isReadOnly: true },
+      data: data ? { ...data, isReadOnly } : undefined,
       disableClose: true,
       panelClass: 'custom-responsive-modal-user'
     });
 
-    dialogRef.afterClosed().subscribe((result: any) => {
-      if (!result) return;
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result && result.action !== 'cancel') {
+        this.loadUsers();
+      }
     });
   }
 
-  // Método para extraer errores de campos específicos del backend
-  private extractFieldErrors(errorResponse: any): Record<string, string> {
-    const fieldErrors: Record<string, string> = {};
-    
-    if (!errorResponse) return fieldErrors;
-    
-    const detalles = errorResponse.detalles || errorResponse;
-    
-    if (typeof detalles !== 'object') return fieldErrors;
-    
-    this.processErrorFields(detalles, fieldErrors, ['persona']);
-    
-    if (detalles.persona && typeof detalles.persona === 'object') {
-      this.processErrorFields(detalles.persona, fieldErrors);
-    }
-    
-    return fieldErrors;
-  }
-
-  private processErrorFields(
-    source: any,
-    fieldErrors: Record<string, string>,
-    skipKeys: string[] = []
-  ): void {
-    for (const [key, value] of Object.entries(source)) {
-      if (skipKeys.includes(key)) continue;
-      
-      if (Array.isArray(value) && value.length > 0) {
-        fieldErrors[key] = value[0];
-      } else if (typeof value === 'string') {
-        fieldErrors[key] = value;
-      }
-    }
-  }
-
   resetPassword(user?: UserData): void {
-    const dialogRefResetPass = this.dialog.open(ResetPassModalComponent, {
+    const dialogRef = this.dialog.open(ResetPassModalComponent, {
       width: '25rem',
       minWidth: 'auto',
       height: '21rem',
@@ -284,10 +256,10 @@ export class UsuarioComponent {
       disableClose: true
     });
 
-    dialogRefResetPass.afterClosed().subscribe((result) => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.alertService.success("Se ha restablecido la contraseña.");
         this.loadUsers();
+        this.alertService.success("Se ha restablecido la contraseña.");
       }
     });
   }

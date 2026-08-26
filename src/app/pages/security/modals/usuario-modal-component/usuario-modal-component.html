@@ -1,224 +1,210 @@
 <p mat-dialog-title>{{ isReadOnly() ? 'Ver Usuario' : (isEditMode() ? 'Editar Usuario' : 'Agregar Usuario') }}</p>
-
 <mat-dialog-content>
     <form class="form-user" (submit)="onSave($event)">
-        <!-- Sección: Datos de persona -->
         <fieldset class="persona-section">
             <legend>Datos Personales</legend>
             <div class="form-person">
-                <!-- Campo Tipo de Documento -->
                 <div class="form-input-container">
-                    <label for="tipoDocumento" class="label-input-container" >Tipo de documento:</label>
-                    <mat-form-field appearance="outline" class="custom-select" subscriptSizing="dynamic">
+                    <label for="tipoDocumento" class="label-input-container required-field" >Tipo de documento:</label>
+                    <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
                         <mat-select id="tipoDocumento" [formField]="userForm.persona.id_tipo_documento">
                             <mat-option [value]="0" selected>Seleccione una opción</mat-option>
                             @for (tipo of tiposDocumento(); track tipo.id_tipo_documento) {
                                 <mat-option [value]="tipo.id_tipo_documento">{{ tipo.nombre_tipo_documento }}</mat-option>
                             }
                         </mat-select>
-                        @if (userForm.persona.id_tipo_documento().invalid() && userForm.persona.id_tipo_documento().touched()) {
-                            <mat-error class="error-list-container">
-                                <div class="error-list">
-                                    @for (error of userForm.persona.id_tipo_documento().errors(); track error.kind) {
-                                        <div class="error-row">
-                                            <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                                            <span>{{ error.message }}</span>
-                                        </div>
-                                    }
-                                </div>
-                            </mat-error>
-                        }
                     </mat-form-field>
+                    @if (userForm.persona.id_tipo_documento().invalid() && userForm.persona.id_tipo_documento().touched()) {
+                        <mat-error class="error-list-container">
+                            <div class="error-list">
+                                @for (error of userForm.persona.id_tipo_documento().errors(); track error.kind) {
+                                    <div class="error-row">
+                                        <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                                        <span>{{ error.message }}</span>
+                                    </div>
+                                }
+                            </div>
+                        </mat-error>
+                    }
                 </div>
-                <!-- Campo Número de Documento -->
                 <div class="form-input-container">
-                    <label for="numeroDocumento" class="label-input-container">Número de Documento: (*)</label>
+                    <label for="numeroDocumento" class="label-input-container required-field">Número de Documento:</label>
                     <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
-                        <input matInput id="numeroDocumento" [formField]="userForm.persona.numero_documento" placeholder="Ej. 12345678">
-                        @if (userForm.persona.numero_documento().invalid() && userForm.persona.numero_documento().touched()) {
-                            <mat-error class="error-list-container">
-                                <div class="error-list">
-                                    @for (error of userForm.persona.numero_documento().errors(); track error.kind) {
-                                        <div class="error-row">
-                                            <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                                            <span>{{ error.message }}</span>
-                                        </div>
-                                    }
-                                </div>
-                            </mat-error>
-                        }
+                        <input matInput id="numeroDocumento" [formField]="userForm.persona.numero_documento" [errorStateMatcher]="numeroDocError.matcher" (input)="errorService.limpiarCampoBackend(backendErrors, 'persona.numero_documento')" placeholder="Ej. 12345678">
                     </mat-form-field>
+                    @if (numeroDocError.mostrarErrores()) {
+                        <mat-error class="error-list-container">
+                            <div class="error-list">
+                                @for (error of numeroDocError.errores(); track error.kind) {
+                                    <div class="error-row">
+                                        <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                                        <span>{{ error.message }}</span>
+                                    </div>
+                                }
+                            </div>
+                        </mat-error>
+                    }
                 </div>
-                <!-- Campo Género -->
                 <div class="form-input-container">
-                    <label for="genero" class="label-input-container">Género: (*)</label>
+                    <label for="genero" class="label-input-container required-field">Género:</label>
                     <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
                         <mat-select id="genero" [formField]="userForm.persona.genero">
-                            <mat-option value="" selected>Seleccione una opción</mat-option>
+                            <mat-option value="" class="initial-select" selected>Seleccione una opción</mat-option>
                             <mat-option value="M">Masculino</mat-option>
                             <mat-option value="F">Femenino</mat-option>
                         </mat-select>
-                        @if (userForm.persona.genero().invalid() && userForm.persona.genero().touched()) {
-                            <mat-error class="error-list-container">
-                                <div class="error-list">
-                                    @for (error of userForm.persona.genero().errors(); track error.kind) {
-                                        <div class="error-row">
-                                            <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                                            <span>{{ error.message }}</span>
-                                        </div>
-                                    }
-                                </div>
-                            </mat-error>
-                        }
                     </mat-form-field>
+                    @if (userForm.persona.genero().invalid() && userForm.persona.genero().touched()) {
+                        <mat-error class="error-list-container">
+                            <div class="error-list">
+                                @for (error of userForm.persona.genero().errors(); track error.kind) {
+                                    <div class="error-row">
+                                        <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                                        <span>{{ error.message }}</span>
+                                    </div>
+                                }
+                            </div>
+                        </mat-error>
+                    }
                 </div>
-                <!-- Campo Teléfono -->
                 <div class="form-input-container">
-                    <label for="telefono" class="label-input-container">Teléfono: (*)</label>
+                    <label for="telefono" class="label-input-container required-field">Teléfono:</label>
                     <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
-                        <input matInput id="telefono" [formField]="userForm.persona.telefono" placeholder="Ej. 999999999">
-                        @if (userForm.persona.telefono().invalid() && userForm.persona.telefono().touched()) {
-                            <mat-error class="error-list-container">
-                                <div class="error-list">
-                                    @for (error of userForm.persona.telefono().errors(); track error.kind) {
-                                        <div class="error-row">
-                                            <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                                            <span>{{ error.message }}</span>
-                                        </div>
-                                    }
-                                </div>
-                            </mat-error>
-                        }
+                        <input matInput id="telefono" [formField]="userForm.persona.telefono" [errorStateMatcher]="telefonoError.matcher" (input)="errorService.limpiarCampoBackend(backendErrors, 'persona.telefono')" placeholder="Ej. 999999999">
                     </mat-form-field>
+                    @if (telefonoError.mostrarErrores()) {
+                        <mat-error class="error-list-container">
+                            <div class="error-list">
+                                @for (error of telefonoError.errores(); track error.kind) {
+                                    <div class="error-row">
+                                        <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                                        <span>{{ error.message }}</span>
+                                    </div>
+                                }
+                            </div>
+                        </mat-error>
+                    }
                 </div>
-                <!-- Campo Nombres -->
                 <div class="form-input-container">
-                    <label for="nombres" class="label-input-container">Nombres: (*)</label>
+                    <label for="nombres" class="label-input-container required-field">Nombres:</label>
                     <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
-                        <input matInput id="nombres" [formField]="userForm.persona.nombres" placeholder="Ej. Juan Carlos">
-                        @if (userForm.persona.nombres().invalid() && userForm.persona.nombres().touched()) {
-                            <mat-error class="error-list-container">
-                                <div class="error-list">
-                                    @for (error of userForm.persona.nombres().errors(); track error.kind) {
-                                        <div class="error-row">
-                                            <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                                            <span>{{ error.message }}</span>
-                                        </div>
-                                    }
-                                </div>
-                            </mat-error>
-                        }
+                        <input matInput id="nombres" class="text-mayusc" [formField]="userForm.persona.nombres" placeholder="Ej. Juan Carlos" soloLetras>
                     </mat-form-field>
+                    @if (userForm.persona.nombres().invalid() && userForm.persona.nombres().touched()) {
+                        <mat-error class="error-list-container">
+                            <div class="error-list">
+                                @for (error of userForm.persona.nombres().errors(); track error.kind) {
+                                    <div class="error-row">
+                                        <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                                        <span>{{ error.message }}</span>
+                                    </div>
+                                }
+                            </div>
+                        </mat-error>
+                    }
                 </div>
-                <!-- Campo Apellido Paterno -->
                 <div class="form-input-container">
-                    <label for="apellidoPaterno" class="label-input-container">Apellido Paterno: (*)</label>
+                    <label for="apellidoPaterno" class="label-input-container required-field">Apellido Paterno:</label>
                     <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
-                        <input matInput id="apellidoPaterno" [formField]="userForm.persona.apellido_paterno" placeholder="Ej. Pérez">
-                        @if (userForm.persona.apellido_paterno().invalid() && userForm.persona.apellido_paterno().touched()) {
-                            <mat-error class="error-list-container">
-                                <div class="error-list">
-                                    @for (error of userForm.persona.apellido_paterno().errors(); track error.kind) {
-                                        <div class="error-row">
-                                            <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                                            <span>{{ error.message }}</span>
-                                        </div>
-                                    }
-                                </div>
-                            </mat-error>
-                        }
+                        <input matInput id="apellidoPaterno" class="text-mayusc" [formField]="userForm.persona.apellido_paterno" placeholder="Ej. Pérez" soloLetras>
                     </mat-form-field>
+                    @if (userForm.persona.apellido_paterno().invalid() && userForm.persona.apellido_paterno().touched()) {
+                        <mat-error class="error-list-container">
+                            <div class="error-list">
+                                @for (error of userForm.persona.apellido_paterno().errors(); track error.kind) {
+                                    <div class="error-row">
+                                        <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                                        <span>{{ error.message }}</span>
+                                    </div>
+                                }
+                            </div>
+                        </mat-error>
+                    }
                 </div>
-                <!-- Campo Apellido Materno -->
                 <div class="form-input-container">
-                    <label for="apellidoMaterno" class="label-input-container">Apellido Materno: (*)</label>
+                    <label for="apellidoMaterno" class="label-input-container">Apellido Materno: </label>
                     <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
-                        <input matInput id="apellidoMaterno" [formField]="userForm.persona.apellido_materno" placeholder="Ej. López">
-                        @if (userForm.persona.apellido_materno().invalid() && userForm.persona.apellido_materno().touched()) {
-                            <mat-error class="error-list-container">
-                                <div class="error-list">
-                                    @for (error of userForm.persona.apellido_materno().errors(); track error.kind) {
-                                        <div class="error-row">
-                                            <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                                            <span>{{ error.message }}</span>
-                                        </div>
-                                    }
-                                </div>
-                            </mat-error>
-                        }
+                        <input matInput id="apellidoMaterno" class="text-mayusc" [formField]="userForm.persona.apellido_materno" placeholder="Ej. López" soloLetras>
                     </mat-form-field>
+                    @if (userForm.persona.apellido_materno().invalid() && userForm.persona.apellido_materno().touched()) {
+                        <mat-error class="error-list-container">
+                            <div class="error-list">
+                                @for (error of userForm.persona.apellido_materno().errors(); track error.kind) {
+                                    <div class="error-row">
+                                        <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                                        <span>{{ error.message }}</span>
+                                    </div>
+                                }
+                            </div>
+                        </mat-error>
+                    }
                 </div>
-                <!-- Campo Correo Personal -->
                 <div class="form-input-container">
-                    <label for="correoPersonal" class="label-input-container">Correo Personal: (*)</label>
+                    <label for="correoPersonal" class="label-input-container required-field">Correo Personal: </label>
                     <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
                         <input matInput id="correoPersonal" [formField]="userForm.persona.correo_personal" placeholder="Ej. juan@gmail.com">
-                        @if (userForm.persona.correo_personal().invalid() && userForm.persona.correo_personal().touched()) {
-                            <mat-error class="error-list-container">
-                                <div class="error-list">
-                                    @for (error of userForm.persona.correo_personal().errors(); track error.kind) {
-                                        <div class="error-row">
-                                            <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                                            <span>{{ error.message }}</span>
-                                        </div>
-                                    }
-                                </div>
-                            </mat-error>
-                        }
                     </mat-form-field>
+                    @if (userForm.persona.correo_personal().invalid() && userForm.persona.correo_personal().touched()) {
+                        <mat-error class="error-list-container">
+                            <div class="error-list">
+                                @for (error of userForm.persona.correo_personal().errors(); track error.kind) {
+                                    <div class="error-row">
+                                        <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                                        <span>{{ error.message }}</span>
+                                    </div>
+                                }
+                            </div>
+                        </mat-error>
+                    }
                 </div>
             </div>
         </fieldset>
 
-        <!-- Sección: Datos del usuario -->
         <fieldset class="usuario-section">
             <legend>Datos del Usuario</legend>
             <div class="form-users">
-                <!-- Campo Rol -->
                 <div class="form-input-container">
-                    <label for="rol" class="label-input-container">Roles: (*)</label>
+                    <label for="rol" class="label-input-container required-field">Roles: </label>
                     <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
                         <mat-select id="rol" [formField]="userForm.id_roles" multiple>
                             @for (role of roles(); track role.id_rol || role.id) {
                                 <mat-option [value]="role.id_rol || role.id">{{ role.nombre_rol }}</mat-option>
                             }
                         </mat-select>
-                        @if (userForm.id_roles().invalid() && userForm.id_roles().touched()) {
-                            <mat-error class="error-list-container">
-                                <div class="error-list">
-                                    @for (error of userForm.id_roles().errors(); track error.kind) {
-                                        <div class="error-row">
-                                            <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                                            <span>{{ error.message }}</span>
-                                        </div>
-                                    }
-                                </div>
-                            </mat-error>
-                        }
                     </mat-form-field>
+                    @if (userForm.id_roles().invalid() && userForm.id_roles().touched()) {
+                        <mat-error class="error-list-container">
+                            <div class="error-list">
+                                @for (error of userForm.id_roles().errors(); track error.kind) {
+                                    <div class="error-row">
+                                        <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                                        <span>{{ error.message }}</span>
+                                    </div>
+                                }
+                            </div>
+                        </mat-error>
+                    }
                 </div>
-                <!-- Campo Email Institucional -->
                 <div class="form-input-container">
-                    <label for="emailInstitucional" class="label-input-container">Email Institucional: (*)</label>
+                    <label for="emailInstitucional" class="label-input-container required-field">Email Institucional: </label>
                     <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
                         <input matInput id="emailInstitucional" [formField]="userForm.email" placeholder="Ej. usuario@institucion.edu.pe">
-                        @if (userForm.email().invalid() && userForm.email().touched()) {
-                            <mat-error class="error-list-container">
-                                <div class="error-list">
-                                    @for (error of userForm.email().errors(); track error.kind) {
-                                        <div class="error-row">
-                                            <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                                            <span>{{ error.message }}</span>
-                                        </div>
-                                    }
-                                </div>
-                            </mat-error>
-                        }
                     </mat-form-field>
+                    @if (userForm.email().invalid() && userForm.email().touched()) {
+                        <mat-error class="error-list-container">
+                            <div class="error-list">
+                                @for (error of userForm.email().errors(); track error.kind) {
+                                    <div class="error-row">
+                                        <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                                        <span>{{ error.message }}</span>
+                                    </div>
+                                }
+                            </div>
+                        </mat-error>
+                    }
                 </div>
-                <!-- Campo estado del usuario -->
                 <div class="form-input-container">
-                    <label for="state" class="label-input-container custom-switch">Estado:</label>
+                    <label for="state" class="label-input-container custom-switch required-field">Estado:</label>
                     <mat-slide-toggle id="state" [checked]="userModal().state === 'Activo'" (change)="userModal.update(m => ({...m, state: $event.checked ? 'Activo' : 'Inactivo'}))" [disabled]="isReadOnly()">
                         <p class="txt-switch">
                         El usuario está &nbsp;
@@ -228,21 +214,17 @@
                 </div>
             </div>
         </fieldset>
+        
+        <mat-dialog-actions align="end">
+            @if (!isReadOnly()) {
+                <button mat-button mat-dialog-close>Cancelar</button>
+                <button mat-button [disabled]="isSaving()">
+                    {{ isSaving() ? 'Guardando...' : (isEditMode() ? 'Actualizar' : 'Guardar') }}
+                </button>
+            }
+            @else {
+                <button mat-button mat-dialog-close>Cerrar</button>
+            }
+        </mat-dialog-actions>
     </form>
 </mat-dialog-content>
-
-<mat-dialog-actions align="end">
-    @if (!isReadOnly()) {
-        <button mat-button  (click)="onCancel()">Cancelar</button>
-        <button mat-button (click)="onSave($event)" [disabled]="isSaving()">
-            @if (isSaving()) {
-                Guardando...
-            } @else {
-                {{ isEditMode() ? 'Actualizar' : 'Guardar' }}
-            }
-        </button>
-    }
-    @if (isReadOnly()) {
-        <button mat-button  (click)="closeModal()">Cerrar</button>
-    }
-</mat-dialog-actions>

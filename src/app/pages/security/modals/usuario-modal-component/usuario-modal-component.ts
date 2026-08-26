@@ -1,5 +1,5 @@
-import { Component, computed, inject, signal, ChangeDetectionStrategy, ChangeDetectorRef, NgZone } from '@angular/core';
-import { form, FormField, minLength, min, pattern, required,  disabled } from '@angular/forms/signals';
+import { Component, computed, inject, signal } from '@angular/core';
+import { form, FormField, minLength, maxLength, pattern, required, disabled, min } from '@angular/forms/signals';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -12,16 +12,19 @@ import { RolesService } from '../../../../shared/services/roles.service';
 import { TiposDocumentoService, TipoDocumentoResponse } from '../../../../shared/services/tipos-documento.service';
 import { IconService } from '../../../../shared/services/icon.service';
 import { CommonModule } from '@angular/common';
-import { UsersService, CreateUserRequest } from '../../../../shared/services/users.service';
-import { UserData, UserFormData } from '../../../../shared/interfaces/usuario-interface';
+import { UsersService } from '../../../../shared/services/users.service';
+import { CreateUserRequest, UserData, UserFormData } from '../../../../shared/interfaces/usuario-interface';
 import { RoleResponse } from '../../../../shared/interfaces/roles-interface';
+import { FormErrorService } from '../../../../shared/services/form-error.service';
+import { AlertService } from '../../../../shared';
+import { AppHttpError } from '../../../../shared/interfaces/error-interface';
+import { LetrasDirective } from '../../../../shared/directives/letras-directive';
 
 @Component({
   selector: 'app-usuario-modal-component',
-  imports: [FormsModule, MatDialogActions, MatFormFieldModule, MatInputModule, MatButtonModule,  MatFormField, MatCheckboxModule, MatError, MatSlideToggleModule, MatSelectModule, CommonModule, FormField, MatDialogModule],
+  imports: [FormsModule, MatDialogActions, MatFormFieldModule, MatInputModule, MatButtonModule,  MatFormField, MatCheckboxModule, MatError, MatSlideToggleModule, MatSelectModule, CommonModule, FormField, MatDialogModule, LetrasDirective],
   templateUrl: './usuario-modal-component.html',
   styleUrl: './usuario-modal-component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
 export class UsuarioModalComponent {
@@ -30,41 +33,34 @@ export class UsuarioModalComponent {
   private readonly rolesService = inject(RolesService);
   private readonly tiposDocumentoService = inject(TiposDocumentoService);
   private readonly iconService = inject(IconService);
-  private readonly cdr = inject(ChangeDetectorRef);
-  private readonly ngZone = inject(NgZone);
   private readonly usersService = inject(UsersService);
+  public readonly errorService = inject(FormErrorService);
+  private readonly alertService = inject(AlertService);
 
-  roles = signal<RoleResponse[]>([]);
-  tiposDocumento = signal<TipoDocumentoResponse[]>([]);
-  
-  backendErrors = signal<Record<string, string>>((this.inputData as any)?._backendErrors || {});
-  
-  isEditMode = signal<boolean>(!!this.inputData?.id);
-  isReadOnly = signal<boolean>((this.inputData as any)?.isReadOnly === true);
+  readonly roles = signal<RoleResponse[]>([]);
+  readonly tiposDocumento = signal<TipoDocumentoResponse[]>([]);
+  readonly backendErrors = signal<Record<string, string[]>>({});
+  readonly isEditMode = signal<boolean>(!!this.inputData?.id);
+  readonly isReadOnly = signal<boolean>((this.inputData as any)?.isReadOnly === true);
+  readonly isSaving = signal<boolean>(false);
+  errorIconPath = computed(() => this.iconService.getIconPath('error')());
+  private readonly EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  private readonly ROLES_PAGE_SIZE = 100;
+  private readonly PERSONA_FIELDS = [
+    'id_tipo_documento', 'numero_documento', 'nombres',
+    'apellido_paterno', 'apellido_materno', 'genero',
+    'telefono', 'correo_personal'
+  ] as const;
 
   private getInitialUserModal(): UserFormData {
-    if (this.inputData) {
-      return {
-        username: this.inputData.username || '',
-        email: this.inputData.email,
-        state: this.inputData.state,
-        id_roles: this.inputData.id_roles || [],
-        name: this.inputData.name || '',
-        roles_names: this.inputData.roles_names || [],
-        persona: {
-          id_tipo_documento: this.inputData.persona.id_tipo_documento,
-          numero_documento: this.inputData.persona.numero_documento,
-          nombres: this.inputData.persona.nombres,
-          apellido_paterno: this.inputData.persona.apellido_paterno,
-          apellido_materno: this.inputData.persona.apellido_materno,
-          genero: this.inputData.persona.genero,
-          telefono: this.inputData.persona.telefono,
-          correo_personal: this.inputData.persona.correo_personal,
-          estado: this.inputData.persona.estado
-        }
-      };
+    if (!this.inputData) {
+      return this.getDefaultUser();
     }
 
+    return this.getUserFromInput();
+  }
+
+  private getDefaultUser(): UserFormData {
     return {
       username: '',
       email: '',
@@ -86,70 +82,104 @@ export class UsuarioModalComponent {
     };
   }
 
+  private getUserFromInput(): UserFormData {
+    const data = this.inputData!;
+    return {
+      username: data.username || '',
+      email: data.email,
+      state: data.state,
+      id_roles: data.id_roles || [],
+      name: data.name || '',
+      roles_names: data.roles_names || [],
+      persona: {
+        id_tipo_documento: data.persona.id_tipo_documento,
+        numero_documento: data.persona.numero_documento,
+        nombres: data.persona.nombres,
+        apellido_paterno: data.persona.apellido_paterno,
+        apellido_materno: data.persona.apellido_materno,
+        genero: data.persona.genero,
+        telefono: data.persona.telefono,
+        correo_personal: data.persona.correo_personal,
+        estado: data.persona.estado
+      }
+    };
+  }
+
   userModal = signal<UserFormData>(this.getInitialUserModal());
 
   userForm = form(this.userModal, (fieldPath) => {
-    disabled(fieldPath.persona.id_tipo_documento, () => this.isReadOnly());
-    disabled(fieldPath.persona.numero_documento, () => this.isReadOnly());
-    disabled(fieldPath.persona.nombres, () => this.isReadOnly());
-    disabled(fieldPath.persona.apellido_paterno, () => this.isReadOnly());
-    disabled(fieldPath.persona.apellido_materno, () => this.isReadOnly());
-    disabled(fieldPath.persona.genero, () => this.isReadOnly());
-    disabled(fieldPath.persona.telefono, () => this.isReadOnly());
-    disabled(fieldPath.persona.correo_personal, () => this.isReadOnly());
+    this.setupDisabledFields(fieldPath);
+    this.setupValidationRules(fieldPath);
+  });
+
+  private setupDisabledFields(fieldPath: any): void {
+    this.PERSONA_FIELDS.forEach(field => {
+      disabled(fieldPath.persona[field], () => this.isReadOnly());
+    });
+
     disabled(fieldPath.id_roles, () => this.isReadOnly());
     disabled(fieldPath.email, () => this.isReadOnly());
     disabled(fieldPath.state, () => this.isReadOnly());
+  }
 
-    minLength(fieldPath.id_roles, 1, {message: 'Debe seleccionar al menos un rol.'});
-    min(fieldPath.persona.id_tipo_documento, 1, {message: 'Tipo de documento requerido.'});
+  private setupValidationRules(fieldPath: any): void {
+    this.setupMinLengthValidations(fieldPath);
+    this.setupMaxLengthValidations(fieldPath);
+    this.setupRequiredValidations(fieldPath);
+    this.setupPatternValidations(fieldPath);
+  }
 
-    required(fieldPath.email, {message: 'Email es requerido.'});
-    required(fieldPath.state, {message: 'Estado es requerido.'});
-    required(fieldPath.persona.numero_documento, {message: 'Número de documento requerido.'});
-    required(fieldPath.persona.nombres, {message: 'Nombres requeridos.'});
-    required(fieldPath.persona.apellido_paterno, {message: 'Apellido paterno requerido.'});
-    required(fieldPath.persona.apellido_materno, {message: 'Apellido materno requerido.'});
-    required(fieldPath.persona.genero, {message: 'Género requerido.'});
-    required(fieldPath.persona.telefono, {message: 'Teléfono requerido.'});
-    required(fieldPath.persona.correo_personal, {message: 'Correo personal requerido.'});
+  private setupMinLengthValidations(fieldPath: any): void {
+    minLength(fieldPath.id_roles, 1, { message: 'Debe seleccionar al menos un rol.' });
+    minLength(fieldPath.persona.nombres, 2, { message: 'El nombre debe tener al menos 2 caracteres.' });
+    minLength(fieldPath.persona.apellido_paterno, 2, { message: 'El apellido paterno debe tener al menos 2 caracteres.' });
+    minLength(fieldPath.persona.apellido_materno, 2, { message: 'El apellido materno debe tener al menos 2 caracteres.' });
+  }
 
-    pattern(fieldPath.persona.correo_personal, /^[^\s@]+@[^\s@]+\.[^\s@]+$/, {message: 'Correo personal inválido.'});
-    pattern(fieldPath.email, /^[^\s@]+@[^\s@]+\.[^\s@]+$/, {message: 'Email inválido.'});
-  });
+  private setupMaxLengthValidations(fieldPath: any): void {
+    maxLength(fieldPath.persona.numero_documento, 12, { message: 'El número de documento de identidad debe tener un máximo de 12 dígitos numéricos.' });
+    maxLength(fieldPath.persona.nombres, 30, { message: 'El nombre debe tener un máximo de 30 caracteres.' });
+    maxLength(fieldPath.persona.apellido_paterno, 30, { message: 'El apellido paterno debe tener un máximo de 30 caracteres.' });
+    maxLength(fieldPath.persona.apellido_materno, 30, { message: 'El apellido materno debe tener un máximo de 30 caracteres.' });
+  }
+
+  private setupRequiredValidations(fieldPath: any): void {
+    min(fieldPath.persona.id_tipo_documento, 1, { message: 'Tipo de documento requerido.' });
+    required(fieldPath.persona.numero_documento, { message: 'Número de documento requerido.' });
+    required(fieldPath.persona.genero, { message: 'Género requerido.' });
+    required(fieldPath.persona.telefono, { message: 'Teléfono requerido.' });
+    required(fieldPath.persona.nombres, { message: 'Nombres requeridos.' });
+    required(fieldPath.persona.apellido_paterno, { message: 'Apellido paterno requerido.' });
+    required(fieldPath.persona.correo_personal, { message: 'Correo personal requerido.' });
+    required(fieldPath.email, { message: 'Email institucional requerido.' });
+  }
+
+  private setupPatternValidations(fieldPath: any): void {
+    pattern(fieldPath.persona.correo_personal, this.EMAIL_REGEX, { message: 'Correo personal inválido.' });
+    pattern(fieldPath.email, this.EMAIL_REGEX, { message: 'Email inválido.' });
+  }
 
   constructor() {
     this.loadRoles();
     this.loadTiposDocumento();
   }
 
+  numeroDocError = this.errorService.createFieldTracker(this.userForm.persona.numero_documento, this.backendErrors, 'persona.numero_documento');
+  telefonoError = this.errorService.createFieldTracker(this.userForm.persona.telefono, this.backendErrors, 'persona.telefono');
+
   private loadRoles(): void {
-    this.rolesService.getRoles({ page_size: 100 }).subscribe({
-      next: (response) => {
-        this.roles.set(response.results);
-      },
-      error: (err) => {
-        console.error('Error al cargar roles:', err);
-      }
+    this.rolesService.getRoles({ page_size: this.ROLES_PAGE_SIZE }).subscribe({
+      next: (response) => this.roles.set(response.results),
+      error: (err) => console.error('Error al cargar roles:', err)
     });
   }
 
   private loadTiposDocumento(): void {
     this.tiposDocumentoService.getTiposDocumento().subscribe({
-      next: (response) => {
-        this.tiposDocumento.set(response.data);
-      },
-      error: (err) => {
-        console.error('Error al cargar tipos de documento:', err);
-      }
+      next: (response) => this.tiposDocumento.set(response.data),
+      error: (err) => console.error('Error al cargar tipos de documento:', err)
     });
   }
-
-  isFormInvalid = computed(() => {
-    return false;
-  });
-  
-  isSaving = signal<boolean>(false);
 
   private mapToApiRequest(userData: UserData): CreateUserRequest {
     return {
@@ -171,124 +201,134 @@ export class UsuarioModalComponent {
     };
   }
 
-  private extractFieldErrors(errorResponse: any): Record<string, string> {
-    const fieldErrors: Record<string, string> = {};
-    if (!errorResponse) return fieldErrors;
-    const detalles = errorResponse.detalles || errorResponse;
-    
-    if (typeof detalles === 'object') {
-      for (const [key, value] of Object.entries(detalles)) {
-        if (key === 'persona') continue;
-        
-        if (Array.isArray(value) && value.length > 0) {
-          fieldErrors[key] = value[0];
-        } else if (typeof value === 'string') {
-          fieldErrors[key] = value;
-        }
-      }
-      
-      if (detalles.persona && typeof detalles.persona === 'object') {
-        for (const [key, value] of Object.entries(detalles.persona)) {
-          if (Array.isArray(value) && value.length > 0) {
-            fieldErrors[key] = value[0];
-          } else if (typeof value === 'string') {
-            fieldErrors[key] = value;
-          }
-        }
-      }
-    }
-    return fieldErrors;
-  }
-
   onSave(event: Event): void {
     event.preventDefault();
     if (this.isReadOnly()) return;
-    
+
     this.backendErrors.set({});
 
     if (this.userForm().invalid()) {
-      this.userForm.email().markAsTouched();
-      this.userForm.state().markAsTouched();
-      this.userForm.id_roles().markAsTouched();
-      this.userForm.persona.id_tipo_documento().markAsTouched();
-      this.userForm.persona.numero_documento().markAsTouched();
-      this.userForm.persona.nombres().markAsTouched();
-      this.userForm.persona.apellido_paterno().markAsTouched();
-      this.userForm.persona.apellido_materno().markAsTouched();
-      this.userForm.persona.genero().markAsTouched();
-      this.userForm.persona.telefono().markAsTouched();
-      this.userForm.persona.correo_personal().markAsTouched();
+      this.markAllFieldsAsTouched();
       return;
     }
-    
-    // Forzar detección de cambios
-    this.cdr.detectChanges();
+
     this.isSaving.set(true);
 
-    const payload: UserData = {
-      username: this.userModal().username.trim().toLowerCase(),
-      email: this.userModal().email.trim().toLowerCase(),
-      state: this.userModal().state,
-      id_roles: this.userModal().id_roles,
-      persona: {
-        id_tipo_documento: this.userModal().persona.id_tipo_documento,
-        numero_documento: this.userModal().persona.numero_documento.trim(),
-        nombres: this.userModal().persona.nombres.trim().toUpperCase(),
-        apellido_paterno: this.userModal().persona.apellido_paterno.trim().toUpperCase(),
-        apellido_materno: this.userModal().persona.apellido_materno.trim().toUpperCase(),
-        genero: this.userModal().persona.genero,
-        telefono: this.userModal().persona.telefono.trim(),
-        correo_personal: this.userModal().persona.correo_personal.trim().toLowerCase(),
-        estado: this.userModal().persona.estado
-      }
-    };
-
+    const payload = this.preparePayload();
     const apiRequest = this.mapToApiRequest(payload);
 
     if (this.isEditMode()) {
-      this.usersService.updateUser(this.inputData?.id || 0, apiRequest).subscribe({
-        next: () => {
-          this.isSaving.set(false);
-          this.dialogRef.close({ action: 'success', data: payload });
-        },
-        error: (err) => {
-          this.isSaving.set(false);
-          const fieldErrors = this.extractFieldErrors(err.error);
-          this.setBackendErrors(fieldErrors);
-        }
-      });
+      this.updateUser(apiRequest);
     } else {
-      this.usersService.createUser(apiRequest).subscribe({
-        next: () => {
-          this.isSaving.set(false);
-          this.dialogRef.close({ action: 'success', data: payload });
-        },
-        error: (err) => {
-          this.isSaving.set(false);
-          const fieldErrors = this.extractFieldErrors(err.error);
-          this.setBackendErrors(fieldErrors);
-        }
-      });
+      this.createUser(apiRequest);
     }
   }
 
-  closeModal(): void {
-    this.dialogRef.close();
+  private markAllFieldsAsTouched(): void {
+    this.userForm.email().markAsTouched();
+    this.userForm.state().markAsTouched();
+    this.userForm.id_roles().markAsTouched();
+    this.userForm.persona.id_tipo_documento().markAsTouched();
+    this.userForm.persona.numero_documento().markAsTouched();
+    this.userForm.persona.nombres().markAsTouched();
+    this.userForm.persona.apellido_paterno().markAsTouched();
+    this.userForm.persona.apellido_materno().markAsTouched();
+    this.userForm.persona.genero().markAsTouched();
+    this.userForm.persona.telefono().markAsTouched();
+    this.userForm.persona.correo_personal().markAsTouched();
   }
 
-  // Método para establecer errores del backend (llamado desde el componente padre)
-  setBackendErrors(errors: Record<string, string>): void {
-    this.ngZone.runOutsideAngular(() => {
-      this.ngZone.run(() => {
-        this.backendErrors.set(errors);
-        this.cdr.detectChanges();
-      });
+  private preparePayload(): UserData {
+    const userData = this.userModal();
+    return {
+      username: userData.username.trim().toLowerCase(),
+      email: userData.email.trim(),
+      state: userData.state,
+      id_roles: userData.id_roles,
+      persona: {
+        id_tipo_documento: userData.persona.id_tipo_documento,
+        numero_documento: userData.persona.numero_documento.trim(),
+        nombres: userData.persona.nombres.trim().toUpperCase(),
+        apellido_paterno: userData.persona.apellido_paterno.trim().toUpperCase(),
+        apellido_materno: userData.persona.apellido_materno.trim().toUpperCase(),
+        genero: userData.persona.genero,
+        telefono: userData.persona.telefono.trim(),
+        correo_personal: userData.persona.correo_personal.trim(),
+        estado: userData.persona.estado
+      }
+    };
+  }
+
+  private createUser(apiRequest: CreateUserRequest): void {
+    this.usersService.createUser(apiRequest).subscribe({
+      next: (response) => this.handleSuccess(response),
+      error: (err: AppHttpError) => this.manejarErroresBackend(err)
     });
   }
 
-  onCancel(): void {
-    this.dialogRef.close({ action: 'cancel' });
+  private updateUser(apiRequest: CreateUserRequest): void {
+    this.usersService.updateUser(this.inputData?.id || 0, apiRequest).subscribe({
+      next: (response) => this.handleSuccess(response),
+      error: (err: AppHttpError) => this.manejarErroresBackend(err)
+    });
   }
 
-  errorIconPath = computed(() => this.iconService.getIconPath('error')());
+  private handleSuccess(response: any): void {
+    this.isSaving.set(false);
+    this.dialogRef.close(response);
+    this.alertService.success(response.message);
+  }
+  
+  private manejarErroresBackend(err: AppHttpError): void {
+    this.isSaving.set(false);
+    this.alertService.error(err.mensajeGeneral || 'Ocurrió un error al procesar los datos.');
+
+    const erroresMapeados = this.mapBackendErrors(err.detalles);
+    this.backendErrors.set(erroresMapeados);
+    this.refreshErrorFields();
+  }
+
+  private mapBackendErrors(detalles: any): Record<string, string[]> {
+    const erroresMapeados: Record<string, string[]> = {};
+
+    if (!detalles || typeof detalles !== 'object') {
+      return erroresMapeados;
+    }
+
+    this.mapPersonaErrors(detalles['persona'], erroresMapeados);
+    this.mapRootErrors(detalles, erroresMapeados);
+
+    return erroresMapeados;
+  }
+
+  private mapPersonaErrors(datosPersona: any, erroresMapeados: Record<string, string[]>): void {
+    if (!datosPersona || typeof datosPersona !== 'object' || Array.isArray(datosPersona)) {
+      return;
+    }
+
+    Object.keys(datosPersona).forEach(campoPersona => {
+      const mensajes = datosPersona[campoPersona];
+      if (Array.isArray(mensajes)) {
+        erroresMapeados[`persona.${campoPersona}`] = mensajes;
+      }
+    });
+  }
+
+  private mapRootErrors(detalles: any, erroresMapeados: Record<string, string[]>): void {
+    Object.keys(detalles).forEach(key => {
+      if (key !== 'persona' && Array.isArray(detalles[key])) {
+        erroresMapeados[key] = detalles[key];
+      }
+    });
+  }
+
+  private refreshErrorFields(): void {
+    if (this.userForm.persona?.numero_documento) {
+      this.userForm.persona.numero_documento().markAsTouched();
+    }
+    if (this.userForm.persona?.telefono) {
+      this.userForm.persona.telefono().markAsTouched();
+    }
+  }
+
 }

@@ -2,63 +2,16 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ApiConfigService } from '../../core/services/api-config.service';
-
-// Interfaces para los datos de personas
-export interface PersonaData {
-  id_tipo_documento: number;
-  numero_documento: string;
-  nombres: string;
-  apellido_paterno: string;
-  apellido_materno: string;
-  genero: string;
-  telefono: string;
-  correo_personal: string;
-  estado: boolean;
-}
-
-// Interfaces para los datos de usuarios
-export interface CreateUserRequest {
-  username?: string;
-  email_institucional: string;
-  estado: boolean;
-  persona: PersonaData;
-  id_roles: number[];
-}
-
-export interface UserResponse {
-  id_usuario: number;
-  nombre_usuario: string;
-  email_institucional: string;
-  estado: boolean;
-  persona: PersonaData;
-  roles: Array<{ id_rol: number; nombre_rol: string }>;
-  bloqueado_hasta: string | null;
-  fecha_creacion: string;
-  fecha_modificacion: string;
-}
-
-export interface UsersListResponse {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: UserResponse[];
-}
-
-export interface GetUsersParams {
-  search?: string;
-  ordering?: string;
-  page?: number;
-  page_size?: number;
-}
+import { CreateUserRequest, GetUsersParams, UserResponse, UsersListResponse } from '../interfaces/usuario-interface';
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class UsersService {
   private readonly http = inject(HttpClient);
   private readonly apiConfig = inject(ApiConfigService);
 
-  // Crear un nuevo usuario
   createUser(userData: CreateUserRequest): Observable<UserResponse> {
     return this.http.post<UserResponse>(
       this.apiConfig.usersEndpoint(),
@@ -66,7 +19,6 @@ export class UsersService {
     );
   }
 
-  // Obtener usuarios con parámetros de búsqueda, paginación y ordenamiento
   getUsers(params: GetUsersParams = {}): Observable<UsersListResponse> {
     let httpParams = new HttpParams();
 
@@ -92,22 +44,18 @@ export class UsersService {
     );
   }
 
-  // Obtener un usuario por ID
   getUserById(id: number): Observable<UserResponse> {
     return this.http.get<UserResponse>(`${this.apiConfig.usersEndpoint()}${id}/`);
   }
 
-  // Actualizar un usuario
   updateUser(id: number, userData: Partial<CreateUserRequest>): Observable<UserResponse> {
     return this.http.put<UserResponse>(`${this.apiConfig.usersEndpoint()}${id}/`, userData);
   }
 
-  // Eliminar un usuario
   deleteUser(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiConfig.usersEndpoint()}${id}/`);
   }
 
-  // Restablecer contraseña de un usuario
   resetPassword(idUsuario: number): Observable<void> {
     return this.http.post<void>(
       this.apiConfig.resetPasswordEndpoint(),

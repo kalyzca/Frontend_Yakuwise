@@ -31,3 +31,37 @@ export interface UserFormData {
   roles_names: string[];
   persona: PersonaData;
 }
+
+export interface CreateUserRequest {
+  username?: string;
+  email_institucional: string;
+  estado: boolean;
+  persona: PersonaData;
+  id_roles: number[];
+}
+
+export interface UserResponse {
+  id_usuario: number;
+  nombre_usuario: string;
+  email_institucional: string;
+  estado: boolean;
+  persona: PersonaData;
+  roles: Array<{ id_rol: number; nombre_rol: string }>;
+  bloqueado_hasta: string | null;
+  fecha_creacion: string;
+  fecha_modificacion: string;
+}
+
+export interface UsersListResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: UserResponse[];
+}
+
+export interface GetUsersParams {
+  search?: string;
+  ordering?: string;
+  page?: number;
+  page_size?: number;
+}

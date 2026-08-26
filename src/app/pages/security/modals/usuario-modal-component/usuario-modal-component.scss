@@ -1,7 +1,6 @@
 @use 'abstracts/variables' as v;
 @use 'abstracts/mixins' as m;
 
-
 .persona-section, 
 .usuario-section {
     border: 1px dotted v.$primary-color;
@@ -32,3 +31,9 @@
         grid-template-columns: repeat(2, 1fr);
     }
 }
+
+.text-mayusc{
+    text-transform: uppercase;
+}
+
+
