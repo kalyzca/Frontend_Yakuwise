@@ -19,7 +19,6 @@ export interface AssignRolesData {
 
 @Component({
   selector: 'app-assign-roles-modal',
-  standalone: true,
   imports: [
     MatDialogModule,
     MatButtonModule,
@@ -55,13 +54,11 @@ export class AssignRolesModalComponent implements OnInit {
     this.isLoading.set(true);
     this.rolesService.getRoles({ page: 1, page_size: 100 }).subscribe({
       next: (response) => {
-        // Filtrar solo roles activos
         const activeRoles = response.results.filter(role => role.estado === true);
         this.availableRoles.set(activeRoles);
         this.isLoading.set(false);
       },
-      error: (error: any) => {
-        console.error('Error al cargar roles', error);
+      error: () => {
         this.alertService.error('Error al cargar roles disponibles.');
         this.isLoading.set(false);
       }
@@ -77,9 +74,8 @@ export class AssignRolesModalComponent implements OnInit {
         });
         this.assignedRoles.set(assignedRoleIds);
       },
-      error: (error: any) => {
-        console.error('Error al cargar roles asignados', error);
-        // Si hay error, iniciar con set vacío
+      error: () => {
+        this.alertService.error('Error al cargar roles asignados.');
         this.assignedRoles.set(new Set<number>());
       }
     });
@@ -99,24 +95,21 @@ export class AssignRolesModalComponent implements OnInit {
 
   onSave(): void {
     this.isSaving.set(true);
-
-    // Get currently assigned roles from server to calculate differences
+    
     this.rolMenusService.getRolMenus({ id_menu: this.data.menuId, page: 1, page_size: 100 }).subscribe({
       next: (response) => {
         const currentlyAssigned = new Set<number>(
           response.results.map(rm => rm.id_rol)
         );
         const newAssignments = this.assignedRoles();
-
-        // Calculate roles to add
         const rolesToAdd: number[] = [];
+
         newAssignments.forEach(roleId => {
           if (!currentlyAssigned.has(roleId)) {
             rolesToAdd.push(roleId);
           }
         });
 
-        // Calculate roles to remove
         const rolesToRemove: number[] = [];
         currentlyAssigned.forEach(roleId => {
           if (!newAssignments.has(roleId)) {
@@ -127,17 +120,14 @@ export class AssignRolesModalComponent implements OnInit {
           }
         });
 
-        // Execute additions
         const addRequests = rolesToAdd.map(roleId =>
           this.rolMenusService.createRolMenu({ id_rol: roleId, id_menu: this.data.menuId })
         );
 
-        // Execute removals
         const removeRequests = rolesToRemove.map(id =>
           this.rolMenusService.deleteRolMenu(id)
         );
 
-        // Combine all requests
         const allRequests: Observable<any>[] = [...addRequests, ...removeRequests];
 
         if (allRequests.length === 0) {
@@ -146,7 +136,6 @@ export class AssignRolesModalComponent implements OnInit {
           return;
         }
 
-        // Execute all requests
         let completed = 0;
         let hasError = false;
 
@@ -164,10 +153,10 @@ export class AssignRolesModalComponent implements OnInit {
                 this.dialogRef.close(true);
               }
             },
-            error: (error: any) => {
+            error: () => {
               completed++;
               hasError = true;
-              console.error('Error en asignación de rol', error);
+              
               if (completed === allRequests.length) {
                 this.isSaving.set(false);
                 this.alertService.warning('Algunas asignaciones no se pudieron completar.');
@@ -177,15 +166,10 @@ export class AssignRolesModalComponent implements OnInit {
           });
         });
       },
-      error: (error: any) => {
-        console.error('Error al obtener roles actuales', error);
+      error: () => {
         this.isSaving.set(false);
         this.alertService.error('Error al guardar asignaciones.');
       }
     });
-  }
-
-  onCancel(): void {
-    this.dialogRef.close(false);
   }
 }

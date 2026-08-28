@@ -153,6 +153,7 @@ export class MenuComponent {
     const dialogRef = this.dialog.open(AssignRolesModalComponent, {
       width: '30rem',
       height: 'auto',
+      minHeight: '20rem',
       data: {
         menuId: menu.id_menu,
         menuName: menu.nombre_menu
