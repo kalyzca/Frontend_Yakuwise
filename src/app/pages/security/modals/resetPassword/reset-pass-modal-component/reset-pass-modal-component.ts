@@ -4,10 +4,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { UserData } from '../../../../../shared/interfaces/usuario-interface';
 import { UsersService } from '../../../../../shared/services/users.service';
 import { AlertService } from '../../../../../shared/services/alert.service';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-reset-pass-modal-component',
-  imports: [MatDialogModule, MatButtonModule],
+  imports: [MatDialogModule, MatButtonModule,MatIconModule,MatTooltipModule],
   templateUrl: './reset-pass-modal-component.html',
   styleUrl: './reset-pass-modal-component.scss',
 })

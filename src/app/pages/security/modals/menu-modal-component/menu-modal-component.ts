@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal, computed, OnInit } from '@angular/core'; 
+import { Component, inject, signal, computed, OnInit } from '@angular/core'; 
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog'; 
 import { MatButtonModule } from '@angular/material/button'; 
 import { MatInputModule } from '@angular/material/input'; 
@@ -53,7 +53,6 @@ export interface MenuData {
   ], 
   templateUrl: './menu-modal-component.html', 
   styleUrl: './menu-modal-component.scss', 
-  changeDetection: ChangeDetectionStrategy.OnPush 
 })
 
 export class MenuModalComponent implements OnInit { 
@@ -135,7 +134,7 @@ export class MenuModalComponent implements OnInit {
       next: (response) => {
         const mappedModulos = response.results.map(modulo => ({
           id: modulo.id_modulo || modulo.id || 0,
-          name: modulo.nombre_modulo,
+          module_name: modulo.nombre_modulo,
           state: modulo.estado ? 'Activo' : 'Inactivo'
         }));
         this.modulos.set(mappedModulos);

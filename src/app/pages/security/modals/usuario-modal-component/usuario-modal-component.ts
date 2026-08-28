@@ -19,10 +19,12 @@ import { FormErrorService } from '../../../../shared/services/form-error.service
 import { AlertService } from '../../../../shared';
 import { AppHttpError } from '../../../../shared/interfaces/error-interface';
 import { LetrasDirective } from '../../../../shared/directives/letras-directive';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-usuario-modal-component',
-  imports: [FormsModule, MatDialogActions, MatFormFieldModule, MatInputModule, MatButtonModule,  MatFormField, MatCheckboxModule, MatError, MatSlideToggleModule, MatSelectModule, CommonModule, FormField, MatDialogModule, LetrasDirective],
+  imports: [FormsModule, MatDialogActions, MatFormFieldModule, MatInputModule, MatButtonModule,  MatFormField, MatCheckboxModule, MatError, MatSlideToggleModule, MatSelectModule, CommonModule, FormField, MatDialogModule, LetrasDirective, MatIconModule, MatTooltipModule],
   templateUrl: './usuario-modal-component.html',
   styleUrl: './usuario-modal-component.scss',
 })

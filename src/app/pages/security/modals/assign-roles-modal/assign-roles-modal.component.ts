@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,6 +9,8 @@ import { RolMenusService } from '../../../../shared/services/rol-menus.service';
 import { AlertService } from '../../../../shared/services/alert.service';
 import { RoleResponse } from '../../../../shared/interfaces/roles-interface';
 import { Observable } from 'rxjs';
+import { TitleCasePipe } from '@angular/common';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 export interface AssignRolesData {
   menuId: number;
@@ -23,11 +25,13 @@ export interface AssignRolesData {
     MatButtonModule,
     MatIconModule,
     MatSlideToggleModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    TitleCasePipe,
+    MatTooltipModule
   ],
   templateUrl: './assign-roles-modal.component.html',
   styleUrl: './assign-roles-modal.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  
 })
 
 export class AssignRolesModalComponent implements OnInit {

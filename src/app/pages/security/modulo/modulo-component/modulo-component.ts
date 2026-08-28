@@ -80,12 +80,12 @@ export class ModuloComponent {
       return currentModulos; 
     } 
     return currentModulos.filter(modulo => { 
-      const moduloNameLower = modulo.name.toLowerCase(); 
+      const moduloNameLower = modulo.module_name.toLowerCase(); 
       const moduloStateLower = modulo.state.toLowerCase(); 
       const moduloIdStr = modulo.id?.toString() || ''; 
       if (['activo', 'inactivo'].includes(search)) return moduloStateLower === search; 
-      if (['act', 'activ', 'activa'].includes(search)) return moduloStateLower === 'activo'; 
-      if (['inac', 'ina', 'inactiv', 'inactiva'].includes(search)) return moduloStateLower === 'inactivo'; 
+      if (['act', 'activ', 'activo'].includes(search)) return moduloStateLower === 'activo'; 
+      if (['inac', 'ina', 'inactiv', 'inactivo'].includes(search)) return moduloStateLower === 'inactivo'; 
       return moduloNameLower.includes(search) || moduloIdStr.includes(search); 
     }); 
   }); 
@@ -139,7 +139,7 @@ export class ModuloComponent {
 
     return { 
       id: apiResponse.id_modulo || apiResponse.id || 0, 
-      name: apiResponse.nombre_modulo,
+      module_name: apiResponse.nombre_modulo,
       state: apiResponse.estado ? 'Activo' : 'Inactivo',
       menus
     }; 

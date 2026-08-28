@@ -1,8 +1,13 @@
-<p mat-dialog-title>{{ isEditMode() ? 'Editar Rol' : 'Agregar Rol' }}</p>
+<p mat-dialog-title class="modal-title">
+    {{ isEditMode() ? 'Editar Rol' : 'Agregar Rol' }}
+    <button mat-icon-button class="close-button" matTooltip="Cerrar" mat-dialog-close>
+        <mat-icon>close</mat-icon>
+    </button>
+</p>
 <mat-dialog-content>
     <form (submit)="onSave($event)">
         <div class="form-input-container">
-            <label for="nameRol" class="label-input-container">Nombre:</label>
+            <label for="nameRol" class="label-input-container required-field">Nombre:</label>
             <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
                 <input matInput id="nameRol" class="text-uppercase" [formField]="roleForm.nombre_rol"
                     [errorStateMatcher]="rolError.matcher" soloLetras
@@ -23,7 +28,7 @@
             }
         </div>
         <div class="form-input-container">
-            <label for="state" class="label-input-container custom-switch">Estado:</label>
+            <label for="state" class="label-input-container custom-switch required-field">Estado:</label>
             <mat-slide-toggle id="state" [checked]="isActive()" (change)="isActive.set($event.checked)">
                 <p class="txt-switch">
                     El rol está <span class="state-text">&nbsp;{{statusText().toLowerCase()}}.</span>

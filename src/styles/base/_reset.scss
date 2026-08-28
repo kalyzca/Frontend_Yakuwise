@@ -449,6 +449,11 @@ body {
     .mat-mdc-menu-content{
         padding: 0;
     }
+    @include mat.tooltip-overrides((
+        container-color: v.$primary-hover-color,
+        supporting-text-color: v.$white-color,
+        supporting-text-line-height: 1rem,
+    ));
     
 }
 
@@ -543,5 +548,14 @@ body {
     
     @include m.respond-to(md) {
         width: 45rem;
+    }
+}
+
+// Estilos boton close
+.modal-title {
+    .close-button {
+        position: absolute;
+        right: 0.5rem;
+        top: 0.5rem;
     }
 }

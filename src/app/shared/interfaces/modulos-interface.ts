@@ -2,7 +2,7 @@ import { MenuResponse } from './menus-interface';
 
 export interface ModuloData {
   id?: number;
-  name: string;
+  module_name: string;
   state: string;
   menus?: MenuData[];
 }

@@ -1,4 +1,9 @@
-<p mat-dialog-title>{{ isReadOnly() ? 'Ver Usuario' : (isEditMode() ? 'Editar Usuario' : 'Agregar Usuario') }}</p>
+<p mat-dialog-title class="modal-title">
+    {{ isReadOnly() ? 'Ver Usuario' : (isEditMode() ? 'Editar Usuario' : 'Agregar Usuario') }}
+    <button mat-icon-button class="close-button" matTooltip="Cerrar" mat-dialog-close>
+        <mat-icon>close</mat-icon>
+    </button>
+</p>
 <mat-dialog-content>
     <form class="form-user" (submit)="onSave($event)">
         <fieldset class="persona-section">

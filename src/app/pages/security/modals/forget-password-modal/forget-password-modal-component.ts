@@ -10,6 +10,8 @@ import { AlertService } from '../../../../shared';
 import { FormErrorService } from '../../../../shared/services/form-error.service';
 import { AppHttpError } from '../../../../shared/interfaces/error-interface';
 import { UsuarioDirective } from '../../../../shared/directives/usuario-directive';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 export interface ForgetPasswordData {
   nombre_usuario: string,
@@ -18,7 +20,7 @@ export interface ForgetPasswordData {
 
 @Component({
   selector: 'app-forget-password-modal',
-  imports: [MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatFormField, MatError, FormField, UsuarioDirective],
+  imports: [MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatFormField, MatError, FormField, UsuarioDirective, MatIconModule, MatTooltipModule],
   templateUrl: './forget-password-modal-component.html',
   styleUrl: './forget-password-modal-component.scss',
 })

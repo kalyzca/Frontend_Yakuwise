@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal, computed, OnInit } from '@angular/core'; 
+import { Component, inject, signal, computed, OnInit } from '@angular/core'; 
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog'; 
 import { MatButtonModule } from '@angular/material/button'; 
 import { MatInputModule } from '@angular/material/input'; 
@@ -10,10 +10,11 @@ import { FormsModule } from '@angular/forms';
 import { ModulosService } from '../../../../shared/services/modulos.service'; 
 import { AlertService } from '../../../../shared/services/alert.service'; 
 import { ModuloData, CreateModuloRequest } from '../../../../shared/interfaces/modulos-interface'; 
-import { form, required, minLength, FormField } from '@angular/forms/signals';
+import { form, required, minLength, maxLength, FormField } from '@angular/forms/signals';
 import { FormErrorService } from '../../../../shared/services/form-error.service';
 import { AppHttpError } from '../../../../shared/interfaces/error-interface';
 import { IconService } from '../../../../shared/services/icon.service'; 
+import { LetrasDirective } from '../../../../shared/directives/letras-directive';
 
 @Component({ 
   selector: 'app-modulo-modal', 
@@ -29,11 +30,11 @@ import { IconService } from '../../../../shared/services/icon.service';
     FormsModule,
     MatFormField,
     MatError,
-    FormField
+    FormField,
+    LetrasDirective
   ], 
   templateUrl: './modulo-modal-component.html', 
   styleUrl: './modulo-modal-component.scss', 
-  changeDetection: ChangeDetectionStrategy.OnPush 
 })
 
 export class ModuloModalComponent implements OnInit { 
@@ -50,25 +51,24 @@ export class ModuloModalComponent implements OnInit {
   readonly errorIconPath = computed(() => this.iconService.getIconPath('error')());
   readonly backendErrors = signal<Record<string, string[]>>({});
   readonly statusText = computed(() => this.isActive() ? 'Activo' : 'Inactivo');
-  private readonly regexModulo = /^[a-zA-ZáéíóúÁÉÍÓÚ ]+$/;
-  
-  readonly moduloModel = signal<ModuloData>({ name: '', state: 'Inactivo' });
+  readonly moduleModel = signal<ModuloData>({ module_name: '', state: 'Inactivo' });
 
-  readonly moduloForm = form(this.moduloModel, (fieldPath) => {
-    required(fieldPath.name, { message: 'El nombre del módulo es requerido.' });
-    minLength(fieldPath.name, 5, { message: 'El nombre del módulo debe tener al menos 5 caracteres.' });
+  readonly moduleForm = form(this.moduleModel, (fieldPath) => {
+    required(fieldPath.module_name, { message: 'El nombre del módulo es requerido.' });
+    minLength(fieldPath.module_name, 5, { message: 'El nombre del módulo debe tener al menos 5 caracteres.' });
+    maxLength(fieldPath.module_name, 40, { message: 'El nombre del módulo debe tener al menos 30 caracteres.' });
   });
 
-  nameError = this.errorService.createFieldTracker(this.moduloForm.name, this.backendErrors, 'nombre_modulo'); 
+  nameModuleError = this.errorService.createFieldTracker(this.moduleForm.module_name, this.backendErrors, 'nombre_modulo'); 
 
   ngOnInit(): void { 
     if (this.data) { 
       this.isEditMode.set(true); 
       this.isActive.set(this.data.state === 'Activo'); 
       
-      this.moduloModel.set({
+      this.moduleModel.set({
         id: this.data.id,
-        name: this.data.name || '',
+        module_name: this.data.module_name || '',
         state: this.data.state || 'Inactivo'
       });
     } 
@@ -77,8 +77,8 @@ export class ModuloModalComponent implements OnInit {
   onSave(event: Event) {
     event.preventDefault();
 
-    if (this.moduloForm.name().invalid()) {
-      this.moduloForm.name().markAsTouched();
+    if (this.moduleForm.module_name().invalid()) {
+      this.moduleForm.module_name().markAsTouched();
       return;
     }
 
@@ -86,7 +86,7 @@ export class ModuloModalComponent implements OnInit {
     this.backendErrors.set({});
     
     const apiRequest: CreateModuloRequest = { 
-      nombre_modulo: this.moduloModel().name.trim().toUpperCase(), 
+      nombre_modulo: this.moduleModel().module_name.trim().toUpperCase(), 
       estado: this.isActive() 
     }; 
     
@@ -123,15 +123,5 @@ export class ModuloModalComponent implements OnInit {
       }); 
     } 
   } 
-
-  blockNumbers(event: KeyboardEvent): void {
-    if (!this.regexModulo.test(event.key)) {
-      event.preventDefault();
-    }
-  }
-
-  closeModal(): void {
-    this.dialogRef.close(false);
-  }
 
 }

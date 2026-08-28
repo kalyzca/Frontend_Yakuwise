@@ -7,19 +7,6 @@
   overflow-x: hidden;
 }
 
-::ng-deep .mat-mdc-dialog-title {
-  position: relative;
-  padding-right: 2.5rem;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-}
-
-.close-button {
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-
 .loading-container {
   display: flex;
   flex-direction: column;

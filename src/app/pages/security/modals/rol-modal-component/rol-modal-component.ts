@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal, computed, OnInit } from '@angular/core'; 
+import { Component, inject, signal, computed, OnInit } from '@angular/core'; 
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog'; 
 import { MatButtonModule } from '@angular/material/button'; 
 import { MatInputModule } from '@angular/material/input'; 
@@ -11,6 +11,8 @@ import { RoleData, CreateRoleRequest } from '../../../../shared/interfaces/roles
 import { form, required, FormField, minLength,maxLength } from '@angular/forms/signals'; 
 import { FormErrorService } from '../../../../shared/services/form-error.service';
 import { LetrasDirective } from '../../../../shared/directives/letras-directive';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({ 
   selector: 'app-rol-modal', 
@@ -21,14 +23,15 @@ import { LetrasDirective } from '../../../../shared/directives/letras-directive'
     MatInputModule, 
     MatFormFieldModule, 
     MatSlideToggleModule, 
-    FormsModule, 
+    FormsModule,
     FormField, 
     MatError,
-    LetrasDirective
+    LetrasDirective, 
+    MatIconModule,
+    MatTooltipModule
   ], 
   templateUrl: './rol-modal-component.html', 
   styleUrl: './rol-modal-component.scss', 
-  changeDetection: ChangeDetectionStrategy.OnPush 
 })
 
 export class RolModalComponent implements OnInit { 
