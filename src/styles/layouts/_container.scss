@@ -118,12 +118,12 @@
                 fill: v.$edit-color;
                 width: 1.75rem;
                 height: 1.75rem;
-                stroke: hsl(57.01deg 89.09% 46.72%);
+                stroke: #A3A300;
                 transition: filter 0.2s ease-in-out
             }
 
             .icon-edit:hover {
-                stroke: v.$gray-400;
+                stroke: #474700;
             }
 
         }
@@ -147,21 +147,27 @@
             }
         }
 
-        .btn-read-user {
+        .btn-read-user,
+        .btn-assign
+        {
             background-color: transparent;
             border-style: none;
             cursor: pointer;
             padding: 0;
             margin: auto;
             
-            .icon-read-user {
+            .icon-read-user,
+            .icon-assign
+            {
                 fill: v.$primary-color;
                 width: 1.75rem;
                 height: 1.75rem;
                 transition: filter 0.2s ease-in-out
             }
 
-            .icon-read-user:hover {
+            .icon-read-user:hover,
+            .icon-assign:hover
+            {
                 fill: v.$primary-hover-color;
             }
         }

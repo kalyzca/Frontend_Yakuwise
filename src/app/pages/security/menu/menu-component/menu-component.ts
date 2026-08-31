@@ -16,10 +16,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MenuResponse, MenusListResponse } from '../../../../shared/interfaces/menus-interface';
 import { AssignRolesModalComponent, AssignRolesData } from '../../modals/assign-roles-modal/assign-roles-modal.component';
+import { TitleCasePipe } from '@angular/common';
 
 @Component({
   selector: 'app-menu-component', 
-  imports: [ButtonComponent, RouterLink, MatFormFieldModule, MatInputModule, MatTableModule, MatSortModule, MatPaginatorModule, MatTooltipModule, FormsModule, MatIconModule, MatButtonModule, MatChipsModule], 
+  imports: [ButtonComponent, RouterLink, MatFormFieldModule, MatInputModule, MatTableModule, MatSortModule, MatPaginatorModule, MatTooltipModule, FormsModule, MatIconModule, MatButtonModule, MatChipsModule, TitleCasePipe], 
   templateUrl: './menu-component.html', 
   styleUrl: './menu-component.scss', 
 })
@@ -96,8 +97,8 @@ export class MenuComponent {
       const menuStateStr = menu.estado ? 'activo' : 'inactivo'; 
       const menuIdStr = menu.id_menu?.toString() || ''; 
       if (['activo', 'inactivo'].includes(search)) return menuStateStr === search; 
-      if (['act', 'activ', 'activa'].includes(search)) return menuStateStr === 'activo'; 
-      if (['inac', 'ina', 'inactiv', 'inactiva'].includes(search)) return menuStateStr === 'inactivo'; 
+      if (['act', 'activ', 'activo'].includes(search)) return menuStateStr === 'activo'; 
+      if (['inac', 'ina', 'inactiv', 'inactivo'].includes(search)) return menuStateStr === 'inactivo'; 
       return menuNameLower.includes(search) || menuModuloLower.includes(search) || menuRolesNames.includes(search) || menuIdStr.includes(search); 
     }); 
   }); 

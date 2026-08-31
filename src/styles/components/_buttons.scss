@@ -6,7 +6,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem 1.5rem;
+  padding: 0.5rem 0.75rem;
   border-radius: v.$radius;
   border: none;
   font-family: v.$font-main;
@@ -20,10 +20,14 @@
     &:hover {
       background-color: v.$primary-hover-color;
     }
+    
+    &:active {
+      background-color: v.$primary-active-color;
+    }
 
   }
 
   &--large {
-    padding: 1rem 2rem;
+    padding: 1rem 1.5rem;
   }
 }

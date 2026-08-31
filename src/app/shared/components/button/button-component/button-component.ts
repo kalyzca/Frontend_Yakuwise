@@ -11,7 +11,7 @@ import { IconComponent } from "../../icon/icon-component/icon-component";
 })
 
 export class ButtonComponent {
-  private configService = inject(ButtonConfigService);
+  private readonly configService = inject(ButtonConfigService);
 
   // Inputs basados en Signals (Angular 21)
   label = input.required<string>();

@@ -324,8 +324,10 @@ body {
         outline-color: v.$primary-color,
         container-height: 2rem,
         hover-state-layer-color: v.$light-secondary-color,
+        label-text-color: v.$dark-color,
+        label-text-weight: 400,
     ));
-
+    
     // Estilos de icon del boton
      @include mat.icon-button-overrides((
         ripple-color: none,
@@ -558,4 +560,14 @@ body {
         right: 0.5rem;
         top: 0.5rem;
     }
+}
+
+// Estilo de chips
+.chips{
+    font-style: italic;
+    text-align: center;
+}
+
+.mat-mdc-chip-set .mdc-evolution-chip-set__chips{
+    justify-content: space-evenly;
 }
