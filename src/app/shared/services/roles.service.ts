@@ -38,6 +38,10 @@ export class RolesService {
       httpParams = httpParams.set('page_size', params.page_size.toString());
     }
 
+    if (params.estado !== undefined && params.estado !== null) {
+      httpParams = httpParams.set('estado', params.estado.toString());
+    }
+
     return this.http.get<RolesListResponse>(
       this.apiConfig.rolesEndpoint(),
       { params: httpParams }
