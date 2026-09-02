@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { SidebarService } from '../../../../shared/services/sidebar.service';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from "@angular/router";
@@ -10,22 +10,22 @@ import { Subscription } from 'rxjs';
   selector: 'app-sidebar-component',
   imports: [CommonModule, RouterLink],
   templateUrl: './sidebar-component.html',
-  styleUrl: './sidebar-component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrl: './sidebar-component.scss'
 })
 export class SidebarComponent implements OnInit, OnDestroy {
 
   // Inyectamos el servicio (usamos protected para que el HTML lo vea)
   protected sidebarService = inject(SidebarService);
   private readonly authService = inject(AuthService);
-  private readonly cdr = inject(ChangeDetectorRef);
 
   userData: LoginResponse['data'] | null = null;
   selectedRoleId: number | null = null;
   private roleSubscription: Subscription | null = null;
+  private userDataSubscription: Subscription | null = null;
 
   ngOnInit() {
     this.userData = this.authService.getUserData();
+    
     if (this.userData) {
       this.selectedRoleId = this.authService.getSelectedRole();
       if (!this.selectedRoleId) {
@@ -34,16 +34,38 @@ export class SidebarComponent implements OnInit, OnDestroy {
       }
     }
 
+    // Subscribe to userData changes
+    this.userDataSubscription = this.authService.userData$.subscribe(userData => {
+      this.userData = userData;
+      if (userData) {
+        this.selectedRoleId = this.authService.getSelectedRole();
+        if (!this.selectedRoleId) {
+          this.selectedRoleId = this.authService.getDefaultRole(userData);
+          this.authService.saveSelectedRole(this.selectedRoleId);
+        }
+      }
+    });
+
     // Subscribe to role changes
     this.roleSubscription = this.authService.selectedRole$.subscribe(roleId => {
-      this.selectedRoleId = roleId;
-      this.cdr.markForCheck();
+      // Protect against null roleId - if null, get it from localStorage
+      if (roleId === null) {
+        const savedRoleId = this.authService.getSelectedRole();
+        if (savedRoleId) {
+          this.selectedRoleId = savedRoleId;
+        }
+      } else {
+        this.selectedRoleId = roleId;
+      }
     });
   }
 
   ngOnDestroy() {
     if (this.roleSubscription) {
       this.roleSubscription.unsubscribe();
+    }
+    if (this.userDataSubscription) {
+      this.userDataSubscription.unsubscribe();
     }
   }
 

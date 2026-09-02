@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { TitleCasePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { SidebarService } from '../../../../shared/services/sidebar.service';
@@ -8,6 +8,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { LoginResponse } from '../../../../shared/interfaces/login-interface';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-header-component',
@@ -16,7 +17,7 @@ import { LoginResponse } from '../../../../shared/interfaces/login-interface';
   styleUrl: './header-component.scss',
 })
 
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
   protected sidebar = inject(SidebarService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
@@ -28,6 +29,8 @@ export class HeaderComponent implements OnInit {
   roles: LoginResponse['data']['roles'] = [];
   selectedRoleId: number | null = null;
   nombres:string = "";
+  private userDataSubscription: Subscription | null = null;
+  isRefreshing = false;
 
   ngOnInit(): void {
     const userData = this.authService.getUserData();
@@ -46,15 +49,36 @@ export class HeaderComponent implements OnInit {
       }
       
       this.selectedRoleId = currentSelectedRole;
-      const selectedRoleObj = this.roles.find(role => role.id_rol === currentSelectedRole);
+      const selectedRoleObj = this.roles?.find(role => role.id_rol === currentSelectedRole);
       this.displayRole = selectedRoleObj ? selectedRoleObj.nombre_rol : userData.nombre_completo;
     }
     else {
       this.displayRole = 'Invitado';
     }
 
-    console.log('users', this.roles);
-    console.log('selectedRoleId', this.selectedRoleId);
+    // Subscribe to userData changes
+    this.userDataSubscription = this.authService.userData$.subscribe(userData => {
+      if (userData !== null) {
+        this.nombreCompleto = userData.nombre_completo;
+        this.nombreUsuario = userData.nombre_usuario;
+        this.nombres = userData.nombre;
+        this.roles = userData.roles;
+        
+        // Set default role if none is selected
+        let currentSelectedRole = this.authService.getSelectedRole();
+        if (!currentSelectedRole) {
+          currentSelectedRole = this.authService.getDefaultRole(userData);
+          this.authService.saveSelectedRole(currentSelectedRole);
+        }
+        
+        this.selectedRoleId = currentSelectedRole;
+        const selectedRoleObj = this.roles?.find(role => role.id_rol === currentSelectedRole);
+        this.displayRole = selectedRoleObj ? selectedRoleObj.nombre_rol : userData.nombre_completo;
+      }
+      else {
+        this.displayRole = 'Invitado';
+      }
+    });
 
   }
 
@@ -66,6 +90,27 @@ export class HeaderComponent implements OnInit {
     
     // Navigate to home/welcome when role changes
     this.router.navigate(['/home/welcome']);
+  }
+
+  onMenuOpened(): void {
+    if (!this.isRefreshing && this.authService.isLoggedIn()) {
+      this.isRefreshing = true;
+      
+      this.authService.refreshUserData().subscribe({
+        next: () => {
+          this.isRefreshing = false;
+        },
+        error: (err) => {
+          console.error('Error al refrescar datos del usuario:', err);
+          this.isRefreshing = false;
+          // Si falla (ej: token expirado), limpiar la sesión
+          if (err.status === 401) {
+            this.authService.clearSession();
+            this.router.navigate(['/login']);
+          }
+        }
+      });
+    }
   }
 
   onLogout(): void {
@@ -80,5 +125,11 @@ export class HeaderComponent implements OnInit {
         this.router.navigate(['/login']);
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    if (this.userDataSubscription) {
+      this.userDataSubscription.unsubscribe();
+    }
   }
 }

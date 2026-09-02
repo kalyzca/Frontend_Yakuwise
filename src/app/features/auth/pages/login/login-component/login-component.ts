@@ -79,6 +79,10 @@ export class LoginComponent {
         this.authService.saveUserData(response.data);
         this.authService.saveToken(response.data.token);
         
+        // Establecer el rol seleccionado por defecto
+        const defaultRole = this.authService.getDefaultRole(response.data);
+        this.authService.saveSelectedRole(defaultRole);
+        
         if (response.data.pass_actualizado) {
           this.router.navigate(['/home/welcome']);
         } else {

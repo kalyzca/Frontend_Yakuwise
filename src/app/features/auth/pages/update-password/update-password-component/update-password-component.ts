@@ -96,6 +96,14 @@ export class UpdatePasswordComponent {
           this.isLoading.set(false);
           userData.pass_actualizado = true;
           this.authService.saveUserData(userData);
+          
+          // Establecer el rol seleccionado por defecto si no está establecido
+          const currentSelectedRole = this.authService.getSelectedRole();
+          if (!currentSelectedRole) {
+            const defaultRole = this.authService.getDefaultRole(userData);
+            this.authService.saveSelectedRole(defaultRole);
+          }
+          
           this.router.navigate(['/home/welcome']);
           this.alertService.success("Contraseña actualizada exitosamente.\nRedirigiendo...");
         }

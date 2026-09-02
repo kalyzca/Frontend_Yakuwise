@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, tap } from 'rxjs';
 import { ApiConfigService } from './api-config.service';
 import { LoginRequest, LoginResponse, UpdatePasswordRequest } from '../../shared/interfaces/login-interface';
 
@@ -17,6 +17,8 @@ export class AuthService {
   private readonly SELECTED_ROLE_KEY = 'selected_role';
   private readonly selectedRoleSubject = new BehaviorSubject<number | null>(null);
   selectedRole$ = this.selectedRoleSubject.asObservable();
+  private readonly userDataSubject = new BehaviorSubject<LoginResponse['data'] | null>(null);
+  userData$ = this.userDataSubject.asObservable();
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(
@@ -52,11 +54,17 @@ export class AuthService {
 
   saveUserData(userData: LoginResponse['data']): void {
     localStorage.setItem(this.USER_KEY, JSON.stringify(userData));
+    this.userDataSubject.next(userData);
   }
 
   getUserData(): LoginResponse['data'] | null {
     const userData = localStorage.getItem(this.USER_KEY);
-    return userData ? JSON.parse(userData) : null;
+    const parsedData = userData ? JSON.parse(userData) : null;
+    // Only update BehaviorSubject if data actually changed
+    if (JSON.stringify(parsedData) !== JSON.stringify(this.userDataSubject.value)) {
+      this.userDataSubject.next(parsedData);
+    }
+    return parsedData;
   }
 
   isLoggedIn(): boolean {
@@ -74,6 +82,8 @@ export class AuthService {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
     localStorage.removeItem(this.SELECTED_ROLE_KEY);
+    this.userDataSubject.next(null);
+    this.selectedRoleSubject.next(null);
   }
 
   saveSelectedRole(roleId: number): void {
@@ -100,5 +110,15 @@ export class AuthService {
       return userData.roles[0].id_rol;
     }
     return 0;
+  }
+
+  refreshUserData(): Observable<LoginResponse> {
+    return this.http.get<LoginResponse>(
+      this.apiConfig.currentUserEndpoint()
+    ).pipe(
+      tap(response => {
+        this.saveUserData(response.data);
+      })
+    );
   }
 }

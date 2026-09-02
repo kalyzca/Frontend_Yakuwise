@@ -28,4 +28,5 @@ export interface GetRolesParams {
   ordering?: string;
   page?: number;
   page_size?: number;
+  estado?: boolean;
 }

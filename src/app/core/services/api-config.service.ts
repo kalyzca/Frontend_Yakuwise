@@ -37,6 +37,9 @@ export class ApiConfigService {
   // Endpoint específico para logout
   readonly logoutEndpoint = signal(`${this.baseUrl()}/security/logout/`);
 
+  // Endpoint específico para obtener datos del usuario actual
+  readonly currentUserEndpoint = signal(`${this.baseUrl()}/security/me/`);
+
   // Endpoint específico para rol-menus
   readonly rolMenusEndpoint = signal(`${this.baseUrl()}/security/rol-menus/`);
 

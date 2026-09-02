@@ -170,7 +170,7 @@ export class UsuarioModalComponent {
   telefonoError = this.errorService.createFieldTracker(this.userForm.persona.telefono, this.backendErrors, 'persona.telefono');
 
   private loadRoles(): void {
-    this.rolesService.getRoles({ page_size: this.ROLES_PAGE_SIZE }).subscribe({
+    this.rolesService.getRoles({ page_size: this.ROLES_PAGE_SIZE, estado: true }).subscribe({
       next: (response) => this.roles.set(response.results),
       error: (err) => console.error('Error al cargar roles:', err)
     });
