@@ -158,13 +158,35 @@ export class MenuModalComponent implements OnInit {
           name: menu.nombre_menu
         }));
         this.menus.set(mappedMenus);
-        if (this.data?.id_depende) {
-          const idDepende = this.data.id_depende;
-          this.menuModel.update(current => ({ ...current, id_depende: idDepende }));
-        }
+        this.preselectParentMenu();
       },
       error: (error) => {
         console.log('Error al cargar menús', error);
+        this.preselectParentMenu();
+      }
+    });
+  }
+
+  private preselectParentMenu(): void {
+    const idDepende = Number(this.data?.id_depende);
+    if (!idDepende) {
+      return;
+    }
+    const applyParent = () => this.menuModel.update(current => ({ ...current, id_depende: idDepende }));
+
+    if (this.menus().some(m => m.id === idDepende)) {
+      applyParent();
+      return;
+    }
+
+    this.menusService.getMenuById(idDepende).subscribe({
+      next: (menu) => {
+        this.menus.update(current => [...current, { id: idDepende, name: menu.nombre_menu }]);
+        applyParent();
+      },
+      error: (error) => {
+        console.log('Error al cargar el menú padre', error);
+        applyParent();
       }
     });
   }
