@@ -77,7 +77,8 @@
             <div class="form-input-container">
                 <label for="id_depende" class="label-input-container required-field">Menú Padre:</label>
                 <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
-                    <input matInput id="id_depende" name="id_depende" [formControl]="menuParentControl"
+                    <input matInput id="id_depende" name="id_depende" [formField]="menuForm.id_depende"
+                        [errorStateMatcher]="idDependeError.matcher"
                         [matAutocomplete]="menuAuto" (input)="onMenuInput($event)" placeholder="Buscar menú padre...">
                     <mat-autocomplete #menuAuto="matAutocomplete" [displayWith]="displayMenuName"
                         (optionSelected)="onMenuSelected($event)">
@@ -92,13 +93,13 @@
                         }
                     </mat-autocomplete>
                 </mat-form-field>
-                @if (backendErrors()['id_depende']) {
+                @if (idDependeError.mostrarErrores()) {
                     <mat-error class="error-list-container">
                         <div class="error-list">
-                            @for (error of backendErrors()['id_depende']; track error) {
+                            @for (error of idDependeError.errores(); track error.kind) {
                                 <div class="error-row">
                                     <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                                    <span>{{ error }}</span>
+                                    <span>{{ error.message }}</span>
                                 </div>
                             }
                         </div>
