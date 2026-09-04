@@ -129,7 +129,7 @@ export class MenuModalComponent implements OnInit {
         nombre_modulo: this.data.nombre_modulo,
         nombre_menu: this.data.nombre_menu,
         estado: this.data.estado,
-        id_depende: this.data.id_depende || null
+        id_depende: null
       });
     } 
   }
@@ -158,6 +158,10 @@ export class MenuModalComponent implements OnInit {
           name: menu.nombre_menu
         }));
         this.menus.set(mappedMenus);
+        if (this.data?.id_depende) {
+          const idDepende = this.data.id_depende;
+          this.menuModel.update(current => ({ ...current, id_depende: idDepende }));
+        }
       },
       error: (error) => {
         console.log('Error al cargar menús', error);
@@ -189,6 +193,9 @@ export class MenuModalComponent implements OnInit {
   }
 
   displayMenuName = (menuId: number | string | null): string => {
+    if (typeof menuId === 'string') {
+      return menuId;
+    }
     const menu = this.menus().find(m => m.id === menuId);
     return menu ? menu.name : '';
   };
@@ -197,7 +204,12 @@ export class MenuModalComponent implements OnInit {
     event.preventDefault();
 
     if (this.menuForm().invalid()) {
-      this.menuForm().markAsTouched();
+      this.menuForm.id_modulo().markAsTouched();
+      this.menuForm.nombre_menu().markAsTouched();
+      this.menuForm.nivel().markAsTouched();
+      this.menuForm.ruta().markAsTouched();
+      this.menuForm.orden().markAsTouched();
+      this.menuForm.id_depende().markAsTouched();
       return;
     }
 
