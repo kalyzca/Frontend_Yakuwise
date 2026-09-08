@@ -9,7 +9,7 @@ import { RolMenusService } from '../../../../shared/services/rol-menus.service';
 import { AlertService } from '../../../../shared/services/alert.service';
 import { RoleResponse } from '../../../../shared/interfaces/roles-interface';
 import { Observable } from 'rxjs';
-import { TitleCasePipe } from '@angular/common';
+import { SubtitlePipe } from '../../../../shared/pipes/subtitle-pipe';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 export interface AssignRolesData {
@@ -25,7 +25,7 @@ export interface AssignRolesData {
     MatIconModule,
     MatSlideToggleModule,
     MatProgressSpinnerModule,
-    TitleCasePipe,
+    SubtitlePipe,
     MatTooltipModule
   ],
   templateUrl: './assign-roles-modal.component.html',

@@ -1,3 +1,16 @@
+export interface MenuData {
+  id_menu: number;
+  nivel: number;
+  orden: number;
+  ruta: string;
+  nombre_menu: string;
+  id_modulo: number;
+  nombre_modulo: string;
+  estado: boolean;
+  roles?: Role[];
+  id_depende: number;
+}
+
 export interface CreateMenuRequest {
   nivel: number;
   orden?: number;

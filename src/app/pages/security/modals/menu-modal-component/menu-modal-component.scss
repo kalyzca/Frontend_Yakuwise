@@ -1,9 +1,21 @@
-.form-row {
-  display: flex;
-  gap: 1rem;
+@use 'abstracts/variables' as v;
+@use 'abstracts/mixins' as m;
+
+.form-menus {
+    display: grid;
+    grid-template-columns: 1fr;
+    row-gap: 0.25rem; 
+    
+    @include m.respond-to(md) {
+        grid-template-columns: repeat(2, 1fr);
+        column-gap: 1rem;
+        row-gap: 0.25rem;
+    }
 }
 
-.half-width {
-  flex: 1;
+.text-mayusc {
+    text-transform: uppercase;
 }
-
+.ruta{
+    text-transform: lowercase;
+}

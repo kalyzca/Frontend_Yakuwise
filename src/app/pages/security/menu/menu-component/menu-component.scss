@@ -1,9 +1,9 @@
-@use 'abstracts/variables' as v;
-@use 'abstracts/mixins'as m;
-
 th.mat-column-roles,
 th.mat-column-estado,
-th.mat-column-actions {
+th.mat-column-actions,
+.mat-column-nivel,
+.mat-column-id_depende,
+.mat-column-estado {
     text-align: center;
 }
 
@@ -14,26 +14,27 @@ th.mat-column-actions {
 
 .mat-column-nombre_menu {
     width: 15%;
+    justify-items: start;
+}
+
+.mat-column-id_depende {
+    width: 20%;
 }
 
 .mat-column-nombre_modulo {
-    width: 15%;
+    width: 10%;
 }
 
 .mat-column-roles {
-    text-align: center;
-    width: 35%;
+    width: 30%;
 }
 
-.mat-column-nivel,
-.mat-column-orden {
+.mat-column-estado {
     width: 5%;
-    text-align: center;
 }
 
-.mat-column-estado,
 .mat-column-actions {
-    width: 10%;
+    width: 15%;
     text-align: center !important;
 }
 

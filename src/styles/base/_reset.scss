@@ -98,11 +98,26 @@ body {
             }
         }
     }
+    .mat-mdc-option {
+        font-size: 0.875rem;
+        min-height: 2rem;
+    }
+    div.mat-mdc-autocomplete-panel.mat-mdc-autocomplete-visible {
+        background-color: v.$white-color;
+    }
+    .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled):not(.mat-mdc-option-active, .mat-mdc-option-multiple, :focus, :hover){
+        background-color:v.$light-primary-color;
+    }
+    
     .mat-mdc-option:hover:not(.mdc-list-item--disabled) {
         background-color:v.$primary-color;
         color: v.$white-color;
         font-size: 0.875rem;
         font-weight: 500;
+
+        .mdc-list-item__primary-text {
+            color: v.$white-color !important;
+        }
     }
     .mat-mdc-option:active:not(.mdc-list-item--disabled) {
         background-color:v.$primary-active-color;
@@ -118,6 +133,7 @@ body {
             width: 100%;
         }
     }
+    
     .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled):hover {
         background-color: v.$primary-hover-color !important;
     }
@@ -456,6 +472,11 @@ body {
         supporting-text-color: v.$white-color,
         supporting-text-line-height: 1rem,
     ));
+
+    // Estilos de Badge
+    @include mat.badge-overrides((
+        background-color: v.$primary-color,
+    ));
     
 }
 
@@ -570,4 +591,24 @@ body {
 
 .mat-mdc-chip-set .mdc-evolution-chip-set__chips{
     justify-content: space-evenly;
+}
+
+.mat-mdc-standard-chip .mdc-evolution-chip__action--primary {
+    z-index: 0;
+}
+
+
+// Estilos modal menus
+.custom-responsive-modal-menus {
+    width: 25rem;
+    max-width: 100vw !important;
+    height: auto;
+    
+    @include m.respond-to(md) {
+        width: 35rem;
+    }
+}
+
+.mat-mdc-option .mdc-list-item__primary-text {
+    font-size: 14px;
 }

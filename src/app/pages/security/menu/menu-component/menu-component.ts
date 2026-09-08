@@ -9,28 +9,30 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTooltipModule } from '@angular/material/tooltip'; 
 import { MatDialog } from '@angular/material/dialog'; 
 import { FormsModule } from '@angular/forms'; 
-import { MenuModalComponent, MenuData } from '../../modals/menu-modal-component/menu-modal-component';
+import { MenuModalComponent } from '../../modals/menu-modal-component/menu-modal-component';
 import { MenusService } from '../../../../shared/services/menus.service';
 import { MatIconModule } from '@angular/material/icon'; 
 import { MatButtonModule } from '@angular/material/button'; 
 import { MatChipsModule } from '@angular/material/chips';
-import { MenuResponse, MenusListResponse } from '../../../../shared/interfaces/menus-interface';
+import { MenuResponse, MenusListResponse, MenuData } from '../../../../shared/interfaces/menus-interface';
 import { AssignRolesModalComponent, AssignRolesData } from '../../modals/assign-roles-modal/assign-roles-modal.component';
-import { TitleCasePipe } from '@angular/common';
+import { MatBadgeModule } from '@angular/material/badge';
+import { SubtitlePipe } from '../../../../shared/pipes/subtitle-pipe';
 
 @Component({
-  selector: 'app-menu-component', 
-  imports: [ButtonComponent, RouterLink, MatFormFieldModule, MatInputModule, MatTableModule, MatSortModule, MatPaginatorModule, MatTooltipModule, FormsModule, MatIconModule, MatButtonModule, MatChipsModule, TitleCasePipe], 
-  templateUrl: './menu-component.html', 
-  styleUrl: './menu-component.scss', 
+  selector: 'app-menu-component',
+  imports: [ButtonComponent, RouterLink, MatFormFieldModule, MatInputModule, MatTableModule, MatSortModule, MatPaginatorModule, MatTooltipModule, FormsModule, MatIconModule, MatButtonModule, MatChipsModule, MatBadgeModule, SubtitlePipe],
+  templateUrl: './menu-component.html',
+  styleUrl: './menu-component.scss',
 })
 
 export class MenuComponent { 
   private readonly dialog = inject(MatDialog); 
   private readonly menusService = inject(MenusService);
   
-  displayedColumns: string[] = ['id_menu', 'nombre_menu', 'nombre_modulo', 'roles', 'nivel', 'orden', 'estado', 'actions']; 
+  displayedColumns: string[] = ['id_menu', 'nombre_menu', 'id_depende', 'nombre_modulo', 'roles', 'estado', 'actions']; 
   menus = signal<MenuData[]>([]); 
+  allMenus = signal<MenuData[]>([]);
   totalMenus = signal<number>(0); 
   pageIndex = signal<number>(1); 
   pageSize = signal<number>(5); 
@@ -40,7 +42,28 @@ export class MenuComponent {
 
   constructor() { 
     this.loadMenus(); 
+    this.loadAllMenus(); // Cargar todos los menús para obtener nombres de padres
   } 
+
+  loadAllMenus(): void {
+    this.menusService.getMenus({ page: 1, page_size: 1000 }).subscribe({
+      next: (response: MenusListResponse) => {
+        const mappedMenus = response.results.map(menu => this.mapFromApiResponse(menu));
+        this.allMenus.set(mappedMenus);
+      },
+      error: (error) => {
+        console.log('error al obtener todos los menús', error);
+      }
+    });
+  }
+
+  getMenuPadreName(idDepende: number): string {
+    if (!idDepende || idDepende === 0) {
+      return 'SIN MENÚ PADRE';
+    }
+    const menuPadre = this.allMenus().find(menu => menu.id_menu === idDepende);
+    return menuPadre ? menuPadre.nombre_menu : 'MENÚ PADRE NO ENCONTRADO';
+  }
 
   loadMenus(): void { 
     let ordering = ''; 
@@ -79,7 +102,8 @@ export class MenuComponent {
       'roles': 'roles',
       'nivel': 'nivel',
       'orden': 'orden',
-      'estado': 'estado'
+      'estado': 'estado',
+      'id_depende': 'id_depende'
     }; 
     return fieldMap[field] || field; 
   } 
@@ -133,19 +157,29 @@ export class MenuComponent {
       roles: apiResponse.roles || [],
       id_depende: apiResponse.id_depende || 0
     }; 
-  } 
+  }
 
-  openModalCreateMenu(menu?: MenuData): void { 
+  
+  createMenu(menu?: MenuData): void {
+    this.openModalCreateMenu(menu, false);
+  }
+  
+  viewMenu(menu: MenuData): void {
+    this.openModalCreateMenu(menu, true);
+  }
+
+  private openModalCreateMenu(menu?: MenuData, isReadOnly?: boolean): void { 
     const dialogRef = this.dialog.open(MenuModalComponent, { 
-      width: '30rem',
-      height: 'auto', 
-      data: menu || null, 
-      disableClose: true
+      height: 'max-content', 
+      data: menu ? { ...menu, isReadOnly } : null, 
+      disableClose: true,
+      panelClass: 'custom-responsive-modal-menus'
     }); 
 
     dialogRef.afterClosed().subscribe((result) => { 
-      if (result) { 
+      if (result && result.action !== 'cancel') { 
         this.loadMenus(); 
+        this.loadAllMenus();
       } 
     }); 
   }
@@ -165,7 +199,10 @@ export class MenuComponent {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.loadMenus();
+        this.loadAllMenus();
       }
     });
   }
+
+  
 }

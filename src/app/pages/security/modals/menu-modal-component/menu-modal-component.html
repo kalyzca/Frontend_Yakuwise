@@ -1,42 +1,42 @@
 <p mat-dialog-title class="modal-title">
-    {{ isEditMode() ? 'Editar Menú' : 'Agregar Menú' }}
+    {{ isReadOnly() ? 'Ver menú' : (isEditMode() ? 'Editar menú' : 'Agregar menú') }}
     <button mat-icon-button class="close-button" matTooltip="Cerrar" mat-dialog-close>
         <mat-icon>close</mat-icon>
     </button>
 </p>
 <mat-dialog-content>
-    <form (submit)="onSave($event)">
-        <div class="form-input-container">
-            <label for="modulo" class="label-input-container required-field">Módulo:</label>
-            <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
-                <mat-select id="modulo" [formField]="menuForm.id_modulo" [errorStateMatcher]="moduloError.matcher"
-                    (selectionChange)="errorService.limpiarCampoBackend(backendErrors, 'id_modulo')">
-                    @for (modulo of modulos(); track modulo.id) {
-                        <mat-option [value]="modulo.id">{{ modulo.module_name }}</mat-option>
-                    }
-                </mat-select>
-            </mat-form-field>
-            @if (moduloError.mostrarErrores()) {
-                <mat-error class="error-list-container">
-                    <div class="error-list">
-                        @for (error of moduloError.errores(); track error.kind) {
-                            <div class="error-row">
-                                <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                                <span>{{ error.message }}</span>
-                            </div>
-                        }
-                    </div>
-                </mat-error>
-            }
-        </div>
-        <div class="form-row">
-            <div class="form-input-container half-width">
-                <label for="nombre_menu" class="label-input-container required-field">Nombre del Menú:</label>
+    <form (submit)="onSave($event)" >
+        <div class="form-menus">
+            <div class="form-input-container">
+                <label for="modulo" class="label-input-container required-field">Módulo:</label>
                 <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
-                    <input matInput id="nombre_menu" [formField]="menuForm.nombre_menu"
+                    <mat-select id="modulo" [formField]="menuForm.id_modulo">
+                        <mat-option [value]="0" selected>Seleccione una opción</mat-option>
+                        @for (modulo of modulos(); track modulo.id) {
+                            <mat-option [value]="modulo.id">{{ modulo.module_name }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+                @if (menuForm.id_modulo().invalid() && menuForm.id_modulo().touched()) {
+                    <mat-error class="error-list-container">
+                        <div class="error-list">
+                            @for (error of menuForm.id_modulo().errors(); track error.kind) {
+                                <div class="error-row">
+                                    <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                                    <span>{{ error.message }}</span>
+                                </div>
+                            }
+                        </div>
+                    </mat-error>
+                }
+            </div>
+            <div class="form-input-container">
+                <label for="nombre_menu" class="label-input-container required-field">Nombre del menú:</label>
+                <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
+                    <input matInput id="nombre_menu" class="text-mayusc" [formField]="menuForm.nombre_menu"
                         [errorStateMatcher]="nombreMenuError.matcher"
                         (input)="errorService.limpiarCampoBackend(backendErrors, 'nombre_menu')"
-                        placeholder="Ej. Usuarios">
+                        placeholder="Ej. Usuarios" soloLetras>
                 </mat-form-field>
                 @if (nombreMenuError.mostrarErrores()) {
                     <mat-error class="error-list-container">
@@ -51,12 +51,12 @@
                     </mat-error>
                 }
             </div>
-            <div class="form-input-container half-width">
+            <div class="form-input-container">
                 <label for="nivel" class="label-input-container required-field">Nivel:</label>
                 <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
-                    <input matInput id="nivel" type="number" [formField]="menuForm.nivel"
-                        [errorStateMatcher]="nivelError.matcher"
-                        (input)="onNivelChange(); errorService.limpiarCampoBackend(backendErrors, 'nivel')"
+                    <input matInput id="nivel" type="number" [formField]="menuForm.nivel" [errorStateMatcher]="nivelError.matcher"
+                        (input)="errorService.limpiarCampoBackend(backendErrors, 'nivel')"
+                        (change)="onNivelChange()"
                         placeholder="Ej. 1">
                 </mat-form-field>
                 @if (nivelError.mostrarErrores()) {
@@ -72,61 +72,40 @@
                     </mat-error>
                 }
             </div>
-        </div>
-        @if (showIdDepiende()) {
+            @if (showIdDepiende()) {
+                <div class="form-input-container">
+                    <label for="id_depende" class="label-input-container required-field">Menú Padre:</label>
+                    <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
+                        <input matInput id="id_depende" name="id_depende" class="text-mayusc" [formField]="menuForm.id_depende"
+                            [errorStateMatcher]="menuDependeError.matcher"
+                            [matAutocomplete]="menuAuto" (input)="onMenuInput($event)" placeholder="Buscar menú padre..." soloLetras>
+                        <mat-autocomplete #menuAuto="matAutocomplete" [displayWith]="displayMenuName" (optionSelected)="onMenuSelected($event)">
+                            @if (menus().length === 0) {
+                                <mat-option disabled>Cargando menús...</mat-option>
+                            } 
+                            @else {
+                                <mat-option [value]="0" selected>Seleccione un menu padre</mat-option>
+                                @for (menu of filteredMenus(); track menu.id) {
+                                    <mat-option [value]="menu.id">{{ menu.name }}</mat-option>
+                                }
+                            }
+                        </mat-autocomplete>
+                    </mat-form-field>
+                    @if (menuDependeError.mostrarErrores()) {
+                        <mat-error class="error-list-container">
+                            <div class="error-list">
+                                @for (error of menuDependeError.errores(); track error.kind) {
+                                    <div class="error-row">
+                                        <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                                        <span>{{ error.message }}</span>
+                                    </div>
+                                }
+                            </div>
+                        </mat-error>
+                    }
+                </div>
+            }
             <div class="form-input-container">
-                <label for="id_depende" class="label-input-container required-field">Menú Padre:</label>
-                <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
-                    <input matInput id="id_depende" name="id_depende" [formControl]="menuParentControl"
-                        [matAutocomplete]="menuAuto" (input)="onMenuInput($event)" placeholder="Buscar menú padre...">
-                    <mat-autocomplete #menuAuto="matAutocomplete" [displayWith]="displayMenuName"
-                        (optionSelected)="onMenuSelected($event)">
-                        @if (menus().length === 0) {
-                            <mat-option disabled>Cargando menús...</mat-option>
-                        } 
-                        @else {
-                            <mat-option [value]="null">-- Seleccione un menú padre --</mat-option>
-                            @for (menu of filteredMenus(); track menu.id) {
-                                <mat-option [value]="menu.id">{{ menu.name }}</mat-option>
-                            }
-                        }
-                    </mat-autocomplete>
-                </mat-form-field>
-                @if (backendErrors()['id_depende']) {
-                    <mat-error class="error-list-container">
-                        <div class="error-list">
-                            @for (error of backendErrors()['id_depende']; track error) {
-                                <div class="error-row">
-                                    <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                                    <span>{{ error }}</span>
-                                </div>
-                            }
-                        </div>
-                    </mat-error>
-                }
-            </div>
-        }
-        <div class="form-row">
-            <div class="form-input-container half-width">
-                <label for="ruta" class="label-input-container required-field">Ruta:</label>
-                <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
-                    <input matInput id="ruta" [formField]="menuForm.ruta" [errorStateMatcher]="rutaError.matcher"
-                        (input)="errorService.limpiarCampoBackend(backendErrors, 'ruta')" placeholder="Ej. /usuarios">
-                </mat-form-field>
-                @if (rutaError.mostrarErrores()) {
-                    <mat-error class="error-list-container">
-                        <div class="error-list">
-                            @for (error of rutaError.errores(); track error.kind) {
-                                <div class="error-row">
-                                    <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
-                                    <span>{{ error.message }}</span>
-                                </div>
-                            }
-                        </div>
-                    </mat-error>
-                }
-            </div>
-            <div class="form-input-container half-width">
                 <label for="orden" class="label-input-container required-field">Orden:</label>
                 <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
                     <input matInput id="orden" type="number" [formField]="menuForm.orden"
@@ -146,20 +125,45 @@
                     </mat-error>
                 }
             </div>
-        </div>
-        <div class="form-input-container">
-            <label for="state" class="label-input-container custom-switch required-field">Estado:</label>
-            <mat-slide-toggle id="state" [checked]="isActive()" (change)="isActive.set($event.checked)">
-                <p class="txt-switch">
-                    El menú está <span class="state-text">&nbsp;{{statusText().toLowerCase()}}.</span>
-                </p>
-            </mat-slide-toggle>
+            
+            <div class="form-input-container">
+                <label for="ruta" class="label-input-container required-field">Ruta:</label>
+                <mat-form-field appearance="outline" class="custom-input" subscriptSizing="dynamic">
+                    <input matInput id="ruta" class="ruta" type="text" [formField]="menuForm.ruta" [errorStateMatcher]="rutaError.matcher"
+                        (input)="errorService.limpiarCampoBackend(backendErrors, 'ruta')" placeholder="Ej. /usuarios">
+                </mat-form-field>
+                @if (rutaError.mostrarErrores()) {
+                    <mat-error class="error-list-container">
+                        <div class="error-list">
+                            @for (error of rutaError.errores(); track error.kind) {
+                                <div class="error-row">
+                                    <img [src]="errorIconPath()" class="error-icon" alt="Error" width="16" height="16" />
+                                    <span>{{ error.message }}</span>
+                                </div>
+                            }
+                        </div>
+                    </mat-error>
+                }
+            </div>
+            <div class="form-input-container">
+                <label for="state" class="label-input-container custom-switch required-field">Estado:</label>
+                <mat-slide-toggle id="state" [checked]="isActive()" (change)="isActive.set($event.checked)" [disabled]="isReadOnly()" subscriptSizing="dynamic">
+                    <p class="txt-switch">
+                        El menú está <span class="state-text">&nbsp;{{statusText().toLowerCase()}}.</span>
+                    </p>
+                </mat-slide-toggle>
+            </div>
         </div>
         <mat-dialog-actions align="end">
-            <button mat-button type="button" mat-dialog-close>Cancelar</button>
-            <button mat-button color="primary" type="submit" [disabled]="isLoading()">
-                {{ isLoading() ? 'Guardando...' : (isEditMode() ? 'Actualizar' : 'Guardar') }}
-            </button>
+            @if (!isReadOnly()) {
+                <button mat-button type="button" mat-dialog-close>Cancelar</button>
+                <button mat-button color="primary" type="submit" [disabled]="isLoading()">
+                    {{ isLoading() ? 'Guardando...' : (isEditMode() ? 'Actualizar' : 'Guardar') }}
+                </button>
+            }
+            @else {
+                <button mat-button mat-dialog-close>Cerrar</button>
+            }
         </mat-dialog-actions>
     </form>
 </mat-dialog-content>
